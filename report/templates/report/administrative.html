@@ -1,0 +1,94 @@
+{% load i18n %}
+<div class="w3-container">
+    <div class="w3-row">
+        <label class="w3-third formfieldtitle" for="activity_associated">{% translate "Activity associated" %}*</label>
+        <div class="w3-twothird formfield">
+            <select id="activity_associated" name="activity_associated" oninput="other_activity(this)">
+                <option selected>----------</option>
+                <option value="0">{% translate "Other (not listed)" %}</option>
+                {% for area in report_form.fields.activity_associated.choices %}
+                    <optgroup label="{{ area.0 }}">
+                        {% for activity in area.1 %}
+                            <option value="{{ activity.0 }}" {% if activity.0 == report_form.instance.activity_associated_id %}selected{% endif %}>{{ activity.1 }}</option>
+                        {% endfor %}
+                    </optgroup>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="w3-row activity_others invisible_field">
+        <label class="w3-third formfieldtitle" for="activity_other">{% translate "Name of the activity" %}</label>
+        <div class="w3-twothird formfield"><input type="text" id="activity_other" name="activity_other" value="{{ report_form.instance.activity_other }}"/></div>
+    </div>
+    <div class="w3-row">
+        <label class="w3-third formfieldtitle" for="area_responsible">{% translate "Area responsible" %}*</label>
+        <div class="w3-twothird formfield">
+            <select id="area_responsible" name="area_responsible">
+                <option selected>----------</option>
+                {% for area_responsible in report_form.fields.area_responsible.queryset %}
+                    <option value="{{ area_responsible.id }}" {% if area_responsible == report_form.instance.area_responsible %}selected{% endif %}>{{ area_responsible.text }} ({{ area_responsible.manager.user.first_name }})</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="w3-row">
+        <label class="w3-third formfieldtitle" for="area_activated">{% translate "Areas activated" %}</label>
+        <div class="w3-twothird formfield">
+            <select id="area_activated" name="area_activated" size="8" multiple>
+                {% for area_activated in report_form.fields.area_activated.queryset %}
+                    <option value="{{ area_activated.id }}" {% if area_activated in report_form.instance.area_activated.all %}selected{% endif %}>{{ area_activated.text }}</option>
+                {% endfor %}
+            </select>
+            <a target="_blank" href="{% url 'report:add_area_activated' %}" aria-label="{% translate 'Add area activated' %}">
+                <button type="button" class="add_button"><i class="fa-solid fa-plus"></i> {% translate "Add" %}</button>
+            </a>
+            <button type="button" class="refresh_button" onclick="update_areas()"><i class="fa-solid fa-refresh"></i> {% translate "Refresh" %}</button>
+        </div>
+    </div>
+    <div class="w3-row">
+        <label class="w3-third formfieldtitle" for="initial_date">{% translate "Initial date" %}*</label>
+        <div class="w3-twothird formfield"><input id="initial_date" name="initial_date" type="date" value="{{ report_form.instance.initial_date|date:'Y-m-d' }}"/></div>
+    </div>
+    <div class="w3-row">
+        <label class="w3-third formfieldtitle" for="end_date">{% translate "End date" %}</label>
+        <div class="w3-twothird formfield"><input id="end_date" name="end_date" type="date" value="{{ report_form.instance.end_date|date:'Y-m-d' }}"/></div>
+    </div>
+    <div class="w3-row">
+        <label class="w3-third formfieldtitle" for="description">{% translate "Description" %}*</label>
+        <div class="w3-twothird formfield"><input id="description" name="description" type="text" value="{{ report_form.instance.description }}"/></div>
+    </div>
+    <div class="w3-row">
+        <label class="w3-third formfieldtitle" for="funding_associated">{% translate "Funding associated" %}</label>
+        <div class="w3-twothird formfield">
+            <select id="funding_associated" name="funding_associated" multiple>
+                {% for funding_associated in report_form.fields.funding_associated.queryset %}
+                    <option value="{{ funding_associated.id }}" {% if funding_associated in report_form.instance.funding_associated.all %}selected{% endif %}>{{ funding_associated.name }}</option>
+                {% endfor %}
+            </select>
+            <a target="_blank" href="{% url 'report:add_funding' %}" aria-label="{% translate 'Add funding' %}">
+                <button type="button" class="add_button"><i class="fa-solid fa-plus"></i> {% translate "Add" %}</button>
+            </a>
+            <button type="button" class="refresh_button"><i class="fa-solid fa-refresh" onclick="update_fundings()"></i> {% translate "Refresh" %}</button>
+        </div>
+    </div>
+    <div class="w3-row">
+        <label class="w3-third formfieldtitle" for="links">{% translate "Links" %}*</label>
+        <div class="w3-twothird formfield"><textarea id="links" name="links" rows="3">{{ report_form.instance.links }}</textarea></div>
+    </div>
+    <div class="w3-row">
+        <label class="w3-third formfieldtitle" for="public_communication">{% translate "Public Communication" %}*</label>
+        <div class="w3-twothird formfield"><textarea id="public_communication" name="public_communication" rows="3">{{ report_form.instance.public_communication }}</textarea></div>
+    </div>
+    <div class="w3-row">
+        <div class="w3-third formfieldtitle">{% translate "Should be on meta?" %}</div>
+        <label class="w3-twothird formfield toggle" for="should_be_on_meta">
+            <span style="display:none">{% translate "Should this report be on Meta?" %}</span>
+            <input class="toggle__input" type="checkbox" id="should_be_on_meta" name="should_be_on_meta" {% if report_form.instance.should_be_on_meta %}checked{% endif %}/>
+            <span class="toggle__fill"></span>
+        </label>
+    </div>
+    <div class="w3-row">
+        <div class="w3-third formfield">&nbsp;</div>
+        <div class="w3-twothird formfield"><button type="button" class="tablinks submitbutton" onclick="openTab(this, 'Quantitative')">{% translate "Fill quantitative report" %}</button></div>
+    </div>
+</div>

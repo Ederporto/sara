@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block styles %}<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">{% endblock %}
+{% block banner %}{% endblock %}
+
+{% block content %}
+    <div class="w3-container">
+        <div class="w3-row">
+            <div class="userform">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="w3-row">
+                        <div class="w3-quarter dissapear">&nbsp;</div>
+                        <div class="w3-half">
+                            {% for field in eventform %}
+                                <label class="w3-third formfieldtitle" for="id_{{ field.name }}">
+                                    {{ field.label }}*
+                                </label>
+                                <div class="w3-twothird formfield">
+                                    {{ field }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="w3-row">
+                        <div class="w3-quarter dissapear">&nbsp;</div>
+                        <div class="w3-half">
+                            <div class="w3-third note formfieldtitle">
+                                {% translate "* Required fields" %}
+                            </div>
+                            <div class="w3-twothird formfield">
+                                <button class="submitbutton" type="submit">{% translate "Submit" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

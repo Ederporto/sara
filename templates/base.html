@@ -1,0 +1,38 @@
+{% load static %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %} | S.A.R.A.</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
+    <link rel="preconnect" href="https://tools-static.wmflabs.org/">
+    <link rel="stylesheet" type="text/css" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" type="text/css" href="https://tools-static.wmflabs.org/fontcdn/css?family=Josefin+Sans">
+    <link rel="stylesheet" type="text/css" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    {% block styles %}{% endblock %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/navbar.css' %}">
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/popper.js/2.11.6/umd/popper.js"></script>
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="wrapper">
+    {% block navbar %}{% include 'navbar.html' %}{% endblock %}
+    <main class="w3-container">
+        {% include "messages.html" %}
+        {% block banner %}
+            <div class="w3-row">
+                <div class="w3-quarter dissapear">&nbsp;</div>
+                <div class="w3-half logo"><h1><img src="{% static 'images/logo.svg' %}" width="200px" alt="{% translate "Logo of the Apprenticeships and Results Evaluation System" %}"></h1></div>
+            </div>
+        {% endblock %}
+        {% block content %}{% endblock %}
+    </main>
+    {% block scripts %}{% endblock %}
+</div>
+</body>
+</html>

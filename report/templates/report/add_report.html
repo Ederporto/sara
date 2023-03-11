@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
+    <link href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+{% endblock %}
+{% block scripts %}
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="w3-container">
+        <div class="w3-row main_content">
+            <div class="w3-row tab">
+                <button id="nav_Administrative" class="tablinks active" onclick="openTab(this, 'Administrative')">{% translate "Administrative" %}</button>
+                <button id="nav_Quantitative" class="tablinks" onclick="openTab(this, 'Quantitative')">{% translate "Quantitative" %}</button>
+                <button id="nav_Learning" class="tablinks" onclick="openTab(this, 'Learning')">{% translate "Learning" %}</button>
+                <button id="nav_Qualitative" class="tablinks" onclick="openTab(this, 'Qualitative')">{% translate "Qualitative" %}</button>
+            </div>
+            <div class="w3-row userform">
+                <form id="report" method="post" onsubmit="validateForm()">
+                    {% csrf_token %}
+                    <div class="w3-container">
+                        <div class="w3-container tabcontent active" id="Administrative">
+                            <h2 id="section_Administrative">{% translate "Administrative" %}</h2>
+                            {% include 'report/administrative.html' %}
+                        </div>
+                        <div class="w3-container tabcontent" id="Quantitative">
+                            <h2 id="section_Quantitative">{% translate "Quantitative" %}</h2>
+                            {% include 'report/quantitative.html' %}
+                        </div>
+                        <div class="w3-container tabcontent" id="Learning">
+                            <h2 id="section_Learning">{% translate "Learning" %}</h2>
+                            {% include 'report/learning.html' %}
+                        </div>
+                        <div class="w3-container tabcontent" id="Qualitative">
+                            <h2 id="section_Qualitative">{% translate "Qualitative" %}</h2>
+                            {% include 'report/theory_of_change.html' %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('.toggle__input.wiki').each(function(){
+                if (this.checked) {
+                    toggle_field(this.id);
+                }
+            })
+        });
+
+        function toggle_field(selectObject) {
+            $("#"+selectObject+"_created").val(0);
+            $("#"+selectObject+"_edited").val(0);
+            $("."+selectObject).toggleClass("invisible_field");
+        }
+
+        function openTab(evt, section) {
+            let i, tabcontent, tablinks;
+
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            $("#"+section)[0].style.display = "block";
+            $("#nav_"+section)[0].classList.add("active");
+        }
+
+        function validateForm() {
+            let form_value = document.forms["report"]["activity_associated"].value;
+            if (form_value === "") {
+                alert("The form is incomplete");
+                return false;
+            }
+        }
+
+        function other_activity(selectObject) {
+            if (selectObject.value === "0") {
+                $(".activity_others").removeClass("invisible_field");
+            } else {
+                $("#activity_others").val("");
+                $(".activity_others").addClass("invisible_field");
+            }
+        }
+
+        function update_activities() {
+            $.ajax({
+                method: 'GET',
+                url: 'get_activities/',
+                success: function (response) {
+                    let other_option = '{% translate "Other (not listed)" %}';
+                    let optgroup = '<option selected>----------</option><option value="0">' + other_option + '</option>';
+                    $.each(response["activities"], function (i, area) {
+                        optgroup = optgroup + '<optgroup label="' + area[0] + '">';
+                        $.each(area[1], function (i, activity) {
+                            optgroup = optgroup + '<option value="' + activity[0] + '">' + activity[1] + '</option>';
+                        });
+                        optgroup = optgroup + '</optgroup>';
+                    });
+                    document.getElementById("activity_associated").innerHTML = optgroup;
+                }
+            });
+        }
+
+        function update_areas() {
+            $.ajax({
+                method: 'GET',
+                url: 'get_areas/',
+                success: function (response) {
+                    let options = '';
+                    $.each(response["areas"], function (i, area) {
+                        options = options + '<option value="' + area.id + '">' + area.text + '</option>';
+                    });
+                    document.getElementById("area_activated").innerHTML = options;
+                }
+            });
+        }
+
+        function update_fundings() {
+            $.ajax({
+                method: 'GET',
+                url: 'get_fundings/',
+                success: function (response) {
+                    let options = '';
+                    $.each(response["fundings"], function (i, funding) {
+                        options = options + '<option value="' + funding.id + '">' + funding.name + '</option>';
+                    });
+                    document.getElementById("funding_associated").innerHTML = options;
+                }
+            });
+        }
+
+        function update_partnerships() {
+            $.ajax({
+                method: 'GET',
+                url: 'get_partnerships/',
+                success: function (response) {
+                    let options = '';
+                    $.each(response["partnerships"], function (i, partnership) {
+                        options = options + '<option value="' + partnership.id + '">' + partnership.name + '</option>';
+                    });
+                    document.getElementById("partners").innerHTML = options;
+                }
+            });
+        }
+
+        function update_technologies() {
+            $.ajax({
+                method: 'GET',
+                url: 'get_technologies/',
+                success: function (response) {
+                    let options = '';
+                    $.each(response["technologies"], function (i, technology) {
+                        options = options + '<option value="' + technology.id + '">' + technology.name + '</option>';
+                    });
+                    document.getElementById("technologies_used").innerHTML = options;
+                }
+            });
+        }
+    </script>
+{% endblock %}

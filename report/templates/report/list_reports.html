@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block scripts %}
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap-table/1.21.2/bootstrap-table.min.js"></script>
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap-table/1.21.2/extensions/mobile/bootstrap-table-mobile.min.js"></script>
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap-table/1.21.2/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
+{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap-table/1.21.2/bootstrap-table.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="userform">
+        <div class="w3-row">
+            <div class="w3-row">
+                <div class="w3-half dissapear" style="text-align: center">
+                    <a title="{% trans 'Export all reports' %}" href="{% url 'report:export_all_reports' %}"><button type="button" class="btn-round btn-export"><i class="fa-solid fa-file-export"></i> {% trans 'Export all reports' %}</button></a>
+                </div>
+                <div class="w3-half formfield"><input id="customSearch" type="search" placeholder="{% trans 'Search' %}" aria-label="{% trans 'Search' %}" autocomplete="off" ></div>
+            </div>
+            <table id="reports" class="table table-striped" style="background-color: var(--light-color)"
+                   data-mobile-responsive="true"
+                   data-check-on-init="true"
+                   data-filter-control="true"
+                   data-show-search-clear-button="true"
+                   data-search="true"
+                   data-search-selector="#customSearch">
+                <thead style="background-color: var(--dark-color); color:var(--light-color); border: 1px solid var(--light-color)">
+                <tr>
+                    <th data-field="id">{% trans "ID" %}</th>
+                    <th data-field="description" data-sortable="true">{% trans "Description" %}</th>
+                    <th data-field="actions">{% trans "Actions" %}</th>
+                    <th data-field="initial_date" data-sorter="datesSorter" data-sortable="true">{% trans "Initial date" %}</th>
+                    <th data-field="end_date" data-sorter="datesSorter" data-sortable="true">{% trans "End date" %}</th>
+                    <th data-field="responsible" data-sortable="true" data-filter-control="select">{% trans "Responsible" %}</th>
+                    <th data-field="has_learning" data-sortable="true" data-filter-control="select">{% trans "Has learning?" %}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for data in dataset %}
+                    <tr class="{% if data.learning %}has-learning{% else %}hasnt-learning{% endif %}">
+                        <th scope="row">{{ data.id }}</th>
+                        <td>{{ data.description }}</td>
+                        <td>
+                            <a title="{% trans 'View' %}" href="{% url 'report:detail_report' report_id=data.id %}"><button title="{% trans 'View' %}" type="button" class="btn-circle btn-view"><i class="fa-solid fa-eye"></i></button></a>
+                            <a title="{% trans 'Update' %}" href="{% url 'report:update_report' report_id=data.id %}"><button title="{% trans 'Update' %}" type="button" class="btn-circle btn-update"><i class="fa-solid fa-pen"></i></button></a>
+                            <br class="appear">
+                            <a title="{% trans 'Delete' %}" href="{% url 'report:delete_report' report_id=data.id %}"><button title="{% trans 'Delete' %}" type="button" class="btn-circle btn-delete"><i class="fa-solid fa-times"></i></button></a>
+                            <a title="{% trans 'Export' %}" href="{% url 'report:export_report' report_id=data.id %}"><button title="{% trans 'Export' %}" type="button" class="btn-circle btn-export"><i class="fa-solid fa-file-export"></i></button></a>
+                        </td>
+                        <td>{{ data.initial_date|date:'Y-m-d' }}</td>
+                        <td>{{ data.end_date|date:'Y-m-d' }}</td>
+                        <td>{{ data.area_responsible.manager.user.first_name }}</td>
+                        <td>{% if data.learning %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $('#reports').bootstrapTable();
+        })
+
+        function datesSorter(a, b) {
+            if (new Date(a) < new Date(b)) return 1;
+            if (new Date(a) > new Date(b)) return -1;
+            return 0;
+        }
+
+        $(function (){
+            $('[class*="bootstrap-table-filter-control-"]').wrap("<label style='width: 100%'></label>");
+        })
+    </script>
+{% endblock %}

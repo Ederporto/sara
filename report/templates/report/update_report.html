@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+    <div class="w3-container">
+        <div class="w3-row main_content">
+            <div class="w3-row tab">
+                <button id="nav_Administrative" class="tablinks active"
+                        onclick="openTab(this, 'Administrative')">{% translate "Administrative" %}</button>
+                <button id="nav_Quantitative" class="tablinks"
+                        onclick="openTab(this, 'Quantitative')">{% translate "Quantitative" %}</button>
+                <button id="nav_Learning" class="tablinks"
+                        onclick="openTab(this, 'Learning')">{% translate "Learning" %}</button>
+                <button id="nav_Qualitative" class="tablinks"
+                        onclick="openTab(this, 'Qualitative')">{% translate "Qualitative" %}</button>
+            </div>
+            <div class="w3-row userform">
+                <form id="report" method="post" onsubmit="validateForm()">
+                    {% csrf_token %}
+                    <div class="w3-container">
+                        <h3 id="Theory of Change">{% translate "Theory of Change" %}</h3>
+                        <div class="w3-container formfield">
+                            <h4 class="formfieldtitle">{% translate "Strategic learning questions related to the activity being reported" %}*</h4>
+                            <fieldset class="subcontainer">
+                                <legend>{% translate "Strategic learning questions related to the activity being reported" %}</legend>
+                                {% for learning_area in report_form.fields.learning_questions_related.choices %}
+                                    <div class="w3-container formfieldtitle">{{ learning_area.0 }}</div>
+                                    {% for learning_question in learning_area.1 %}
+                                        <label class="container">{{ learning_question.1 }}
+                                            <input type="checkbox" name="learning_questions_related" data-learning-area="{{ learning_area.0 }}" onclick="show_objectives(this)" value="{{ learning_question.0 }}" {% if learning_question.0 in learning_questions_related_set %}checked{% endif %}>
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    {% endfor %}
+                                {% endfor %}
+                            </fieldset>
+
+                            <h4 class="formfieldtitle">{% translate "Evaluation objectives" %}*</h4>
+                            <div class="w3-container" id="evaluation_objectives">
+                                {% for learning_area in report_form.fields.learning_questions_related.choices %}
+                                    <div class="w3-container formfieldtitle" id="objectives_from_learning_area_{{ learning_area.0 }}">{{ learning_area.0 }}</div>
+                                    <div class="w3-container formfield" id="learning_area_{{ learning_area.0 }}"></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="w3-row tab">
+                            <div class="w3-half formfield form-left"><button type="button" class="tablinks custombutton" onclick="openTab(this, 'Learning')">{% translate "Go back to learning report" %}</button></div>
+                            <div class="w3-half formfield form-right"><button class="custombutton" type="submit">{% translate "Submit" %}</button></div>
+                        </div>
+                        <script>
+                            $(document).ready(function () {
+                                $('input[name=learning_questions_related]').each(function(){
+                                    if (this.checked) {
+                                        show_objectives(this);
+                                    }
+                                })
+                            });
+
+                            function show_objectives(selectObject) {
+                                let question_id = $(selectObject).val();
+                                let learning_area_id = $(selectObject).data("learning-area");
+                                let is_checked = $(selectObject).is(":checked");
+                                let report_id = {{ report_form.instance.id }};
+                                $.ajax({
+                                url: '{% url "report:get_objectives" %}',
+                                datatype: 'json',
+                                type: 'GET',
+                                data: {'question_id': question_id, 'report_id': report_id},
+                                success: function (data) {
+                                    let answers = data.answers;
+                                    $.each(data.objectives, function (index, item) {
+                                        let n = $("input[data-learning-area='" + learning_area_id + "']:checked").length;
+                                        console.log(answers);
+                                        if (is_checked) {
+                                            if (n === 1) {
+                                                let objective_obj = "<div class='w3-container formfield'  data-learning-area='" +
+                                                learning_area_id + "' id='objective_" + item.id + "'>" +
+                                                "<label for='objective_answer_" + item.id + "'>" + item.text + "</label>" +
+                                                "<input id='objective_answer_" + item.id + "' name='objective_answer_" + item.id +
+                                                "' type='text' maxlength='420'/>" + "</div>";
+                                                $(`[id="learning_area_${learning_area_id}"]`).append(objective_obj);
+                                            }
+                                        } else {
+                                            if (n === 0) {
+                                                $("#objective_" + item.id).remove();
+                                            }
+                                        }
+                                    })
+                                }})
+                            }
+                        </script>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

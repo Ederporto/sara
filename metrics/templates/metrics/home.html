@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/calendar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="w3-container userform">
+        <div class="w3-row">
+            <div class="w3-third dissapear">&nbsp;</div>
+            <div class="w3-third">
+                <p>{% blocktrans %}<b>S.A.R.A.</b> is a web application for recording and analyzing qualitative and quantitative activity reports.{% endblocktrans %}</p>
+            </div>
+        </div>
+        <div class="w3-row">
+            <div class="w3-third dissapear">&nbsp;</div>
+            <div class="w3-third">
+                {% if user.is_authenticated %}<div class="w3-row"><a href="{% url 'report:add_report' %}"><button class="custombutton" type="button">{% translate "Add report" %}</button></a></div>{% endif %}
+                {% if user.is_authenticated %}<div class="w3-row"><a href="{% url 'report:list_reports' %}"><button class="custombutton" type="button">{% translate "List reports" %}</button></a></div>{% endif %}
+                {% if user.is_authenticated %}<div class="w3-row"><a href="{% url 'agenda:show_calendar' %}"><button class="custombutton" type="button">{% translate "Show calendar" %}</button></a></div>{% endif %}
+                <div class="w3-row"><a href="{% url 'metrics:show_activities' %}"><button class="custombutton" type="button">{% translate "See activities plan" %}</button></a></div>
+                <div class="w3-row"><a href="{% url 'strategy:show_strategy' %}"><button class="custombutton" type="button">{% translate "See strategy" %}</button></a></div>
+                {% if user.is_authenticated %}<div class="w3-row"><a href="{% url 'user:profile' %}"><button class="custombutton" type="button">{% translate "Edit your profile" %}</button></a></div>{% endif %}
+                {% if user.is_authenticated %}<div class="w3-row"><a href="{% url 'user:register' %}"><button class="custombutton" type="button">{% translate "Register new user" %}</button></a></div>{% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
