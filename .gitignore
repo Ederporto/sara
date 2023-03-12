@@ -7,3 +7,6 @@ Lib/
 Scripts/
 *.sqlite3
 settings_local.py
+initial_data.json
+users_data.json
+settings.py
