@@ -26,7 +26,7 @@ SECRET_KEY = 'Teste'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['sara-wmb.toolforge.org']
+ALLOWED_HOSTS = ['sara-wmb.toolforge.org', '127.0.0.1', 'localhost']
 
 # Application definition
 
