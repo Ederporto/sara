@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
+{% endblock %}
 
 {% block content %}
     <div class="w3-container">
@@ -27,4 +30,5 @@
             </div>
         </div>
     </div>
+    {% include 'footer.html' %}
 {% endblock %}

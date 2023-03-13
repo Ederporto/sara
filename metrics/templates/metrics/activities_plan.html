@@ -2,8 +2,11 @@
 {% load static %}
 {% load i18n %}
 
-{% block content %}
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
+{% endblock %}
 
+{% block content %}
     <div class="w3-row">
         <div class="w3-quarter index index-box">
             <ul>
@@ -60,4 +63,5 @@
             {% endfor %}
         </div>
     </div>
+    {% include 'footer.html' %}
 {% endblock %}
