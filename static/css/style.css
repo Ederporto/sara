@@ -10,6 +10,10 @@
     --main-lighter-color: rgb(153, 182, 255);
     --main-darker-color: rgb(29, 49, 128);
 
+    /* GREY COLORS */
+    --dark-grey-color: rgb(25, 25, 25);
+    --light-grey-color: rgb(230, 230, 230);
+
     /* AREA COLORS */
     --rainbow-color-1: rgba(142, 124, 195, 1);
     --rainbow-color-2: rgba(96, 70, 159, 1);
@@ -28,7 +32,7 @@
     --rainbow-color-15: rgba(236, 128, 181, 1);
     --rainbow-color-16: rgba(197, 45, 124, 1);
 
-    --bs-body-color: var(--dark-color);
+    --bs-body-color: var(--dark-grey-color);
 
     /* TYPOGRAPHY */
     --main-font: Poppins, sans-serif;
@@ -45,21 +49,23 @@ body {
     padding: 0 !important;
     margin: 0;
     overflow: hidden;
+    color: var(--light-grey-color);
 }
 main {
     overflow-y: auto;
     flex: 1 0;
     transition: margin-left .5s;
-    background-color: var(--main-color);
+    background-color: var(--dark-grey-color);
 }
 a { text-decoration: none !important; color:inherit !important; }
+p, footer, .block-section { margin:1em 0; }
 svg { vertical-align:unset !important; }
 button { font-family: var(--main-font); }
 
 /* SCROLLBAR ELEMENTS */
 ::-webkit-scrollbar { width: 1em; }
-::-webkit-scrollbar-track { background: var(--main-color); }
-::-webkit-scrollbar-thumb { background: var(--dark-color); border-radius: 1em; }
+::-webkit-scrollbar-track { background: var(--dark-grey-color); }
+::-webkit-scrollbar-thumb { background: var(--main-color); border-radius: 1em; }
 
 /* HEADER ELEMENTS */
 h1, h2, h3, h4, h5 {
@@ -80,26 +86,26 @@ h1 {
 }
 h2 {
     font-size: 2em !important;
-    color: var(--light-color);
+    color: var(--main-color);
     text-transform: uppercase;
 }
 h3 {
     font-size: 1.5em !important;
-    color: var(--dark-color);
-    background: var(--light-color);
+    color: var(--dark-grey-color);
+    background: var(--light-grey-color);
     text-transform: uppercase;
     padding: 0 0.5em;
 }
 h4 {
-    color: var(--light-color);
+    color: var(--light-grey-color);
     font-size: 1em !important;
-    background: linear-gradient(to bottom, transparent 85%, var(--dark-color) 15%);
+    background: linear-gradient(to bottom, transparent 85%, var(--main-color) 15%);
     text-transform: uppercase;
 }
 h5 {
     font-size: 1em !important;
     font-style: italic;
-    color: var(--dark-color);
+    color: var(--light-grey-color);
 }
 
 /* LOGO */
@@ -120,9 +126,10 @@ ul {
 li { list-style-type: "◀  "; }
 
 .wrapper { display: flex; height: 100%; }
+.wrapper-main { width: 100%; height: 100vh; overflow-y: auto; }
 .w3-container { padding: 0; }
 .w3-threequarter { padding: 1em 2em; }
-.subcontainer { padding: 1em !important; background-color: var(--light-color); }
+.subcontainer { padding: 1em !important; background-color: var(--light-grey-color); }
 .text-center { text-align: center; }
 .index {
     background-color: var(--light-color);
@@ -132,9 +139,6 @@ li { list-style-type: "◀  "; }
     position: sticky;
     top: 0;
 }
-.collapsible { width: 100%; }
-.collapsible:hover { background-color: var(--dark-color); }
-.collapsible i { float: right; }
 .appear { display: none; }
 @media screen and (max-width: 600px) {
     .index { position: relative; }
@@ -211,7 +215,7 @@ li { list-style-type: "◀  "; }
     text-transform: uppercase;
 }
 .tab button:hover {
-    background-color: var(--dark-color);
+    background-color: var(--main-color);
     color: var(--light-color)
 }
 .tab button.active {
@@ -220,11 +224,12 @@ li { list-style-type: "◀  "; }
 }
 .tabcontent { display: none; }
 .tabcontent.active { display: block; }
+.tablinks { color: var(--light-grey-color); }
 
 /* TABLE */
 .custom-table-header-el {
     border: 1px solid var(--light-color);
-    background-color: var(--dark-color);
+    background-color: var(--main-color);
     color: var(--light-color);
     padding: 0.5em;
     text-align: center;
@@ -233,7 +238,7 @@ li { list-style-type: "◀  "; }
 }
 .custom-table-row:nth-of-type(odd) {
     background-color: var(--light-color);
-    color: var(--dark-color);
+    color: var(--main-color);
     padding: 0.5em;
     text-align: center;
     vertical-align: middle;
@@ -241,13 +246,15 @@ li { list-style-type: "◀  "; }
 }
 .custom-table-row:nth-of-type(even) {
     background-color: var(--light-color);
-    color: var(--dark-color);
+    color: var(--main-color);
     padding: 0.5em;
     text-align: center;
     vertical-align: middle;
     height: 100%;
 }
 .card-view-title { min-width: 40% !important; }
+.table-sara { background-color: var(--light-color); }
+.table-sara thead { background-color: var(--main-color); color:var(--light-color); border: 1px solid var(--light-color) }
 
 /* BUTTONS */
 .btn-circle {
@@ -278,10 +285,10 @@ li { list-style-type: "◀  "; }
 .btn-export { background-color: var(--attention-color); }
 
 .custombutton {
-    background-color: var(--dark-color);
+    background-color: var(--main-color);
     border-radius: 2em;
     border: none;
-    color: var(--main-color);
+    color: var(--light-color);
     margin: 0 0 1em 0;
     width: 100%;
     padding: 0.5em;

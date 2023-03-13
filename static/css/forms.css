@@ -44,7 +44,7 @@ fieldset input { background-color: var(--main-lighter-color) !important }
     transition: 0.3s;
 }
 .submitbutton {
-    background-color: var(--dark-color);
+    background-color: var(--main-color);
     border-radius: 2em;
     border: none;
     color: var(--main-color);
