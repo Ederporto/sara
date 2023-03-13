@@ -149,7 +149,7 @@ li { list-style-type: "◀  "; }
 }
 
 /* CHECKBOX */
-.container {
+.select-container {
     display: block;
     position: relative;
     padding-left: 2em;
@@ -157,8 +157,9 @@ li { list-style-type: "◀  "; }
     cursor: pointer;
     font-size: 1em;
     user-select: none;
+    color: var(--dark-grey-color)
 }
-.container input {
+.select-container input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
@@ -174,11 +175,11 @@ li { list-style-type: "◀  "; }
     background-color: var(--light-color);
     border: 1px solid var(--main-color);
 }
-.container:hover input ~ .checkmark {
+.select-container:hover input ~ .checkmark {
     background-color: var(--main-lighter-color);
     border: 1px solid var(--light-color);
 }
-.container input:checked ~ .checkmark {
+.select-container input:checked ~ .checkmark {
     background-color: var(--main-color);
 }
 .checkmark:after {
@@ -186,11 +187,11 @@ li { list-style-type: "◀  "; }
     position: absolute;
     display: none;
 }
-.container input:checked ~ .checkmark:after {
+.select-container input:checked ~ .checkmark:after {
     display: block;
     transition: all 300ms ease-in-out;
 }
-.container .checkmark:after {
+.select-container .checkmark:after {
     left: 0.5em;
     top: 0.3em;
     width: 0.3em;

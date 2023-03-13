@@ -7,9 +7,9 @@
         <fieldset class="subcontainer">
             <legend>{% translate "Strategic learning questions related to the activity being reported" %}</legend>
             {% for learning_area in report_form.fields.learning_questions_related.choices %}
-                <div class="w3-container formfieldtitle">{{ learning_area.0 }}</div>
+                <div class="w3-container formfieldtitle" style="color:var(--main-color);">{{ learning_area.0 }}</div>
                 {% for learning_question in learning_area.1 %}
-                    <label class="container">{{ learning_question.1 }}
+                    <label class="select-container">{{ learning_question.1 }}
                         <input type="checkbox" name="learning_questions_related" data-learning-area="{{ learning_area.0 }}" onclick="show_objectives(this)" value="{{ learning_question.0 }}" {% if learning_question.0 in learning_questions_related_set %}checked{% endif %}>
                         <span class="checkmark"></span>
                     </label>

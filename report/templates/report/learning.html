@@ -7,9 +7,9 @@
         <fieldset class="subcontainer">
             <legend>{% translate "Directions related to the activity being reported" %}</legend>
             {% for strategic_axis in report_form.fields.directions_related.choices %}
-                <div class="w3-container formfieldtitle">{{ strategic_axis.0 }}</div>
+                <div class="w3-container formfieldtitle" style="color:var(--main-color);">{{ strategic_axis.0 }}</div>
                 {% for direction in strategic_axis.1 %}
-                    <label class="container">{{ direction.1 }}
+                    <label class="select-container">{{ direction.1 }}
                         <input type="checkbox" name="directions_related" value="{{ direction.0 }}" {% if direction.0 in directions_related_set %}checked{% endif %}>
                         <span class="checkmark"></span>
                     </label>

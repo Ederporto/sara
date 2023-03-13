@@ -47,7 +47,7 @@ fieldset input { background-color: var(--main-lighter-color) !important }
     background-color: var(--main-color);
     border-radius: 2em;
     border: none;
-    color: var(--main-color);
+    color: var(--light-color);
     margin: 0;
     width: 100%;
     padding: 0.5em;
