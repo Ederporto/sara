@@ -6,24 +6,47 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
 {% endblock %}
 
+{% block banner %}
+    <div class="w3-row">
+        <div class="w3-third dissapear">&nbsp;</div>
+        <div class="w3-third logo">
+            <h1>
+                <img src="{% static 'images/sara-logo.svg' %}" alt="{% translate "Logo of the Apprenticeships and Results Evaluation System" %}">
+            </h1>
+        </div>
+    </div>
+{% endblock %}
+
 {% block content %}
     <div class="w3-container userform">
-        <div class="w3-row">
+        <div class="w3-row block-section">
             <div class="w3-third dissapear">&nbsp;</div>
             <div class="w3-third">
                 <p>{% blocktrans %}<b>S.A.R.A.</b> is a web application for recording and analyzing qualitative and quantitative activity reports.{% endblocktrans %}</p>
             </div>
         </div>
-        <div class="w3-row">
+        <div class="w3-row block-section">
             <div class="w3-third dissapear">&nbsp;</div>
             <div class="w3-third">
-                {% if user.is_authenticated %}<div class="w3-row"><a href="{% url 'report:add_report' %}"><button class="custombutton" type="button">{% translate "Add report" %}</button></a></div>{% endif %}
-                {% if user.is_authenticated %}<div class="w3-row"><a href="{% url 'report:list_reports' %}"><button class="custombutton" type="button">{% translate "List reports" %}</button></a></div>{% endif %}
-                {% if user.is_authenticated %}<div class="w3-row"><a href="{% url 'agenda:show_calendar' %}"><button class="custombutton" type="button">{% translate "Show calendar" %}</button></a></div>{% endif %}
-                <div class="w3-row"><a href="{% url 'metrics:show_activities' %}"><button class="custombutton" type="button">{% translate "See activities plan" %}</button></a></div>
-                <div class="w3-row"><a href="{% url 'strategy:show_strategy' %}"><button class="custombutton" type="button">{% translate "See strategy" %}</button></a></div>
-                {% if user.is_authenticated %}<div class="w3-row"><a href="{% url 'user:profile' %}"><button class="custombutton" type="button">{% translate "Edit your profile" %}</button></a></div>{% endif %}
-                {% if user.is_authenticated %}<div class="w3-row"><a href="{% url 'user:register' %}"><button class="custombutton" type="button">{% translate "Register new user" %}</button></a></div>{% endif %}
+                {% if user.is_authenticated %}<div class="w3-half form-left"><a href="{% url 'report:add_report' %}"><button class="custombutton" type="button">{% translate "Add report" %}</button></a></div>{% endif %}
+                {% if user.is_authenticated %}<div class="w3-half form-right"><a href="{% url 'report:list_reports' %}"><button class="custombutton" type="button">{% translate "List reports" %}</button></a></div>{% endif %}
+                {% if user.is_authenticated %}<div class="w3-half form-left"><a href="{% url 'agenda:show_calendar' %}"><button class="custombutton" type="button">{% translate "Show calendar" %}</button></a></div>{% endif %}
+                <div class="w3-half form-{% if user.is_authenticated %}right{% else %}left{% endif %}"><a href="{% url 'metrics:show_activities' %}"><button class="custombutton" type="button">{% translate "See activities plan" %}</button></a></div>
+                <div class="w3-half form-{% if user.is_authenticated %}left{% else %}right{% endif %}"><a href="{% url 'strategy:show_strategy' %}"><button class="custombutton" type="button">{% translate "See strategy" %}</button></a></div>
+                {% if user.is_authenticated %}<div class="w3-half form-right"><a href="{% url 'user:profile' %}"><button class="custombutton" type="button">{% translate "Edit your profile" %}</button></a></div>{% endif %}
+                {% if user.is_authenticated %}<div class="w3-half form-left"><a href="{% url 'user:register' %}"><button class="custombutton" type="button">{% translate "Register new user" %}</button></a></div>{% endif %}
+            </div>
+        </div>
+        <div id="footer" class="w3-row">
+            <hr>
+            <div class="w3-quarter dissapear">&nbsp;</div>
+            <div class="w3-half">
+                <div class="w3-row block-section" style="text-align: center;">
+                    <img src="{% static 'images/logo.svg' %}" alt="{% translate "Logo of the Wiki Movimento Brasil" %}" style="height:3em; text-align: center">
+                </div>
+                <div class="w3-row block-section" style="text-align: center;">
+                    {% blocktrans %}This application is a development by <i>User Group Wiki Movimento Brasil</i>.{% endblocktrans %}
+                </div>
             </div>
         </div>
     </div>
