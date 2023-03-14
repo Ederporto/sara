@@ -3,6 +3,20 @@
 {% load i18n %}
 {% block styles %}<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">{% endblock %}
 
+{% block banner %}
+    <div class="w3-row">
+    <div class="w3-third dissapear">&nbsp;</div>
+    <div class="w3-third">
+        <div style="width:100px; height: 100px; border-radius:50%; overflow: hidden; text-align: center">
+            {% if userform.photograph %}
+                <img src="https://commons.wikimedia.org/wiki/Special:FilePath/{{ userform.photograph }}?width=200px" width="100px">
+            {% else %}
+                <img src="{% static 'images/placeholder.svg' %}" alt="{% translate "Placeholder" %}" width="100px">
+            {% endif %}
+        </div>
+    </div>
+    </div>
+{% endblock %}
 {% block content %}
     <div class="w3-container">
         <div class="w3-row">

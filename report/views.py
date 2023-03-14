@@ -380,7 +380,7 @@ def export_user_profile(report_id=None):
     rows = []
     for report in reports:
         for instance in [report.created_by, report.modified_by]:
-            rows.append([instance.id, instance.wiki_handle, instance.user.first_name, instance.user.last_name,
+            rows.append([instance.id, instance.professional_wiki_handle, instance.user.first_name, instance.user.last_name,
                          instance.user.email, instance.lattes, instance.orcid, instance.google_scholar])
 
     df = pd.DataFrame(rows, columns=header).drop_duplicates()

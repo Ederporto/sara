@@ -13,8 +13,8 @@ class UserForm(forms.ModelForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ("wiki_handle", "gender", "linkedin", "lattes", "orcid",
-                  "google_scholar", "twitter", "facebook", "instagram")
+        fields = ("professional_wiki_handle", "personal_wiki_handle", "wikidata_item", "photograph", "gender",
+                  "linkedin", "lattes", "orcid", "google_scholar", "twitter", "facebook", "instagram")
 
 
 class NewUserForm(UserCreationForm):

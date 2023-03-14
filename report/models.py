@@ -69,7 +69,7 @@ class Technology(models.Model):
 
 class AreaActivated (models.Model):
     text = models.TextField(_("Name of the area activated"), max_length=420)
-    contact = models.TextField(max_length=420, blank=True)
+    contact = models.TextField(max_length=420, null=True, blank=True)
 
     class Meta:
         verbose_name = _("Area activated")
@@ -88,7 +88,7 @@ def save_team_area_as_area_activated(sender, instance, created, **kwargs):
     if created:
         contact = ""
         if instance.manager:
-            contact = instance.manager.wiki_handle
+            contact = instance.manager.professional_wiki_handle
         AreaActivated.objects.create(text=instance.text, contact=contact)
 
 

@@ -6,6 +6,6 @@ app_name = 'metrics'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('ii', views.ii, name='ii'),
+    path('about', views.about, name='about'),
     path('activities_plan', views.show_activities_plan, name='show_activities'),
 ]
