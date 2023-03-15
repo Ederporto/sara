@@ -15,6 +15,9 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfile
         fields = ("professional_wiki_handle", "personal_wiki_handle", "wikidata_item", "photograph", "gender",
                   "linkedin", "lattes", "orcid", "google_scholar", "twitter", "facebook", "instagram")
+        widgets = {
+            "professional_wiki_handle": forms.TextInput(attrs={'required': True})
+        }
 
 
 class NewUserForm(UserCreationForm):

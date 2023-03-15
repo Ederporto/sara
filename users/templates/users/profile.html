@@ -5,14 +5,17 @@
 
 {% block banner %}
     <div class="w3-row">
-    <div class="w3-third dissapear">&nbsp;</div>
-    <div class="w3-third">
-        <div style="width:100px; height: 100px; border-radius:50%; overflow: hidden; text-align: center">
-            {% if userform.photograph %}
-                <img src="https://commons.wikimedia.org/wiki/Special:FilePath/{{ userform.photograph }}?width=200px" width="100px">
-            {% else %}
-                <img src="{% static 'images/placeholder.svg' %}" alt="{% translate "Placeholder" %}" width="100px">
-            {% endif %}
+    <div class="w3-quarter dissapear">&nbsp;</div>
+    <div class="w3-half">
+        <div class="w3-third">&nbsp;</div>
+        <div class="w3-twothird">
+            <div style="width:100px; height: 100px; border-radius:50%; overflow: hidden; margin-left: auto; margin-right: auto;">
+                {% if userform.photograph %}
+                    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/{{ userform.photograph }}?width=200px" alt="{{ userform.first_name }} {{ userform.last_name }}" width="100px">
+                {% else %}
+                    <img src="{% static 'images/placeholder.svg' %}" alt="{% translate "Placeholder" %}" width="100px">
+                {% endif %}
+            </div>
         </div>
     </div>
     </div>
@@ -28,7 +31,7 @@
                             <legend>{% translate "Fixed fields" %}</legend>
                             {% for field in userform %}
                                 <label class="w3-third formfieldtitle" for="id_{{ field.name }}">
-                                    {{ field.label }}*
+                                    {{ field.label }}{% if field.field.required %}*{% endif %}
                                 </label>
                                 <div class="w3-twothird formfield">
                                     {{ field }}
