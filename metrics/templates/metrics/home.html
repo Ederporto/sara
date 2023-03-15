@@ -35,7 +35,7 @@
                 <div class="w3-half form-{% if user.is_authenticated %}left{% else %}right{% endif %}"><a href="{% url 'strategy:show_strategy' %}"><button class="custombutton" type="button">{% translate "See strategy" %}</button></a></div>
                 {% if user.is_authenticated %}<div class="w3-half form-right"><a href="{% url 'user:profile' %}"><button class="custombutton" type="button">{% translate "Edit your profile" %}</button></a></div>{% endif %}
                 {% if user.is_authenticated %}<div class="w3-half form-left"><a href="{% url 'user:register' %}"><button class="custombutton" type="button">{% translate "Register new user" %}</button></a></div>{% endif %}
-                <div class="w3-half form-right"><a href="{% url 'metrics:about' %}"><button class="custombutton" type="button">{% translate "About S.A.R.A." %}</button></a></div>
+                <div class="w3-half form-{% if user.is_authenticated %}right{% else %}left{% endif %}"><a href="{% url 'metrics:about' %}"><button class="custombutton" type="button">{% translate "About S.A.R.A." %}</button></a></div>
             </div>
         </div>
         {% include 'footer.html' %}
