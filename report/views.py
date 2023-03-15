@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, reverse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import gettext as _
+from django.contrib import messages
 
 from metrics.models import Metric
 from report.models import LearningArea, EvaluationObjective, EvaluationObjectiveAnswer, Editor, Organizer, Partner, \
@@ -20,6 +21,9 @@ from report.forms import NewReportForm, StrategicLearningQuestionsForm, activiti
 @login_required
 def add_report(request):
     if request.method == "POST":
+        form_valid_message = _("Report registered successfully!")
+        form_invalid_message = _("Something went wrong!")
+
         report_form = NewReportForm(request.POST)
         if report_form.is_valid():
             report = report_form.save()
@@ -40,7 +44,9 @@ def add_report(request):
                 strategic_learning_questions_form.save()
             else:
                 pass
+            messages.success(request, form_valid_message)
             return redirect(reverse("report:detail_report", kwargs={"report_id": report.id}))
+        messages.error(request, form_invalid_message)
         context = {"report_form": report_form,
                    "directions_related_set": [],
                    "learning_questions_related_set": []}
@@ -229,8 +235,8 @@ def export_report(request, report_id=None):
 def export_report_instance(report_id=None):
     header = [_('ID'), _('Created by'), _('Created at'), _('Modified by'), _('Modified at'), _('Activity associated'),
               _('Name of the activity'), _('Area responsible'), _('Area activated'), _('Initial date'), _('End date'),
-              _('Description'), _('Funding associated'), _('Links'), _('Public communication'), _('Should be on meta'),
-              _('Quantity of participants'), _('Quantity of Resources'), _('Quantity of Feedbacks'), _('Editors'),
+              _('Description'), _('Funding associated'), _('Links'), _('Public communication'),
+              _('Number of Participants'), _('Number of Resources'), _('Number of Feedbacks'), _('Editors'),
               _('Organizers'), _('Partnerships activated'), _('Technologies used'), _('# Wikipedia created'),
               _('# Wikipedia edited'), _('# Commons created'), _('# Commons edited'), _('# Wikidata created'),
               _('# Wikidata edited'), _('# Wikiversity created'), _('# Wikiversity edited'), _('# Wikibooks created'),
@@ -268,7 +274,7 @@ def export_report_instance(report_id=None):
         should_be_on_meta = report.should_be_on_meta
 
         # Quantitative
-        quantity_of_participants = report.quantity_of_participants
+        participants = report.participants
         resources = report.resources
         feedbacks = report.feedbacks
         editors = "; ".join(report.editors.values_list("username", flat=True))
@@ -314,7 +320,7 @@ def export_report_instance(report_id=None):
 
         rows.append([id_, created_by, created_at, modified_by, modified_at, activity_associated, activity_other,
                      area_responsible, area_activated, initial_date, end_date, description, funding_associated, links,
-                     public_communication, should_be_on_meta, quantity_of_participants, resources, feedbacks, editors,
+                     public_communication, should_be_on_meta, participants, resources, feedbacks, editors,
                      organizers, partners_activated, technologies_used, wikipedia_created, wikipedia_edited,
                      commons_created, commons_edited, wikidata_created, wikidata_edited, wikiversity_created,
                      wikiversity_edited, wikibooks_created, wikibooks_edited, wikisource_created, wikisource_edited,

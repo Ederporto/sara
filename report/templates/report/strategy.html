@@ -1,0 +1,28 @@
+{% load i18n %}
+
+<div class="w3-container">
+    <h3 id="Strategy Axis">{% translate "Strategy Axes" %}</h3>
+    <div class="w3-container formfield">
+        <h4 class="formfieldtitle">{% translate "Directions related to the activity being reported" %}*</h4>
+        <fieldset class="subcontainer">
+            <legend>{% translate "Directions related to the activity being reported" %}</legend>
+            {% for strategic_axis in report_form.fields.directions_related.choices %}
+                <div class="w3-container formfieldtitle" style="color:var(--main-color);">{{ strategic_axis.0 }}</div>
+                {% for direction in strategic_axis.1 %}
+                    <label class="select-container">{{ direction.1 }}
+                        <input type="checkbox" name="directions_related" value="{{ direction.0 }}" {% if direction.0 in directions_related_set %}checked{% endif %}>
+                        <span class="checkmark"></span>
+                    </label>
+                {% endfor %}
+            {% endfor %}
+        </fieldset>
+    </div>
+    <div class="w3-row">
+        <div class="w3-half formfield form-left">
+            <button type="button" class="tablinks custombutton" onclick="openTab(this, 'Quantitative')">{% translate "Go back to quantitative report" %}</button>
+        </div>
+        <div class="w3-half formfield form-right">
+            <button type="button" class="tablinks custombutton" onclick="openTab(this, 'Learning')">{% translate "Fill learning report" %}</button>
+        </div>
+    </div>
+</div>

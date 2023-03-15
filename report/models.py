@@ -157,10 +157,9 @@ class Report(models.Model):
     funding_associated = models.ForeignKey(Funding, on_delete=models.RESTRICT, related_name="funding_associated", null=True, blank=True)
     links = models.TextField(max_length=10000)
     public_communication = models.TextField(max_length=10000)
-    should_be_on_meta = models.BooleanField()
 
     # Quantitative metrics
-    quantity_of_participants = models.IntegerField(null=True, blank=True, default=0)
+    participants = models.IntegerField(null=True, blank=True, default=0)
     resources = models.IntegerField(null=True, blank=True, default=0)
     feedbacks = models.IntegerField(null=True, blank=True, default=0)
     editors = models.ManyToManyField(Editor, related_name="editors", blank=True)
@@ -198,7 +197,7 @@ class Report(models.Model):
 
     # Strategy
     directions_related = models.ManyToManyField(Direction, related_name="direction_related", blank=True)
-    learning = models.TextField(max_length=4200, blank=True)
+    learning = models.TextField(max_length=500, blank=True)
 
     # Theory of Change
     learning_questions_related = models.ManyToManyField(StrategicLearningQuestion, related_name="strategic_learning_question_related", blank=True)

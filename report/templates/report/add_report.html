@@ -16,8 +16,8 @@
             <div class="w3-row tab">
                 <button id="nav_Administrative" class="tablinks active" onclick="openTab(this, 'Administrative')">{% translate "Administrative" %}</button>
                 <button id="nav_Quantitative" class="tablinks" onclick="openTab(this, 'Quantitative')">{% translate "Quantitative" %}</button>
+                <button id="nav_Strategy" class="tablinks" onclick="openTab(this, 'Strategy')">{% translate "Strategy" %}</button>
                 <button id="nav_Learning" class="tablinks" onclick="openTab(this, 'Learning')">{% translate "Learning" %}</button>
-                <button id="nav_Qualitative" class="tablinks" onclick="openTab(this, 'Qualitative')">{% translate "Qualitative" %}</button>
             </div>
             <div class="w3-row userform">
                 <form id="report" method="post" onsubmit="validateForm()">
@@ -31,13 +31,13 @@
                             <h2 id="section_Quantitative">{% translate "Quantitative" %}</h2>
                             {% include 'report/quantitative.html' %}
                         </div>
+                        <div class="w3-container tabcontent" id="Strategy">
+                            <h2 id="section_Strategy">{% translate "Strategy" %}</h2>
+                            {% include 'report/strategy.html' %}
+                        </div>
                         <div class="w3-container tabcontent" id="Learning">
                             <h2 id="section_Learning">{% translate "Learning" %}</h2>
                             {% include 'report/learning.html' %}
-                        </div>
-                        <div class="w3-container tabcontent" id="Qualitative">
-                            <h2 id="section_Qualitative">{% translate "Qualitative" %}</h2>
-                            {% include 'report/theory_of_change.html' %}
                         </div>
                     </div>
                 </form>

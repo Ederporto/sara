@@ -1,16 +1,16 @@
 {% load i18n %}
 <div class="w3-container">
     <div class="w3-third formfield form-left">
-        <label class="formfieldtitle" for="quantity_of_participants">{% translate "Quantity of participants" %}</label>
-        <input type="number" min="0" value="{{ report_form.instance.quantity_of_participants }}" id="quantity_of_participants" name="quantity_of_participants"/>
+        <label class="formfieldtitle" for="participants">{% translate "Number of participants" %}</label>
+        <input type="number" min="0" value="{{ report_form.instance.participants }}" id="number_of_participants" name="participants"/>
     </div>
     <div class="w3-third formfield form-left form-right">
-        <label class="formfieldtitle" for="quantity_of_resources">{% translate "Quantity of resources" %}</label>
-        <input type="number" min="0" value="{{ report_form.instance.quantity_of_resources }}" id="quantity_of_resources" name="quantity_of_resources"/>
+        <label class="formfieldtitle" for="resources">{% translate "Number of resources" %}</label>
+        <input type="number" min="0" value="{{ report_form.instance.resources }}" id="number_of_resources" name="resources"/>
     </div>
     <div class="w3-third formfield form-right">
-        <label class="formfieldtitle" for="quantity_of_feedbacks">{% translate "Quantity of feedbacks" %}</label>
-        <input type="number" min="0" value="{{ report_form.instance.quantity_of_feedbacks }}" id="quantity_of_feedbacks" name="quantity_of_feedbacks"/>
+        <label class="formfieldtitle" for="feedbacks">{% translate "Number of feedbacks" %}</label>
+        <input type="number" min="0" value="{{ report_form.instance.feedbacks }}" id="number_of_feedbacks" name="feedbacks"/>
     </div>
     <div class="w3-half formfield form-left">
         <label class="formfieldtitle" for="editors">{% translate "Editors" %}</label>
@@ -263,7 +263,7 @@
             <button type="button" class="tablinks submitbutton" onclick="openTab(this, 'Administrative')">{% translate "Go back to administrative report" %}</button>
         </div>
         <div class="w3-half formfield form-right">
-            <button type="button" class="tablinks submitbutton" onclick="openTab(this, 'Learning')">{% translate "Fill learning report" %}</button>
+            <button type="button" class="tablinks submitbutton" onclick="openTab(this, 'Strategy')">{% translate "Fill strategy report" %}</button>
         </div>
     </div>
 </div>

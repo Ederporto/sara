@@ -80,14 +80,6 @@
         <div class="w3-twothird formfield"><textarea id="public_communication" name="public_communication" rows="3">{{ report_form.instance.public_communication }}</textarea></div>
     </div>
     <div class="w3-row">
-        <div class="w3-third formfieldtitle">{% translate "Should be on meta?" %}</div>
-        <label class="w3-twothird formfield toggle" for="should_be_on_meta">
-            <span style="display:none">{% translate "Should this report be on Meta?" %}</span>
-            <input class="toggle__input" type="checkbox" id="should_be_on_meta" name="should_be_on_meta" {% if report_form.instance.should_be_on_meta %}checked{% endif %}/>
-            <span class="toggle__fill"></span>
-        </label>
-    </div>
-    <div class="w3-row">
         <div class="w3-third formfield">&nbsp;</div>
         <div class="w3-twothird formfield"><button type="button" class="tablinks submitbutton" onclick="openTab(this, 'Quantitative')">{% translate "Fill quantitative report" %}</button></div>
     </div>
