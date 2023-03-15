@@ -590,7 +590,6 @@ def delete_report(request, report_id):
 
 
 # FUNCTIONS
-@login_required
 def get_or_create_editors(editors_string):
     editors_list = editors_string.split("\r\n")
     editors = []
@@ -602,7 +601,6 @@ def get_or_create_editors(editors_string):
     return editors
 
 
-@login_required
 def get_or_create_organizers(organizers_string):
     organizers_list = organizers_string.split("\r\n")
     organizers = []
