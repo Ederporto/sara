@@ -84,11 +84,11 @@
         }
 
         function other_activity(selectObject) {
-            if (selectObject.value === "0") {
-                $(".activity_others").removeClass("invisible_field");
-            } else {
+            if (selectObject.value) {
                 $("#activity_others").val("");
                 $(".activity_others").addClass("invisible_field");
+            } else {
+                $(".activity_others").removeClass("invisible_field");
             }
         }
 

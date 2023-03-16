@@ -4,8 +4,8 @@
         <label class="w3-third formfieldtitle" for="activity_associated">{% translate "Activity associated" %}*</label>
         <div class="w3-twothird formfield">
             <select id="activity_associated" name="activity_associated" oninput="other_activity(this)">
-                <option selected>----------</option>
-                <option value="0">{% translate "Other (not listed)" %}</option>
+                <option value="" selected>----------</option>
+                <option value="">{% translate "Other (not listed)" %}</option>
                 {% for area in report_form.fields.activity_associated.choices %}
                     <optgroup label="{{ area.0 }}">
                         {% for activity in area.1 %}
@@ -16,7 +16,7 @@
             </select>
         </div>
     </div>
-    <div class="w3-row activity_others invisible_field">
+    <div class="w3-row activity_others">
         <label class="w3-third formfieldtitle" for="activity_other">{% translate "Name of the activity" %}</label>
         <div class="w3-twothird formfield"><input type="text" id="activity_other" name="activity_other" value="{{ report_form.instance.activity_other }}"/></div>
     </div>

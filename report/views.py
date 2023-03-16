@@ -25,6 +25,7 @@ def add_report(request):
         form_invalid_message = _("Something went wrong!")
 
         report_form = NewReportForm(request.POST)
+
         if report_form.is_valid():
             report = report_form.save()
 
@@ -544,17 +545,18 @@ def update_report(request, report_id):
 
     if request.method == "POST":
         if report_form.is_valid():
+            report_instance = report_form.save(commit=False)
             user_profile = UserProfile.objects.get(user=request.user)
             editors = get_or_create_editors(request.POST["editors_string"])
             organizers = get_or_create_organizers(request.POST["organizers_string"])
 
-            report_form.instance.editors.set(editors)
-            report_form.instance.organizers.set(organizers)
-            report_form.instance.modified_by = user_profile
-            report_form.instance.modified_at = datetime.datetime.now()
+            report_instance.editors.set(editors)
+            report_instance.organizers.set(organizers)
+            report_instance.modified_by = user_profile
+            report_instance.modified_at = datetime.datetime.now()
 
-            report_form.save()
-            update_answers(report_form.instance.learning_questions_related.all(), report_id)
+            report_instance.save()
+            update_answers(report_instance.learning_questions_related.all(), report_id)
             save_answers(request.POST, report_id)
             return redirect(reverse("report:detail_report", kwargs={"report_id": report_id}))
 
