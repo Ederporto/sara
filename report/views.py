@@ -188,7 +188,7 @@ def add_excel_file(report_id=None):
     export_directions_related(report_id).to_excel(writer, sheet_name='Directions', index=False)
     export_editors(report_id).to_excel(writer, sheet_name='Editors', index=False)
     export_learning_questions_related(report_id).to_excel(writer, sheet_name='Learning questions', index=False)
-    export_evaluation_objectives(report_id).to_excel(writer, sheet_name='Evaluation objectives', index=False)
+    # export_evaluation_objectives(report_id).to_excel(writer, sheet_name='Evaluation objectives', index=False)
     export_organizers(report_id).to_excel(writer, sheet_name='Organizers', index=False)
     export_partners_activated(report_id).to_excel(writer, sheet_name='Partners', index=False)
     export_technologies_used(report_id).to_excel(writer, sheet_name='Technologies', index=False)
@@ -218,7 +218,7 @@ def export_report(request, report_id=None):
              [export_directions_related, sub_directory + 'Directions' + posfix],
              [export_editors, sub_directory + 'Editors' + posfix],
              [export_learning_questions_related, sub_directory + 'Learning questions' + posfix],
-             [export_evaluation_objectives, sub_directory + 'Evaluation objectives' + posfix],
+             # [export_evaluation_objectives, sub_directory + 'Evaluation objectives' + posfix],
              [export_organizers, sub_directory + 'Organizers' + posfix],
              [export_partners_activated, sub_directory + 'Partners' + posfix],
              [export_technologies_used, sub_directory + 'Technologies' + posfix]]
@@ -275,7 +275,6 @@ def export_report_instance(report_id=None):
         funding_associated = report.funding_associated
         links = report.links.replace("\r\n", "; ")
         public_communication = report.public_communication
-        should_be_on_meta = report.should_be_on_meta
 
         # Quantitative
         participants = report.participants
@@ -324,7 +323,7 @@ def export_report_instance(report_id=None):
 
         rows.append([id_, created_by, created_at, modified_by, modified_at, activity_associated, activity_other,
                      area_responsible, area_activated, initial_date, end_date, description, funding_associated, links,
-                     public_communication, should_be_on_meta, participants, resources, feedbacks, editors,
+                     public_communication, participants, resources, feedbacks, editors,
                      organizers, partners_activated, technologies_used, wikipedia_created, wikipedia_edited,
                      commons_created, commons_edited, wikidata_created, wikidata_edited, wikiversity_created,
                      wikiversity_edited, wikibooks_created, wikibooks_edited, wikisource_created, wikisource_edited,
@@ -359,20 +358,21 @@ def export_metrics(report_id=None):
 
     rows = []
     for report in reports:
-        for instance in report.activity_associated.metrics.all():
-            rows.append([instance.id, instance.text, instance.activity_id, instance.activity.text,
-                         instance.activity.code, instance.number_of_editors, instance.number_of_participants,
-                         instance.number_of_partnerships, instance.number_of_resources, instance.number_of_feedbacks,
-                         instance.number_of_events, instance.other_type, instance.observation,
-                         instance.wikipedia_created, instance.wikipedia_edited, instance.commons_created,
-                         instance.commons_edited, instance.wikidata_created, instance.wikidata_edited,
-                         instance.wikiversity_created, instance.wikiversity_edited, instance.wikibooks_created,
-                         instance.wikibooks_edited, instance.wikisource_created, instance.wikisource_edited,
-                         instance.wikinews_created, instance.wikinews_edited, instance.wikiquote_created,
-                         instance.wikiquote_edited, instance.wiktionary_created, instance.wiktionary_edited,
-                         instance.wikivoyage_created, instance.wikivoyage_edited, instance.wikispecies_created,
-                         instance.wikispecies_edited, instance.metawiki_created, instance.metawiki_edited,
-                         instance.mediawiki_created, instance.mediawiki_edited])
+        if report.activity_associated:
+            for instance in report.activity_associated.metrics.all():
+                rows.append([instance.id, instance.text, instance.activity_id, instance.activity.text,
+                             instance.activity.code, instance.number_of_editors, instance.number_of_participants,
+                             instance.number_of_partnerships, instance.number_of_resources, instance.number_of_feedbacks,
+                             instance.number_of_events, instance.other_type, instance.observation,
+                             instance.wikipedia_created, instance.wikipedia_edited, instance.commons_created,
+                             instance.commons_edited, instance.wikidata_created, instance.wikidata_edited,
+                             instance.wikiversity_created, instance.wikiversity_edited, instance.wikibooks_created,
+                             instance.wikibooks_edited, instance.wikisource_created, instance.wikisource_edited,
+                             instance.wikinews_created, instance.wikinews_edited, instance.wikiquote_created,
+                             instance.wikiquote_edited, instance.wiktionary_created, instance.wiktionary_edited,
+                             instance.wikivoyage_created, instance.wikivoyage_edited, instance.wikispecies_created,
+                             instance.wikispecies_edited, instance.metawiki_created, instance.metawiki_edited,
+                             instance.mediawiki_created, instance.mediawiki_edited])
 
     df = pd.DataFrame(rows, columns=header).drop_duplicates()
     return df
@@ -465,28 +465,28 @@ def export_learning_questions_related(report_id=None):
     return df
 
 
-def export_evaluation_objectives(report_id=None):
-    header = [_('ID'), _('Evaluation objectives'), _('Evaluation answers'), _('Learning area ID'), _('Learning area')]
-
-    if report_id:
-        reports = Report.objects.filter(pk=report_id)
-    else:
-        reports = Report.objects.all()
-
-    rows = []
-    for report in reports:
-        objectives = EvaluationObjective.objects.filter(
-            learning_area_of_objective__strategic_question__in=report.learning_questions_related.all())
-        for instance in objectives.all():
-            answer = EvaluationObjectiveAnswer.objects.get(objective=instance, report=report)
-            rows.append([instance.id,
-                         instance.text,
-                         answer.answer,
-                         instance.learning_area_of_objective_id,
-                         instance.learning_area_of_objective.text])
-
-    df = pd.DataFrame(rows, columns=header).drop_duplicates()
-    return df
+# def export_evaluation_objectives(report_id=None):
+#     header = [_('ID'), _('Evaluation objectives'), _('Evaluation answers'), _('Learning area ID'), _('Learning area')]
+#
+#     if report_id:
+#         reports = Report.objects.filter(pk=report_id)
+#     else:
+#         reports = Report.objects.all()
+#
+#     rows = []
+#     for report in reports:
+#         objectives = EvaluationObjective.objects.filter(
+#             learning_area_of_objective__strategic_question__in=report.learning_questions_related.all())
+#         for instance in objectives.all():
+#             answer = EvaluationObjectiveAnswer.objects.get(objective=instance, report=report)
+#             rows.append([instance.id,
+#                          instance.text,
+#                          answer.answer,
+#                          instance.learning_area_of_objective_id,
+#                          instance.learning_area_of_objective.text])
+#
+#     df = pd.DataFrame(rows, columns=header).drop_duplicates()
+#     return df
 
 
 def export_organizers(report_id=None):
