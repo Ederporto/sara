@@ -2,3 +2,4 @@ django
 pandas
 whitenoise
 xlsxwriter
+django-admin-logs
