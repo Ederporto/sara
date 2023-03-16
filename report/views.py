@@ -240,7 +240,7 @@ def export_report_instance(report_id=None):
     header = [_('ID'), _('Created by'), _('Created at'), _('Modified by'), _('Modified at'), _('Activity associated'),
               _('Name of the activity'), _('Area responsible'), _('Area activated'), _('Initial date'), _('End date'),
               _('Description'), _('Funding associated'), _('Links'), _('Public communication'),
-              _('Number of Participants'), _('Number of Resources'), _('Number of Feedbacks'), _('Editors'),
+              _('Number of participants'), _('Number of resources'), _('Number of feedbacks'), _('Editors'),
               _('Organizers'), _('Partnerships activated'), _('Technologies used'), _('# Wikipedia created'),
               _('# Wikipedia edited'), _('# Commons created'), _('# Commons edited'), _('# Wikidata created'),
               _('# Wikidata edited'), _('# Wikiversity created'), _('# Wikiversity edited'), _('# Wikibooks created'),
