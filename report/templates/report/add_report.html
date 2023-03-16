@@ -75,14 +75,6 @@
             $("#nav_"+section)[0].classList.add("active");
         }
 
-        function validateForm() {
-            let form_value = document.forms["report"]["activity_associated"].value;
-            if (form_value === "") {
-                alert("The form is incomplete");
-                return false;
-            }
-        }
-
         function other_activity(selectObject) {
             if (selectObject.value) {
                 $("#activity_others").val("");

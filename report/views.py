@@ -21,9 +21,6 @@ from report.forms import NewReportForm, StrategicLearningQuestionsForm, activiti
 @login_required
 def add_report(request):
     if request.method == "POST":
-        form_valid_message = _("Report registered successfully!")
-        form_invalid_message = _("Something went wrong!")
-
         report_form = NewReportForm(request.POST)
 
         if report_form.is_valid():
@@ -45,9 +42,15 @@ def add_report(request):
                 strategic_learning_questions_form.save()
             else:
                 pass
+            form_valid_message = _("Report registered successfully!")
             messages.success(request, form_valid_message)
             return redirect(reverse("report:detail_report", kwargs={"report_id": report.id}))
+
+        # else, the form is invalid, and there should be an error list:
+        form_invalid_message = _("Something went wrong!")
         messages.error(request, form_invalid_message)
+        for field, error in report_form.errors.items():
+            messages.error(request, field + ": " + error[0])
         context = {"report_form": report_form,
                    "directions_related_set": [],
                    "learning_questions_related_set": []}
@@ -615,11 +618,11 @@ def get_or_create_organizers(organizers_string):
     if organizers_string:
         for organizer in organizers_list:
             organizer_name, institution_name = (organizer + ";").split(";", maxsplit=1)
-            new_organizer, new_organizer_created = Organizer.objects.get_or_create(name=organizer)
+            new_organizer, new_organizer_created = Organizer.objects.get_or_create(name=organizer_name)
             if institution_name:
                 for partner_name in institution_name.split(";"):
-                    partner, partner_created = Partner.objects.get_or_create(name=partner_name)
-                    if partner_created:
+                    if partner_name:
+                        partner, partner_created = Partner.objects.get_or_create(name=partner_name)
                         new_organizer.institution.add(partner)
                 new_organizer.save()
             organizers.append(new_organizer)
