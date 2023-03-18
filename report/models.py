@@ -148,7 +148,7 @@ class Report(models.Model):
     modified_at = models.DateTimeField(auto_now_add=True)
 
     # Administrative fields
-    activity_associated = models.ForeignKey(Activity, on_delete=models.RESTRICT, related_name="activity_associated", null=True, blank=True)
+    activity_associated = models.ForeignKey(Activity, on_delete=models.RESTRICT, related_name="activity_associated")
     activity_other = models.TextField(max_length=420, blank=True, default="")
     area_responsible = models.ForeignKey(TeamArea, on_delete=models.RESTRICT, related_name="responsible")
     area_activated = models.ManyToManyField(AreaActivated, related_name="area_activated", blank=True)
@@ -197,11 +197,11 @@ class Report(models.Model):
     mediawiki_edited = models.IntegerField(null=True, blank=True, default=0)
 
     # Strategy
-    directions_related = models.ManyToManyField(Direction, related_name="direction_related", blank=True)
-    learning = models.TextField(max_length=5000, blank=True, validators=[MinLengthValidator(500)])
+    directions_related = models.ManyToManyField(Direction, related_name="direction_related")
+    learning = models.TextField(max_length=5000, validators=[MinLengthValidator(500)])
 
     # Theory of Change
-    learning_questions_related = models.ManyToManyField(StrategicLearningQuestion, related_name="strategic_learning_question_related", blank=True)
+    learning_questions_related = models.ManyToManyField(StrategicLearningQuestion, related_name="strategic_learning_question_related")
 
     class Meta:
         verbose_name = _("Report")
