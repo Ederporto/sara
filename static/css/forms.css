@@ -32,6 +32,17 @@ fieldset { border: none; padding: 0; margin: 0; }
 fieldset legend { display: none; }
 fieldset input { background-color: var(--main-lighter-color) !important }
 .note { font-weight: 100; color: var(--light-color); }
+.language_selector {
+    width: fit-content;
+    border: none;
+    background-color: var(--dark-color);
+    color: var(--main-color);
+    font-weight: normal;
+    padding: 0;
+    border-radius: 1em;
+    overflow-y: auto;
+    overflow-x: auto;
+}
 
 /* BUTTONS */
 .closebtn {
