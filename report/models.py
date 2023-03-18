@@ -213,6 +213,9 @@ class Report(models.Model):
 
         super(Report, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return self.description
+
 
 class EvaluationObjectiveAnswer(models.Model):
     objective = models.ForeignKey(EvaluationObjective, on_delete=models.CASCADE, related_name="answer")
