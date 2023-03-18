@@ -34,8 +34,8 @@
                 <div class="w3-half form-{% if user.is_authenticated %}right{% else %}left{% endif %}"><a href="{% url 'metrics:show_activities' %}"><button class="custombutton" type="button">{% translate "See activities plan" %}</button></a></div>
                 <div class="w3-half form-{% if user.is_authenticated %}left{% else %}right{% endif %}"><a href="{% url 'strategy:show_strategy' %}"><button class="custombutton" type="button">{% translate "See strategy" %}</button></a></div>
                 {% if user.is_authenticated %}<div class="w3-half form-right"><a href="{% url 'user:profile' %}"><button class="custombutton" type="button">{% translate "Edit your profile" %}</button></a></div>{% endif %}
-                {% if user.is_authenticated %}<div class="w3-half form-left"><a href="{% url 'user:register' %}"><button class="custombutton" type="button">{% translate "Register new user" %}</button></a></div>{% endif %}
-                {% if user.is_authenticated %}<div class="w3-half form-right"><a href="{% url 'bug:list_bugs' %}"><button class="custombutton" type="button">{% translate "Bugs" %}</button></a></div>{% endif %}
+                {% if perms.auth.add_user %}<div class="w3-half form-left"><a href="{% url 'user:register' %}"><button class="custombutton" type="button">{% translate "Register new user" %}</button></a></div>{% endif %}
+                {% if user.is_authenticated %}<div class="w3-half form-{% if perms.auth.add_user %}right{% else %}left{% endif %}"><a href="{% url 'bug:list_bugs' %}"><button class="custombutton" type="button">{% translate "Bugs" %}</button></a></div>{% endif %}
             </div>
         </div>
         <div class="w3-row block-section">
