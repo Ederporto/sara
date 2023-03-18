@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.core.validators import MinLengthValidator
 
 from metrics.models import Activity
 from users.models import TeamArea, UserProfile
@@ -197,7 +198,7 @@ class Report(models.Model):
 
     # Strategy
     directions_related = models.ManyToManyField(Direction, related_name="direction_related", blank=True)
-    learning = models.TextField(max_length=500, blank=True)
+    learning = models.TextField(max_length=5000, blank=True, validators=[MinLengthValidator(500)])
 
     # Theory of Change
     learning_questions_related = models.ManyToManyField(StrategicLearningQuestion, related_name="strategic_learning_question_related", blank=True)
