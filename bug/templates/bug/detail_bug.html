@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block styles %}<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">{% endblock %}
+{% block banner %}{% endblock %}
+
+{% block content %}
+    <div class="w3-container">
+        <div class="w3-third">&nbsp;</div>
+        <div class="w3-third userform">
+            <h2>{% blocktrans with id_=data.id %}Bug nº {{ id_ }}{% endblocktrans %}</h2>
+            <div class="w3-container">
+                {% if data.title %}
+                    <div class="w3-row">
+                        <div class="w3-third formfieldtitle">{% trans "Title" %}</div>
+                        <div class="w3-twothird">{{ data.title }}</div>
+                    </div>
+                {% endif %}
+                <div class="w3-row">
+                    <div class="w3-third formfieldtitle">{% trans "Description" %}</div>
+                    <div class="w3-twothird">{{ data.description }}</div>
+                </div>
+                <div class="w3-row">
+                    <div class="w3-third formfieldtitle">{% trans "Date of report" %}</div>
+                    <div class="w3-twothird">{{ data.date_of_report }}</div>
+                </div>
+                {% if data.update_date %}
+                    <div class="w3-row">
+                        <div class="w3-third formfieldtitle">{% trans "Update date" %}</div>
+                        <div class="w3-twothird">{{ data.update_date }}</div>
+                    </div>
+                {% endif %}
+                <div class="w3-row">
+                    <div class="w3-third formfieldtitle">{% trans "Reporter" %}</div>
+                    <div class="w3-twothird">{{ data.reporter }}</div>
+                </div>
+                <div class="w3-row">
+                    <div class="w3-third formfieldtitle">{% trans "Status" %}</div>
+                    <div class="w3-twothird">{{ data.get_status_display }}</div>
+                </div>
+                <div class="w3-row">
+                    <div class="w3-third formfieldtitle">{% trans "Type" %}</div>
+                    <div class="w3-twothird">{{ data.get_type_of_bug_display }}</div>
+                </div>
+                {% if data.observation %}
+                    <div class="w3-row">
+                        <div class="w3-third formfieldtitle">{% trans "Observation" %}</div>
+                        <div class="w3-twothird">{{ data.observation }}</div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

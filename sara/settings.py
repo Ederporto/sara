@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'strategy.apps.StrategyConfig',
     'report.apps.ReportConfig',
+    'bug.apps.BugConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

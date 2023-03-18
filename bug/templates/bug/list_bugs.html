@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block scripts %}
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap-table/1.21.2/bootstrap-table.min.js"></script>
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap-table/1.21.2/extensions/mobile/bootstrap-table-mobile.min.js"></script>
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap-table/1.21.2/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
+{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap-table/1.21.2/bootstrap-table.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="userform">
+        <div class="w3-row">
+            <div class="w3-row">
+                <div class="w3-half" style="text-align: center">
+                    <div class="w3-quarter dissapear">&nbsp;</div>
+                    <div class="w3-half" style="text-align: center">
+                        <a title="{% trans 'Add bug report' %}" href="{% url 'bug:create_bug' %}"><button type="button" class="submitbutton btn-update"><i class="fa-solid fa-plus"></i> {% trans 'Add bug report' %}</button></a>
+                    </div>
+                </div>
+                <div class="w3-half formfield"><input id="customSearch" type="search" placeholder="{% trans 'Search' %}" aria-label="{% trans 'Search' %}" autocomplete="off" ></div>
+            </div>
+            <table id="bugs" class="table table-striped" style="background-color: var(--light-color)"
+                   data-mobile-responsive="true"
+                   data-check-on-init="true"
+                   data-filter-control="true"
+                   data-show-search-clear-button="true"
+                   data-search="true"
+                   data-search-selector="#customSearch">
+                <thead style="background-color: var(--main-color); color:var(--light-color); border: 1px solid var(--light-color)">
+                <tr>
+                    <th data-field="id">{% trans "ID" %}</th>
+                    <th data-field="title" data-sortable="true">{% trans "Title" %}</th>
+                    <th data-field="date_of_report" data-sorter="datesSorter" data-sortable="true">{% trans "Date of report" %}</th>
+                    <th data-field="reporter" data-sortable="true" data-filter-control="select">{% trans "Reporter" %}</th>
+                    <th data-field="type_of_bug" data-sortable="true" data-filter-control="select">{% trans "Type" %}</th>
+                    <th data-field="status" data-sortable="true" data-filter-control="select">{% trans "Status" %}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for data in dataset %}
+                    <tr>
+                        <th scope="row">{{ data.id }}</th>
+                        <td><a href="{% url 'bug:detail_bug' bug_id=data.id %}" title="{{ data.title }}">{{ data.title }}</a></td>
+                        <td>{{ data.date_of_report|date:'Y-m-d' }}</td>
+                        <td>{{ data.reporter.user.first_name }}</td>
+                        <td>{{ data.get_type_of_bug_display }}</td>
+                        <td>{{ data.get_status_display }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $('#bugs').bootstrapTable();
+        })
+
+        function datesSorter(a, b) {
+            if (new Date(a) < new Date(b)) return 1;
+            if (new Date(a) > new Date(b)) return -1;
+            return 0;
+        }
+
+        $(function (){
+            $('[class*="bootstrap-table-filter-control-"]').wrap("<label style='width: 100%'></label>");
+        })
+    </script>
+{% endblock %}

@@ -30,6 +30,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page=settings.LOGIN_REDIRECT_URL), name='logout'),
     path('strategy', include('strategy.urls', namespace='strategy')),
     path('report/', include('report.urls', namespace='report')),
+    path('bug/', include('bug.urls', namespace='bug')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
