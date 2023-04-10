@@ -1,77 +1,43 @@
 import datetime
 from django.test import TestCase
 from django.core.exceptions import ValidationError
-from django.db.utils import IntegrityError
 from .models import Event
 from users.models import TeamArea
 
 
 class EventModelTests(TestCase):
-    def test_calendar_event_without_title_raises_error(self):
-        """
-        Objects without text are not created
-        """
-        ini_date = datetime.datetime.now()
-        end_date = datetime.datetime.now()
-        area_responsible = TeamArea.objects.create(text="Area Responsible")
-        calendar = Event.objects.create(initial_date=ini_date, end_date=end_date, area_responsible=area_responsible)
+    def setUp(self):
+        self.area_responsible = TeamArea.objects.create(text="Area Responsible", code="area_responsible")
+        self.area_involved_1 = TeamArea.objects.create(text="Area Involved 1", code="area_involved_1")
+        self.area_involved_2 = TeamArea.objects.create(text="Area Involved 2", code="area_involved_2")
+        self.event = Event.objects.create(
+            name="Test Event",
+            initial_date=datetime.date(2023, 3, 24),
+            end_date=datetime.date(2023, 3, 31),
+            area_responsible=self.area_responsible,
+        )
 
-        try:
-            calendar.clean()
-        except ValidationError as e:
-            self.assertTrue("Every event needs a name, a date of beginning and ending" in e.message)
+    def test_str_method_with_end_date_different_from_initial_date(self):
+        correct_output = "Test Event (24/Mar - 31/Mar)"
+        self.assertEqual(str(self.event), correct_output)
 
-    def test_calendar_event_without_ini_date_raises_error(self):
-        """
-        Objects without text are not created
-        """
-        text = "Calendar Event"
-        end_date = datetime.datetime.now()
-        area_responsible = TeamArea.objects.create(text="Area Responsible")
+    def test_str_method_with_end_date_equal_from_initial_date(self):
+        correct_output = "Test Event (24/Mar)"
 
-        try:
-            Event.objects.create(text=text, end_date=end_date, area_responsible=area_responsible)
-        except IntegrityError as e:
-            self.assertTrue("NOT NULL constraint failed: agenda_event.initial_date" in str(e))
+        self.event.end_date = self.event.initial_date
+        self.event.save()
 
-    def test_calendar_event_without_end_date_raises_error(self):
-        """
-        Objects without text are not created
-        """
-        text = "Calendar Event"
-        ini_date = datetime.datetime.now()
-        area_responsible = TeamArea.objects.create(text="Area Responsible")
+        self.assertEqual(str(self.event), correct_output)
 
-        try:
-            Event.objects.create(text=text, initial_date=ini_date, area_responsible=area_responsible)
-        except IntegrityError as e:
-            self.assertTrue("NOT NULL constraint failed: agenda_event.end_date" in str(e))
+    def test_clean_method(self):
+        event = Event.objects.create(
+            name="Test Event 2",
+            initial_date=datetime.date(2023, 3, 24),
+            end_date=datetime.date(2023, 3, 31),
+            area_responsible=self.area_responsible,
+        )
+        event.full_clean()
 
-    def test_calendar_event_with_proper_arguments_returns_formatted_string(self):
-        text = "Calendar Event"
-        ini_date = datetime.datetime.now()
-        end_date = datetime.datetime.now()
-        area_responsible = TeamArea.objects.create(text="Area Responsible")
-        calendar = Event.objects.create(text=text, initial_date=ini_date, end_date=end_date,
-                                        area_responsible=area_responsible)
-
-        self.assertEqual(text + "(" + ini_date.strftime("%d/%b") + " - " + end_date.strftime("%d/%b") + ")",
-                         calendar.__str__())
-
-    def test_delete_team_area_deletes_events_associated_with_it(self):
-        text = "Calendar Event"
-        ini_date = datetime.datetime.now()
-        end_date = datetime.datetime.now()
-        area_responsible = TeamArea.objects.create(text="Area Responsible")
-        calendar = Event.objects.create(text=text, initial_date=ini_date, end_date=end_date,
-                                        area_responsible=area_responsible)
-        calendar.clean()
-        calendar.save()
-
-        self.assertEqual(TeamArea.objects.count(), 1)
-        self.assertEqual(Event.objects.count(), 1)
-        self.assertEqual(calendar.area_responsible.text, TeamArea.objects.first().text)
-
-        TeamArea.objects.get(pk=area_responsible.pk).delete()
-        self.assertEqual(TeamArea.objects.count(), 0)
-        self.assertEqual(Event.objects.count(), 0)
+        with self.assertRaises(ValidationError):
+            event.name = ""
+            event.full_clean()

@@ -56,6 +56,8 @@ class TeamArea(models.Model):
     def clean(self):
         if not self.text:
             raise ValidationError(_("You need to fill the text field"))
+        if not self.code:
+            raise ValidationError(_("You need to fill the code field"))
 
 
 class Position(models.Model):

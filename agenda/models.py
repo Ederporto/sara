@@ -17,7 +17,11 @@ class Event(models.Model):
         verbose_name_plural = _("Events")
 
     def __str__(self):
-        return self.name + "(" + self.initial_date.strftime("%d/%b") + " - " + self.end_date.strftime("%d/%b") + ")"
+        if self.end_date == self.initial_date:
+            return self.name + " (" + self.initial_date.strftime("%d/%b") + ")"
+        else:
+            return self.name + " (" + self.initial_date.strftime("%d/%b") + " - " + \
+                self.end_date.strftime("%d/%b") + ")"
 
     def clean(self):
         if not self.name or not self.initial_date or not self.end_date:
