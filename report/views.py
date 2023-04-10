@@ -281,8 +281,7 @@ def export_report_instance(report_id=None):
         resources = report.resources
         feedbacks = report.feedbacks
         editors = "; ".join(report.editors.values_list("username", flat=True))
-        organizers = "; ".join([x["name"] + " (" + x["institution__name"] + ")" for x in
-                                report.organizers.values("name", "institution__name")])
+        organizers = "; ".join([x["name"] for x in report.organizers.values("name", "institution__name")])
         partners_activated = "; ".join(report.partners_activated.values_list("name", flat=True))
         technologies_used = "; ".join(report.technologies_used.values_list("name", flat=True))
 
@@ -500,7 +499,8 @@ def export_organizers(report_id=None):
     rows = []
     for report in reports:
         for instance in report.organizers.all():
-            rows.append([instance.id, instance.name, instance.institution.name])
+            if instance.id == 24:
+                rows.append([instance.id, instance.name, ";".join(map(str, instance.institution.values_list("id", flat=True))), ";".join(map(str, instance.institution.values_list("name", flat=True)))])
 
     df = pd.DataFrame(rows, columns=header).drop_duplicates()
     return df
