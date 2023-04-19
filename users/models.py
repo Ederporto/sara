@@ -34,7 +34,7 @@ class UserProfile(models.Model):
         verbose_name_plural = _("User profiles")
 
     def __str__(self):
-        return self.professional_wiki_handle or self.user.first_name
+        return self.professional_wiki_handle or self.user.first_name or self.user.username
 
     def clean(self):
         if not self.user or not self.professional_wiki_handle:
