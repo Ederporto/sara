@@ -1,23 +1,22 @@
 from django import forms
-from .models import Bug
+from .models import Bug, Observation
 
 
 class BugForm(forms.ModelForm):
     class Meta:
         model = Bug
-        fields = ("title", "type_of_bug", "description")
-        widgets = {
-            "type_of_bug": forms.Select(attrs={'required': True}),
-            "description": forms.Textarea(attrs={'required': True, 'rows': 4})
-        }
+        fields = "__all__"
+        exclude = ["status"]
+
+    def __init__(self, *args, **kwargs):
+        super(BugForm, self).__init__(*args, **kwargs)
 
 
-class BugReportForm(forms.ModelForm):
+class ObservationForm(forms.ModelForm):
     class Meta:
-        model = Bug
-        fields = ("title", "type_of_bug", "description", "update_date", "status", "observation")
-        widgets = {
-            "type_of_bug": forms.Select(attrs={'required': True}),
-            "description": forms.Textarea(attrs={'required': True, 'rows': 4}),
-            "observation": forms.Textarea(attrs={'required': False, 'rows': 4})
-        }
+        model = Observation
+        fields = "__all__"
+        exclude = ["bug_report"]
+
+    def __init__(self, *args, **kwargs):
+        super(ObservationForm, self).__init__(*args, **kwargs)

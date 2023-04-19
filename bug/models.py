@@ -1,6 +1,7 @@
 from django.db import models
 from users.models import UserProfile
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
 
 class Bug(models.Model):
@@ -16,11 +17,22 @@ class Bug(models.Model):
         NEWFEATURE = "3", _("New feature request")
         CLARIFICATION = "4", _("Question or clarification")
 
-    title = models.CharField(_("Title"), max_length=140, blank=True)
+    title = models.CharField(_("Title"), max_length=140)
     description = models.TextField(_("Description"), max_length=500)
-    date_of_report = models.DateField(_("Date of report"), auto_now_add=True)
-    update_date = models.DateField(_("Update date"), null=True)
-    reporter = models.ForeignKey(UserProfile, on_delete=models.RESTRICT, related_name="reporter", null=True)
-    status = models.CharField(_("Status"), max_length=1, choices=Status.choices, default=Status.TODO)
     type_of_bug = models.CharField(_("Type"), max_length=1, choices=BugType.choices, default=BugType.ERROR)
-    observation = models.TextField(_("Observation"), max_length=500, null=True, blank=True)
+    status = models.CharField(_("Status"), max_length=1, choices=Status.choices, default=Status.TODO)
+    date_of_report = models.DateField(_("Date of report"), auto_now_add=True, editable=False)
+    reporter = models.ForeignKey(UserProfile, on_delete=models.RESTRICT, related_name="reporter", editable=False)
+    update_date = models.DateField(_("Update date"), auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+
+class Observation(models.Model):
+    bug_report = models.OneToOneField(Bug, on_delete=models.CASCADE, related_name="observation")
+    observation = models.TextField(_("Observation"), max_length=500)
+    date_of_answer = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.observation
