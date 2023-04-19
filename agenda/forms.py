@@ -19,9 +19,7 @@ class EventForm(forms.ModelForm):
         initials = {}
 
         if self.instance.pk:
-            initials.update({
-                'area_involved': self.instance.area_involved.all()
-            })
+            initials.update({'area_involved': self.instance.area_involved.all()})
 
         for field, initial in initials.items():
             self.fields[field].initial = initial

@@ -63,19 +63,18 @@ def add_event(request):
 
     if request.method == "POST":
         event_form = EventForm(request.POST)
-        year = datetime.datetime.today().year
-        month = datetime.datetime.today().month
 
         if event_form.is_valid():
             event_form.save()
-            year = event_form.instance.initial_date.year
-            month = event_form.instance.initial_date.month
+
             messages.success(request, form_valid_message)
+            return redirect(reverse("agenda:list_events"))
         else:
             messages.error(request, form_invalid_message)
-        return redirect("agenda:show_specific_calendar", year=year, month=month)
+
     else:
         event_form = EventForm()
+
     return render(request, "agenda/add_event.html", {"eventform": event_form})
 
 
