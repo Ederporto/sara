@@ -1,255 +1,116 @@
 from django.test import TestCase
+from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 from .models import Objective, Area, Metric, Activity
 from strategy.models import StrategicAxis
+from django.urls import reverse
 
 
 class AreaModelTests(TestCase):
-    def test_area_without_english_text_shows_that_text(self):
-        """
-        Objects without text in English are created normally and its string is this text
-        """
-        text = "Area"
-        area = Area.objects.create(text=text)
-        self.assertEqual(area.text, area.__str__())
-        self.assertIsNone(area.text_en)
+    def setUp(self):
+        self.axis = StrategicAxis.objects.create(text="Strategic Axis")
+        self.area = Area.objects.create(text="Area")
 
-    def test_area_with_only_english_text_raises_a_validation_error(self):
-        """
-        When objects don't have the text field filled, the object is not created
-        """
-        text_en = "Area"
+    def test_area_str_method_returns_area_text(self):
+        self.assertEqual(str(self.area), 'Area')
 
-        area = Area.objects.create(text_en=text_en)
+    def test_area_can_have_related_axes(self):
+        self.area.related_axis.add(self.axis)
+        self.assertIn(self.axis, self.area.related_axis.all())
 
-        try:
-            area.clean()
-        except ValidationError as e:
-            self.assertTrue("You need to fill the text field" in e.message)
-
-    def test_area_with_both_texts_shows_the_non_english_text(self):
-        """
-        Objects with both texts filled give preference to the non english (local)
-        language
-        """
-        text = "Area"
-        text_en = "Area_English"
-
-        area = Area.objects.create(text=text, text_en=text_en)
-        self.assertEqual(area.text, area.__str__())
-        self.assertNotEqual(area.text_en, area.__str__())
-        self.assertIsNotNone(area.text_en)
-        self.assertIsNotNone(area.text)
-
-    def test_create_area_without_any_text_raises_validation_error(self):
-        """
-        Objects without any text are not created and a validation error is raised
-        """
-        area = Area.objects.create()
-
-        try:
-            area.clean()
-        except ValidationError as e:
-            print(e.message)
-            self.assertTrue("You need to fill the text field" in e.message)
-
-    def test_create_area_with_text_is_indeed_created(self):
-        """
-        Objects with the proper parameters are created
-        """
-        number_of_areas_on_database_before_creation = Area.objects.count()
-        text = "Test"
-        text_en = "Test_English"
-        area = Area.objects.create(text=text, text_en=text_en)
-        number_of_areas_on_database_after_creation = Area.objects.count()
-        self.assertIsNotNone(area.text)
-        self.assertNotEqual(number_of_areas_on_database_before_creation,
-                            number_of_areas_on_database_after_creation)
-
-    def test_create_area_with_links_to_strategic_axis_fails_if_it_doesnt_exists(self):
-        text = "Area"
-        text_en = "Area_English"
-        text1 = "Strategic_Axis"
-
-        strategic_axis = StrategicAxis.objects.create(text=text1)
-        area = Area.objects.create(text=text, text_en=text_en)
-        area.related_axis.add(strategic_axis)
-        area.save()
-
-        self.assertEqual(Area.objects.count(), 1)
-        self.assertEqual(StrategicAxis.objects.count(), 1)
+    def test_area_text_cannot_be_empty(self):
+        with self.assertRaises(ValidationError):
+            empty_area = Area(text="")
+            empty_area.full_clean()
 
 
 class ObjectiveModelTests(TestCase):
+    def setUp(self):
+        self.area = Area.objects.create(text='Area')
+        self.obj = Objective.objects.create(text='Objective', area=self.area)
 
-    def test_objective_without_english_text_shows_that_text(self):
-        """
-        Objects without text in English are created normally and its string is this text
-        """
-        text = "Objective"
-        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
-        area = Area.objects.create(text="Area")
-        area.related_axis.add(strategic_axis)
-        area.save()
-        objective = Objective.objects.create(text=text, area=area)
-        self.assertEqual(objective.text, objective.__str__())
-        self.assertIsNone(objective.text_en)
+    def test_objective_str_returns_objective_text(self):
+        self.assertEqual(str(self.obj), 'Objective')
 
-    def test_objective_with_only_english_text_raises_a_validation_error(self):
-        """
-        When objects don't have the text field filled, the object is not created
-        """
-        text_en = "Objective"
-        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
-        area = Area.objects.create(text="Area")
-        area.related_axis.add(strategic_axis)
-        area.save()
-        objective = Objective.objects.create(text_en=text_en, area=area)
+    def test_objective_related_name_on_area_returns_objectives(self):
+        self.assertIn(self.obj, self.area.objectives.all())
 
-        try:
-            objective.clean()
-        except ValidationError as e:
-            print(e.message)
-            self.assertTrue("You need to fill the text field" in e.message)
+    def test_objective_cascade_deletes_with_area(self):
+        self.area.delete()
+        self.assertFalse(Objective.objects.filter(pk=self.obj.pk).exists())
 
-    def test_objective_with_both_texts_shows_the_non_english_text(self):
-        """
-        Objects with both texts filled give preference to the non english (local)
-        language
-        """
-        text = "Objective"
-        text_en = "Objective_English"
-        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
-        area = Area.objects.create(text="Area")
-        area.related_axis.add(strategic_axis)
-        area.save()
-        objective = Objective.objects.create(text=text, text_en=text_en, area=area)
-        self.assertEqual(objective.text, objective.__str__())
-        self.assertNotEqual(objective.text_en, objective.__str__())
-        self.assertIsNotNone(objective.text_en)
-        self.assertIsNotNone(objective.text)
-
-    def test_create_objective_with_proper_parameters_is_indeed_created(self):
-        """
-        Objects creates with proper necessary parameters are indeed created
-        """
-        number_of_objectives_on_database_before_creation = Objective.objects.count()
-        text = "Test"
-        text_en = "Test_English"
-        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
-        area = Area.objects.create(text="Area")
-        area.related_axis.add(strategic_axis)
-        area.save()
-        objective = Objective.objects.create(text=text, text_en=text_en, area=area)
-        number_of_objectives_on_database_after_creation = Objective.objects.count()
-        self.assertIsNotNone(objective.text)
-        self.assertNotEqual(number_of_objectives_on_database_before_creation,
-                            number_of_objectives_on_database_after_creation)
+    def test_objective_text_cannot_be_empty(self):
+        with self.assertRaises(ValidationError):
+            empty_obj = Objective(text="", area=self.area)
+            empty_obj.full_clean()
 
 
 class ActivityModelTests(TestCase):
+    def setUp(self):
+        self.area = Area.objects.create(text="Area")
+        self.activity = Activity.objects.create(text="Activity", code="A1", area=self.area)
 
-    def test_activity_without_english_text_shows_that_text(self):
-        """
-        Objects without text in English are created normally and its string is this text
-        """
-        text = "Activity"
+    def test_activity_str_returns_text(self):
+        self.assertEqual(str(self.activity), "Activity")
 
-        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
-        area = Area.objects.create(text="Area")
-        area.related_axis.add(strategic_axis)
-        area.save()
-        activity = Activity.objects.create(text=text, area=area)
-        self.assertEqual(activity.text, activity.__str__())
-        self.assertIsNone(activity.text_en)
+    def test_activity_related_name_on_area_returns_activities(self):
+        self.assertIn(self.activity, self.area.activities.all())
 
-    def test_activity_with_only_english_text_raises_a_validation_error(self):
-        """
-        When objects don't have the text field filled, the object is not created
-        """
-        text_en = "Activity"
-
-        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
-        area = Area.objects.create(text="Area")
-        area.related_axis.add(strategic_axis)
-        area.save()
-        activity = Activity.objects.create(text_en=text_en, area=area)
-
-        try:
-            activity.clean()
-        except ValidationError as e:
-            print(e.message)
-            self.assertTrue("You need to fill the text field" in e.message)
-
-    def test_activity_with_both_texts_shows_the_non_english_text(self):
-        """
-        Objects with both texts filled give preference to the non english (local)
-        language
-        """
-        text = "Activity"
-        text_en = "Activity_English"
-
-        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
-        area = Area.objects.create(text="Area")
-        area.related_axis.add(strategic_axis)
-        area.save()
-        activity = Activity.objects.create(text=text, text_en=text_en, area=area)
-        self.assertEqual(activity.text, activity.__str__())
-        self.assertNotEqual(activity.text_en, activity.__str__())
-        self.assertIsNotNone(activity.text_en)
-        self.assertIsNotNone(activity.text)
+    def test_activity_text_cannot_be_empty(self):
+        with self.assertRaises(ValidationError):
+            empty_activity = Activity(text="", area=self.area)
+            empty_activity.full_clean()
 
 
 class MetricModelTests(TestCase):
-    def test_metric_without_english_text_shows_that_text(self):
-        """
-        Objects without text in English are created normally and its string is this text
-        """
-        text = "Metric"
+    def setUp(cls):
+        cls.area = Area.objects.create(text="Area")
+        cls.activity = Activity.objects.create(text="Activity", area=cls.area)
+        cls.metric = Metric.objects.create(text="Metric", activity=cls.activity)
 
-        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
+    def test_metric_str_returns_metrics_text(self):
+        self.assertEqual(str(self.metric), "Metric")
+
+    def test_metric_instance_can_have_empty_text(self):
+        with self.assertRaises(ValidationError):
+            metric = Metric.objects.create(text="", activity=self.activity)
+            metric.full_clean()
+
+    def test_metric_instance_must_have_a_non_empty_text(self):
+        with self.assertRaises(ValidationError):
+            metric = Metric.objects.create(activity=self.activity)
+            metric.full_clean()
+
+    def test_metric_instance_must_have_an_activity_associated(self):
+        with self.assertRaises(IntegrityError):
+            Metric.objects.create(text="Metric2")
+
+    def test_metric_instance_with_required_parameters_is_created(self):
+        metric = Metric.objects.create(text="Metric3", activity=self.activity)
+        metric.full_clean()
+
+
+class MetricViewsTests(TestCase):
+    def test_index_view(self):
+        self.index_url = reverse("metrics:index")
+        response = self.client.get(self.index_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "metrics/home.html")
+
+    def test_about_view(self):
+        self.index_url = reverse("metrics:about")
+        response = self.client.get(self.index_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "metrics/about.html")
+
+    def test_show_activities_plan_view(self):
         area = Area.objects.create(text="Area")
-        area.related_axis.add(strategic_axis)
-        area.save()
         activity = Activity.objects.create(text="Activity", area=area)
-        metric = Metric.objects.create(text=text, activity=activity)
-
-        self.assertEqual(metric.text, metric.__str__())
-        self.assertIsNone(metric.text_en)
-
-    def test_metric_with_only_english_text_raises_a_validation_error(self):
-        """
-        When objects don't have the text field filled, the object is not created
-        """
-        text_en = "Metric"
-
-        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
-        area = Area.objects.create(text="Area")
-        area.related_axis.add(strategic_axis)
-        area.save()
-        activity = Activity.objects.create(text="Activity", area=area)
-        metric = Metric.objects.create(text_en=text_en, activity=activity)
-
-        try:
-            metric.clean()
-        except ValidationError as e:
-            self.assertTrue("You need to fill the text field" in e.message)
-
-    def test_metric_with_both_texts_shows_the_non_english_text(self):
-        """
-        Objects with both texts filled give preference to the non english (local)
-        language
-        """
-        text = "Metric"
-        text_en = "Metric_English"
-
-        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
-        area = Area.objects.create(text="Area")
-        area.related_axis.add(strategic_axis)
-        area.save()
-        activity = Activity.objects.create(text="Activity", area=area)
-        metric = Metric.objects.create(text=text, text_en=text_en, activity=activity)
-        self.assertEqual(metric.text, metric.__str__())
-        self.assertNotEqual(metric.text_en, metric.__str__())
-        self.assertIsNotNone(metric.text_en)
-        self.assertIsNotNone(metric.text)
+        url = reverse("metrics:show_activities")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "metrics/activities_plan.html")
+        self.assertContains(response, "Activity")
+        self.assertContains(response, "Area")
