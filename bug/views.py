@@ -1,10 +1,14 @@
+import csv
 import datetime
+import pandas as pd
 from django.contrib.auth.decorators import permission_required
-from django.shortcuts import render, redirect, reverse, get_object_or_404
+from django.shortcuts import render, redirect, reverse, get_object_or_404, HttpResponse
 from django.utils.translation import gettext as _
 from django.contrib import messages
 from .forms import BugForm, ObservationForm
 from .models import Bug, Observation
+import zipfile
+from io import BytesIO
 
 
 @permission_required("bug.add_bug")
@@ -32,6 +36,54 @@ def list_bugs(request):
     bugs = Bug.objects.all()
     context = {"dataset": bugs}
     return render(request, "bug/list_bugs.html", context)
+
+
+@permission_required("bug.view_bug")
+def export_bugs(request):
+    buffer = BytesIO()
+    zip_file = zipfile.ZipFile(buffer, mode="w")
+    posfix = " - {}".format(datetime.datetime.today().strftime('%Y-%m-%d %H-%M-%S'))
+    zip_name = _("SARA - Bugs")
+
+    bugs = Bug.objects.all()
+    header = [_("ID"), _("Title"), _("Description"), _("Type"), _("Status"), _("Date of report"), _("Reporter"), _("Update date"), _("Observation"), _("Answer date")]
+    rows = []
+
+    for bug in bugs:
+        try:
+            bug_observation = bug.observation
+        except Observation.DoesNotExist:
+            bug_observation = None
+
+        observation = bug_observation.observation if bug_observation else ""
+        date_of_answer = bug_observation.date_of_answer if bug_observation else ""
+
+        rows.append([bug.pk, bug.title, bug.description, bug.type_of_bug, bug.status, bug.date_of_report, bug.reporter_id, bug.update_date, observation, date_of_answer])
+
+    df = pd.DataFrame(rows, columns=header).drop_duplicates()
+    print(df.dtypes)
+    df = df.astype(dtype={_("ID"): int, _("Title"): str, _("Description"): str, _("Type"): int, _("Status"): int, _("Date of report"): "datetime64[ns]", _("Reporter"): int, _("Update date"): "datetime64[ns]", _("Observation"): str, _("Answer date"): "datetime64[ns]"})
+    print(df.dtypes)
+    df[_("Date of report")] = df[_("Date of report")].dt.tz_localize(None)
+    df[_("Update date")] = df[_("Update date")].dt.tz_localize(None)
+    df[_("Answer date")] = df[_("Answer date")].dt.tz_localize(None)
+
+    csv_file = BytesIO()
+    df.to_csv(path_or_buf=csv_file, index=False)
+    zip_file.writestr("{}.csv".format("Bug report" + posfix), csv_file.getvalue())
+
+    excel_file = BytesIO()
+    writer = pd.ExcelWriter(excel_file, engine="xlsxwriter")
+    df.to_excel(writer, sheet_name="Report", index=False)
+    writer.save()
+    zip_file.writestr("{}.xlsx".format("Bug report" + posfix), excel_file.getvalue())
+
+    zip_file.close()
+    response = HttpResponse(buffer.getvalue())
+    response['Content-Type'] = 'application/x-zip-compressed'
+    response['Content-Disposition'] = 'attachment; filename=' + zip_name + posfix + '.zip'
+
+    return response
 
 
 @permission_required("bug.view_bug")

@@ -273,3 +273,31 @@ class BugViewsTests(TestCase):
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Something went wrong!")
+
+    def test_export_bugs_get_view_is_only_accessible_for_users_with_the_right_permissions(self):
+        self.user.user_permissions.remove(self.view_bug_permission)
+        self.client.login(username=self.username, password=self.password)
+        bug1 = Bug.objects.create(title="Bug 1", description="Bug description 1", type_of_bug=Bug.BugType.ERROR, status=Bug.Status.TODO, reporter=self.user_profile)
+        bug2 = Bug.objects.create(title="Bug 2", description="Bug description 2", type_of_bug=Bug.BugType.CLARIFICATION, status=Bug.Status.PROG, reporter=self.user_profile)
+        bug3 = Bug.objects.create(title="Bug 3", description="Bug description 3", type_of_bug=Bug.BugType.IMPROVEMENT, status=Bug.Status.TEST, reporter=self.user_profile)
+        bug4 = Bug.objects.create(title="Bug 4", description="Bug description 4", type_of_bug=Bug.BugType.NEWFEATURE, status=Bug.Status.DONE, reporter=self.user_profile)
+        bugs = [bug1, bug2, bug3, bug4]
+
+        url = reverse("bug:export_bugs")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('bug:export_bugs')}")
+
+    def test_export_bugs_get_view_returns_zip_file(self):
+        self.client.login(username=self.username, password=self.password)
+        bug1 = Bug.objects.create(title="Bug 1", description="Bug description 1", type_of_bug=Bug.BugType.ERROR, status=Bug.Status.TODO, reporter=self.user_profile)
+        bug2 = Bug.objects.create(title="Bug 2", description="Bug description 2", type_of_bug=Bug.BugType.CLARIFICATION, status=Bug.Status.PROG, reporter=self.user_profile)
+        bug3 = Bug.objects.create(title="Bug 3", description="Bug description 3", type_of_bug=Bug.BugType.IMPROVEMENT, status=Bug.Status.TEST, reporter=self.user_profile)
+        bug4 = Bug.objects.create(title="Bug 4", description="Bug description 4", type_of_bug=Bug.BugType.NEWFEATURE, status=Bug.Status.DONE, reporter=self.user_profile)
+        bugs = [bug1, bug2, bug3, bug4]
+
+        url = reverse("bug:export_bugs")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        content_type = response.headers['Content-Type']
+        self.assertEqual(content_type, 'application/x-zip-compressed')
