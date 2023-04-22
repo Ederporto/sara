@@ -1,5 +1,5 @@
 import datetime
-
+from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.utils.translation import gettext as _
 from django.contrib import messages
@@ -7,6 +7,7 @@ from .forms import BugForm, ObservationForm
 from .models import Bug, Observation
 
 
+@permission_required("bug.add_bug")
 def add_bug(request):
     if request.method == "POST":
         bug_form = BugForm(request.POST)
@@ -26,18 +27,21 @@ def add_bug(request):
     return render(request, "bug/add_bug.html", {"bugform": bug_form})
 
 
+@permission_required("bug.view_bug")
 def list_bugs(request):
     bugs = Bug.objects.all()
     context = {"dataset": bugs}
     return render(request, "bug/list_bugs.html", context)
 
 
+@permission_required("bug.view_bug")
 def detail_bug(request, bug_id):
     context = {"data": Bug.objects.get(pk=bug_id)}
 
     return render(request, "bug/detail_bug.html", context)
 
 
+@permission_required("bug.change_bug")
 def update_bug(request, bug_id):
     bug = get_object_or_404(Bug, pk=bug_id)
 
@@ -59,6 +63,7 @@ def update_bug(request, bug_id):
     return render(request, "bug/update_bug.html", {"bugform": bug_form})
 
 
+@permission_required("bug.add_observation")
 def add_observation(request, bug_id):
     if request.method == "POST":
         obs_form = ObservationForm(request.POST)
@@ -77,6 +82,7 @@ def add_observation(request, bug_id):
     return render(request, "bug/add_observation.html", {"obsform": obs_form})
 
 
+@permission_required("bug.change_observation")
 def edit_observation(request, bug_id):
     obs = get_object_or_404(Observation, bug_report=bug_id)
 

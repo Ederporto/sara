@@ -8,13 +8,15 @@ from django.contrib.auth.models import Group
 
 
 class UserProfile(models.Model):
-    GENDER_CHOICES = (("M", _("Male")),
-                      ("F", _("Female")),
-                      ("NB", _("Non Binary")),
-                      ("?", _("Other")))
+    class GenderChoices(models.TextChoices):
+        M = "1", _("Male")
+        F = "2", _("Female")
+        NB = "3", _("Non Binary")
+        X = "4", _("Other")
+        ND = "5", _("Não declarado")
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    gender = models.CharField(max_length=2, choices=GENDER_CHOICES, null=True, blank=True, default="X")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, editable=False)
+    gender = models.CharField(max_length=2, choices=GenderChoices.choices, null=True, blank=True, default=GenderChoices.ND)
     professional_wiki_handle = models.CharField(_("WMB username"), max_length=50, null=True, blank=True)
     personal_wiki_handle = models.CharField(_("Wiki username"), max_length=50, null=True, blank=True)
     photograph = models.CharField(_("Photograph"), max_length=420, null=True, blank=True)

@@ -1,11 +1,17 @@
 from django.test import TestCase
+from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.db.models import RestrictedError
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import User
+from django.test.client import RequestFactory
+from django.contrib.admin.sites import AdminSite
+from django.utils.translation import gettext as _
 from .models import TeamArea, Position, UserProfile
+from .admin import AccountUserAdmin, UserProfileInline
 from agenda.models import Event
 import datetime
+from django.contrib.auth.models import Permission
 
 
 class TeamAreaModelTests(TestCase):
@@ -105,3 +111,129 @@ class UserProfileModelTest(TestCase):
                                        last_name="Last Name 2")
             user_profile = UserProfile.objects.filter(user=user).first()
             user_profile.full_clean()
+
+
+class UserProfileViewTest(TestCase):
+    def setUp(self):
+        self.username = "username"
+        self.password = "password"
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.user_profile = UserProfile.objects.filter(user=self.user).first()
+
+    def test_user_profile_is_only_accessible_by_logged_users(self):
+        response = self.client.get(reverse('user:profile', kwargs={"user_id": self.user.pk}))
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('user:profile', kwargs={'user_id': self.user.pk})}")
+
+    def test_user_profile_view_get(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get(reverse('user:profile', kwargs={"user_id": self.user.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'users/profile.html')
+
+    def test_user_profile_view_post(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get(reverse('user:profile', kwargs={"user_id": self.user.pk}))
+
+        self.assertIsNone(self.user_profile.professional_wiki_handle)
+        self.assertEqual(response.status_code, 200)
+        data = {"professional_wiki_handle": "Handle"}
+
+        response = self.client.post(reverse('user:profile', kwargs={"user_id": self.user.pk}), data=data)
+        self.assertContains(response, _("Changes done successfully!"))
+
+        user_profile = UserProfile.objects.get(user=self.user)
+        self.assertIsNotNone(user_profile.professional_wiki_handle)
+
+    def test_user_profile_view_post_with_invalid_parameters_fails(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get(reverse('user:profile', kwargs={"user_id": self.user.pk}))
+
+        self.assertIsNone(self.user_profile.professional_wiki_handle)
+        self.assertEqual(response.status_code, 200)
+        data = {"professional_wiki_handle": ""}
+
+        response = self.client.post(reverse('user:profile', kwargs={"user_id": self.user.pk}), data=data)
+        self.assertContains(response, _("Something went wrong!"))
+
+        user_profile = UserProfile.objects.get(user=self.user)
+        self.assertIsNone(user_profile.professional_wiki_handle)
+
+
+class RegisterViewTest(TestCase):
+    def setUp(self):
+        self.username = "username"
+        self.password = "password"
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.permission = Permission.objects.get(codename="add_user")
+        self.user.user_permissions.add(self.permission)
+
+    def test_register_get_view_is_not_accessed_by_users_without_permission(self):
+        self.user.user_permissions.remove(self.permission)
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get(reverse("user:register"))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('user:register')}")
+
+    def test_register_get_view_is_accessed_by_users_with_permission(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get(reverse("user:register"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "users/register.html")
+
+    def test_register_post_view_succeeds_in_new_user_creation(self):
+        self.client.login(username=self.username, password=self.password)
+        data = {
+            "username": "new_user",
+            "email": "email@email.com",
+            "first_name": "First Name",
+            "last_name": "Last Name",
+            "password1": "(<|&+86]:;C#QZ#I",
+            "password2": "(<|&+86]:;C#QZ#I",
+        }
+
+        response = self.client.post(reverse("user:register"), data=data)
+        self.assertEqual(response.status_code, 302)
+        user = User.objects.get(username=data["username"])
+        self.assertRedirects(response, reverse('user:profile', kwargs={"user_id":user.pk}))
+
+    def test_register_post_view_fails_in_new_user_creation_with_invalid_parameters(self):
+        self.client.login(username=self.username, password=self.password)
+        data = {
+            "username": "new_user",
+            "email": "email@email.com",
+            "first_name": "",
+            "last_name": "Last Name",
+            "password1": "(<|&+86]:;C#QZ#I",
+            "password2": "(<|&+86]:;C#QZ#I",
+        }
+
+        response = self.client.post(reverse("user:register"), data=data)
+        self.assertContains(response, _("Unsuccessful registration. Invalid information."))
+        self.assertFalse(User.objects.filter(username=data["username"]).exists())
+
+
+class AccountUserAdminTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_superuser(username='superuser', password='password', email='admin@example.com')
+        self.factory = RequestFactory()
+        self.site = AdminSite()
+        self.account_user_admin = AccountUserAdmin(User, self.site)
+
+    def test_add_view_sets_inlines_to_empty_list(self):
+        url = reverse('admin:auth_user_add')
+        request = self.factory.get(url)
+        request.user = self.user
+        response = self.account_user_admin.add_view(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.account_user_admin.inlines, [])
+
+    def test_change_view_sets_inlines_to_user_profile_inline(self):
+        user = User.objects.create_user(username='username', password='password')
+        url = reverse('admin:auth_user_change', args=[user.pk])
+        request = self.factory.get(url)
+        request.user = self.user
+        response = self.account_user_admin.change_view(request, object_id=str(user.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.account_user_admin.inlines, [UserProfileInline])

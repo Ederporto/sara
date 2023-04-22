@@ -68,7 +68,7 @@
         {% if user.is_authenticated %}
             <div class="nav_separator"></div>
             <div class="nav_block nav_bottom">
-                <a href="{% url 'user:profile' %}" aria-label="{% translate 'User profile' %}">
+                <a href="{% url 'user:profile' user_id=user.id %}" aria-label="{% translate 'User profile' %}">
                     <i class="nav_icon fa-solid fa-user-gear"></i>
                     <span class="nav_btn_title">{% translate "Profile" %}<br>{{ user.professional_wiki_handle }}</span>
                 </a>

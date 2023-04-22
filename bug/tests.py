@@ -75,6 +75,25 @@ class BugViewsTests(TestCase):
                                       description=self.description,
                                       reporter=self.user_profile,
                                       type_of_bug=self.type_of_bug)
+        self.add_obs_permission = Permission.objects.get(codename="add_observation")
+        self.change_obs_permission = Permission.objects.get(codename="change_observation")
+        self.add_bug_permission = Permission.objects.get(codename="add_bug")
+        self.view_bug_permission = Permission.objects.get(codename="view_bug")
+        self.change_bug_permission = Permission.objects.get(codename="change_bug")
+        self.user.user_permissions.add(self.add_obs_permission)
+        self.user.user_permissions.add(self.change_obs_permission)
+        self.user.user_permissions.add(self.add_bug_permission)
+        self.user.user_permissions.add(self.view_bug_permission)
+        self.user.user_permissions.add(self.change_bug_permission)
+
+    def test_add_bug_view_get_fails_if_user_doesnt_have_permission(self):
+        self.user.user_permissions.remove(self.add_bug_permission)
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("bug:create_bug")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('bug:create_bug')}")
 
     def test_add_bug_view_get(self):
         self.client.login(username=self.username, password=self.password)
@@ -114,20 +133,41 @@ class BugViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Something went wrong!")
 
+    def test_list_bugs_view_fails_if_user_doesnt_have_permission(self):
+        self.user.user_permissions.remove(self.view_bug_permission)
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("bug:list_bugs")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('bug:list_bugs')}")
+
     def test_list_bugs_view(self):
         url = reverse("bug:list_bugs")
+        self.client.login(username=self.username, password=self.password)
+
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.bug, response.context["dataset"])
 
+    def test_detail_bug_view_fails_if_user_doesnt_have_permission(self):
+        self.user.user_permissions.remove(self.view_bug_permission)
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("bug:detail_bug", args=[self.bug.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('bug:detail_bug', args=[self.bug.id])}")
+
     def test_detail_bug_view(self):
+        self.client.login(username=self.username, password=self.password)
         url = reverse("bug:detail_bug", args=[self.bug.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-
         self.assertEqual(response.context["data"], self.bug)
 
     def test_update_bug_view(self):
+        self.client.login(username=self.username, password=self.password)
         url = reverse("bug:edit_bug", args=[self.bug.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -145,6 +185,7 @@ class BugViewsTests(TestCase):
         self.assertRedirects(response, reverse("bug:detail_bug", args=[self.bug.id]))
 
     def test_update_bug_view_fails_with_invalid_parameters(self):
+        self.client.login(username=self.username, password=self.password)
         url = reverse("bug:edit_bug", args=[self.bug.id])
 
         data = {
@@ -159,6 +200,15 @@ class BugViewsTests(TestCase):
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Something went wrong!")
+
+    def test_add_observation_only_is_accessible_to_users_with_the_right_permissions(self):
+        self.user.user_permissions.remove(self.add_obs_permission)
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("bug:add_obs", kwargs={"bug_id": self.bug.id})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('bug:add_obs', kwargs={'bug_id': self.bug.pk})}")
 
     def test_add_observation_view_get(self):
         self.client.login(username=self.username, password=self.password)
@@ -183,10 +233,20 @@ class BugViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Something went wrong!")
 
-    def test_update_observation_view(self):
+    def test_update_observation_view_is_only_accessible_for_users_with_permission(self):
+        self.user.user_permissions.remove(self.change_obs_permission)
+        self.client.login(username=self.username, password=self.password)
         url = reverse("bug:edit_obs", args=[self.bug.id])
-        obs = Observation.objects.create(bug_report=self.bug,
-                                         observation="Observation")
+        Observation.objects.create(bug_report=self.bug, observation="Observation")
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('bug:edit_obs', args=[self.bug.id])}")
+
+    def test_update_observation_view(self):
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("bug:edit_obs", args=[self.bug.id])
+        obs = Observation.objects.create(bug_report=self.bug, observation="Observation")
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -194,9 +254,13 @@ class BugViewsTests(TestCase):
 
         self.client.login(username=self.username, password=self.password)
         response = self.client.post(url, data=data)
+
+        obs = Observation.objects.get(pk=obs.pk)
+        self.assertEqual(obs.observation, data["observation"])
         self.assertRedirects(response, reverse("bug:detail_bug", args=[self.bug.id]))
 
     def test_update_observation_view_fails_with_invalid_parameters(self):
+        self.client.login(username=self.username, password=self.password)
         url = reverse("bug:edit_obs", args=[self.bug.id])
         Observation.objects.create(bug_report=self.bug,
                                    observation="Observation")

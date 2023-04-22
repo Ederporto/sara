@@ -1,42 +1,43 @@
 from django.db import transaction
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.utils.translation import gettext as _
 from .forms import UserProfileForm, UserForm, NewUserForm
+from .models import User
 
 
 @login_required
 @transaction.atomic
-def update_profile(request):
-    form_valid_message = _("Changes done successfully!")
-    form_invalid_message = _("Something went wrong!")
+def update_profile(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+
     if request.method == "POST":
-        user_profile_form = UserProfileForm(request.POST, instance=request.user.userprofile)
+        user_form = UserForm(instance=user)
+        user_profile_form = UserProfileForm(request.POST, instance=user.userprofile)
         if user_profile_form.is_valid():
             user_profile_form.save()
-            messages.success(request, form_valid_message)
+            messages.success(request, _("Changes done successfully!"))
         else:
-            messages.error(request, form_invalid_message)
-
-        return redirect("user:profile")
+            messages.error(request, _("Something went wrong!"))
     else:
-        user_form = UserForm(instance=request.user)
-        user_profile_form = UserProfileForm(instance=request.user.userprofile)
+        user_form = UserForm(instance=user)
+        user_profile_form = UserProfileForm(instance=user.userprofile)
     return render(request, "users/profile.html", {"userform": user_form, "userprofileform": user_profile_form})
 
 
-@permission_required('add_user')
+@permission_required('auth.add_user')
 def register(request):
     if request.method == "POST":
         form = NewUserForm(request.POST)
+        print(form.errors)
         if form.is_valid():
             user = form.save()
             user.refresh_from_db()
             user.is_staff = True
             user.save()
             messages.success(request, _("Registration successful."))
-            return redirect("metrics:index")
+            return redirect(reverse("user:profile", kwargs={"user_id": user.pk}))
         messages.error(request, _("Unsuccessful registration. Invalid information."))
     form = NewUserForm()
-    return render(request=request, template_name="users/register.html", context={"register_form": form})
+    return render(request, "users/register.html", {"register_form": form})
