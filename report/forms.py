@@ -2,6 +2,7 @@ from django import forms
 from .models import Report, StrategicLearningQuestion, LearningArea, AreaActivated, Funding, Partner, Technology
 from metrics.models import Area
 from strategy.models import StrategicAxis
+from users.models import TeamArea
 
 
 class NewReportForm(forms.ModelForm):
@@ -11,10 +12,17 @@ class NewReportForm(forms.ModelForm):
         exclude = ["created_by", "created_at", "modified_by", "modified_at"]
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super(NewReportForm, self).__init__(*args, **kwargs)
         self.fields['activity_associated'].choices = activities_associated_as_choices()
         self.fields['directions_related'].choices = directions_associated_as_choices()
         self.fields['learning_questions_related'].choices = learning_questions_as_choices()
+        if user:
+            self.fields['area_responsible'].initial = area_responsible_of_user(user)
+
+
+def area_responsible_of_user(user):
+    return TeamArea.objects.filter(team_area_of_position=user.userprofile.position).first().pk
 
 
 def activities_associated_as_choices():

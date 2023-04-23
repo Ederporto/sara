@@ -88,8 +88,6 @@ class AreaActivated (models.Model):
 def save_team_area_as_area_activated(sender, instance, created, **kwargs):
     if created:
         contact = ""
-        if instance.manager:
-            contact = instance.manager.professional_wiki_handle
         AreaActivated.objects.create(text=instance.text, contact=contact)
 
 
@@ -142,8 +140,8 @@ class EvaluationObjective(models.Model):
 
 
 class Report(models.Model):
-    created_by = models.ForeignKey(UserProfile, on_delete=models.RESTRICT, related_name="user_reporting", null=True)
-    modified_by = models.ForeignKey(UserProfile, on_delete=models.RESTRICT, related_name="user_modifying", null=True)
+    created_by = models.ForeignKey(UserProfile, on_delete=models.RESTRICT, related_name="user_reporting")
+    modified_by = models.ForeignKey(UserProfile, on_delete=models.RESTRICT, related_name="user_modifying")
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now_add=True)
 
@@ -157,51 +155,51 @@ class Report(models.Model):
     description = models.TextField(max_length=420)
     funding_associated = models.ForeignKey(Funding, on_delete=models.RESTRICT, related_name="funding_associated", null=True, blank=True)
     links = models.TextField(max_length=10000)
-    public_communication = models.TextField(max_length=10000)
+    public_communication = models.TextField(max_length=10000, null=True, blank=True)
 
     # Quantitative metrics
-    participants = models.IntegerField(null=True, blank=True, default=0)
-    resources = models.IntegerField(null=True, blank=True, default=0)
-    feedbacks = models.IntegerField(null=True, blank=True, default=0)
+    participants = models.IntegerField(blank=True, default=0)
+    resources = models.IntegerField(blank=True, default=0)
+    feedbacks = models.IntegerField(blank=True, default=0)
     editors = models.ManyToManyField(Editor, related_name="editors", blank=True)
     organizers = models.ManyToManyField(Organizer, related_name="organizers", blank=True)
     partners_activated = models.ManyToManyField(Partner, related_name="partners", blank=True)
     technologies_used = models.ManyToManyField(Technology, related_name="tecnologies", blank=True)
 
     # Wikimedia projects
-    wikipedia_created = models.IntegerField(null=True, blank=True, default=0)
-    wikipedia_edited = models.IntegerField(null=True, blank=True, default=0)
-    commons_created = models.IntegerField(null=True, blank=True, default=0)
-    commons_edited = models.IntegerField(null=True, blank=True, default=0)
-    wikidata_created = models.IntegerField(null=True, blank=True, default=0)
-    wikidata_edited = models.IntegerField(null=True, blank=True, default=0)
-    wikiversity_created = models.IntegerField(null=True, blank=True, default=0)
-    wikiversity_edited = models.IntegerField(null=True, blank=True, default=0)
-    wikibooks_created = models.IntegerField(null=True, blank=True, default=0)
-    wikibooks_edited = models.IntegerField(null=True, blank=True, default=0)
-    wikisource_created = models.IntegerField(null=True, blank=True, default=0)
-    wikisource_edited = models.IntegerField(null=True, blank=True, default=0)
-    wikinews_created = models.IntegerField(null=True, blank=True, default=0)
-    wikinews_edited = models.IntegerField(null=True, blank=True, default=0)
-    wikiquote_created = models.IntegerField(null=True, blank=True, default=0)
-    wikiquote_edited = models.IntegerField(null=True, blank=True, default=0)
-    wiktionary_created = models.IntegerField(null=True, blank=True, default=0)
-    wiktionary_edited = models.IntegerField(null=True, blank=True, default=0)
-    wikivoyage_created = models.IntegerField(null=True, blank=True, default=0)
-    wikivoyage_edited = models.IntegerField(null=True, blank=True, default=0)
-    wikispecies_created = models.IntegerField(null=True, blank=True, default=0)
-    wikispecies_edited = models.IntegerField(null=True, blank=True, default=0)
-    metawiki_created = models.IntegerField(null=True, blank=True, default=0)
-    metawiki_edited = models.IntegerField(null=True, blank=True, default=0)
-    mediawiki_created = models.IntegerField(null=True, blank=True, default=0)
-    mediawiki_edited = models.IntegerField(null=True, blank=True, default=0)
+    wikipedia_created = models.IntegerField(blank=True, default=0)
+    wikipedia_edited = models.IntegerField(blank=True, default=0)
+    commons_created = models.IntegerField(blank=True, default=0)
+    commons_edited = models.IntegerField(blank=True, default=0)
+    wikidata_created = models.IntegerField(blank=True, default=0)
+    wikidata_edited = models.IntegerField(blank=True, default=0)
+    wikiversity_created = models.IntegerField(blank=True, default=0)
+    wikiversity_edited = models.IntegerField(blank=True, default=0)
+    wikibooks_created = models.IntegerField(blank=True, default=0)
+    wikibooks_edited = models.IntegerField(blank=True, default=0)
+    wikisource_created = models.IntegerField(blank=True, default=0)
+    wikisource_edited = models.IntegerField(blank=True, default=0)
+    wikinews_created = models.IntegerField(blank=True, default=0)
+    wikinews_edited = models.IntegerField(blank=True, default=0)
+    wikiquote_created = models.IntegerField(blank=True, default=0)
+    wikiquote_edited = models.IntegerField(blank=True, default=0)
+    wiktionary_created = models.IntegerField(blank=True, default=0)
+    wiktionary_edited = models.IntegerField(blank=True, default=0)
+    wikivoyage_created = models.IntegerField(blank=True, default=0)
+    wikivoyage_edited = models.IntegerField(blank=True, default=0)
+    wikispecies_created = models.IntegerField(blank=True, default=0)
+    wikispecies_edited = models.IntegerField(blank=True, default=0)
+    metawiki_created = models.IntegerField(blank=True, default=0)
+    metawiki_edited = models.IntegerField(blank=True, default=0)
+    mediawiki_created = models.IntegerField(blank=True, default=0)
+    mediawiki_edited = models.IntegerField(blank=True, default=0)
 
     # Strategy
-    directions_related = models.ManyToManyField(Direction, related_name="direction_related")
+    directions_related = models.ManyToManyField(Direction, related_name="direction_related", blank=False)
     learning = models.TextField(max_length=5000, validators=[MinLengthValidator(500)])
 
     # Theory of Change
-    learning_questions_related = models.ManyToManyField(StrategicLearningQuestion, related_name="strategic_learning_question_related")
+    learning_questions_related = models.ManyToManyField(StrategicLearningQuestion, related_name="strategic_learning_question_related", blank=False)
 
     class Meta:
         verbose_name = _("Report")

@@ -20,9 +20,8 @@ from report.forms import NewReportForm, StrategicLearningQuestionsForm, activiti
 # CREATE
 @login_required
 def add_report(request):
+    report_form = NewReportForm(request.POST or None, user=request.user)
     if request.method == "POST":
-        report_form = NewReportForm(request.POST)
-
         if report_form.is_valid():
             report = report_form.save()
 
@@ -56,7 +55,6 @@ def add_report(request):
                    "learning_questions_related_set": []}
         return render(request, "report/add_report.html", context)
     else:
-        report_form = NewReportForm()
         strategic_learning_questions_form = StrategicLearningQuestionsForm()
 
     context = {"report_form": report_form,

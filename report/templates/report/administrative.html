@@ -3,9 +3,9 @@
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="activity_associated">{% translate "Activity associated" %}*</label>
         <div class="w3-twothird formfield">
-            <select id="activity_associated" name="activity_associated" oninput="other_activity(this)">
+            <select id="activity_associated" name="activity_associated" required>
                 <option value="" selected>----------</option>
-                <option value="">{% translate "Other (not listed)" %}</option>
+                <option value="other">{% translate "Other (not listed)" %}</option>
                 {% for area in report_form.fields.activity_associated.choices %}
                     <optgroup label="{{ area.0 }}">
                         {% for activity in area.1 %}
@@ -16,17 +16,13 @@
             </select>
         </div>
     </div>
-    <div class="w3-row activity_others">
-        <label class="w3-third formfieldtitle" for="activity_other">{% translate "Name of the activity" %}</label>
-        <div class="w3-twothird formfield"><input type="text" id="activity_other" name="activity_other" value="{{ report_form.instance.activity_other }}"/></div>
-    </div>
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="area_responsible">{% translate "Area responsible" %}*</label>
         <div class="w3-twothird formfield">
-            <select id="area_responsible" name="area_responsible">
+            <select id="area_responsible" name="area_responsible" required>
                 <option selected>----------</option>
                 {% for area_responsible in report_form.fields.area_responsible.queryset %}
-                    <option value="{{ area_responsible.id }}" {% if area_responsible == report_form.instance.area_responsible %}selected{% endif %}>{{ area_responsible.text }} ({{ area_responsible.manager.user.first_name }})</option>
+                    <option value="{{ area_responsible.id }}" {% if area_responsible.id == report_form.fields.area_responsible.initial %}selected{% endif %}>{{ area_responsible.text }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -47,7 +43,7 @@
     </div>
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="initial_date">{% translate "Initial date" %}*</label>
-        <div class="w3-twothird formfield"><input id="initial_date" name="initial_date" type="date" value="{{ report_form.instance.initial_date|date:'Y-m-d' }}"/></div>
+        <div class="w3-twothird formfield"><input id="initial_date" name="initial_date" type="date" value="{{ report_form.instance.initial_date|date:'Y-m-d' }}" required/></div>
     </div>
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="end_date">{% translate "End date" %}</label>
@@ -55,7 +51,7 @@
     </div>
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="description">{% translate "Description" %}*</label>
-        <div class="w3-twothird formfield"><input id="description" name="description" type="text" value="{{ report_form.instance.description }}"/></div>
+        <div class="w3-twothird formfield"><input id="description" name="description" type="text" value="{{ report_form.instance.description }}" required/></div>
     </div>
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="funding_associated">{% translate "Funding associated" %}</label>
@@ -73,10 +69,10 @@
     </div>
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="links">{% translate "Links" %}*</label>
-        <div class="w3-twothird formfield"><textarea id="links" name="links" rows="3">{{ report_form.instance.links }}</textarea></div>
+        <div class="w3-twothird formfield"><textarea id="links" name="links" rows="3" required>{{ report_form.instance.links }}</textarea></div>
     </div>
     <div class="w3-row">
-        <label class="w3-third formfieldtitle" for="public_communication">{% translate "Public communication" %}*</label>
+        <label class="w3-third formfieldtitle" for="public_communication">{% translate "Public communication" %}</label>
         <div class="w3-twothird formfield"><textarea id="public_communication" name="public_communication" rows="3">{{ report_form.instance.public_communication }}</textarea></div>
     </div>
     <div class="w3-row">
