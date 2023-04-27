@@ -108,7 +108,7 @@ class LearningArea(models.Model):
 
 class StrategicLearningQuestion(models.Model):
     text = models.CharField(max_length=420)
-    learning_area = models.ForeignKey(LearningArea, on_delete=models.CASCADE, null=True, related_name='strategic_question')
+    learning_area = models.ForeignKey(LearningArea, on_delete=models.CASCADE, related_name='strategic_question')
 
     class Meta:
         verbose_name = _("Strategic learning question")
@@ -153,9 +153,9 @@ class Report(models.Model):
     initial_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
     description = models.TextField(max_length=420)
-    funding_associated = models.ForeignKey(Funding, on_delete=models.RESTRICT, related_name="funding_associated", null=True, blank=True)
-    links = models.TextField(max_length=10000)
-    public_communication = models.TextField(max_length=10000, null=True, blank=True)
+    funding_associated = models.ManyToManyField(Funding, related_name="funding_associated", blank=True)
+    links = models.TextField(max_length=10000, blank=False)
+    public_communication = models.TextField(max_length=10000, null=True, blank=True, default="")
 
     # Quantitative metrics
     participants = models.IntegerField(blank=True, default=0)
@@ -206,23 +206,9 @@ class Report(models.Model):
         verbose_name_plural = _("Reports")
 
     def save(self, *args, **kwargs):
+        super(Report, self).save(*args, **kwargs)
         if not self.end_date:
             self.end_date = self.initial_date
 
-        super(Report, self).save(*args, **kwargs)
-
     def __str__(self):
         return self.description
-
-
-class EvaluationObjectiveAnswer(models.Model):
-    objective = models.ForeignKey(EvaluationObjective, on_delete=models.CASCADE, related_name="answer")
-    answer = models.CharField(max_length=4200, null=True, blank=True)
-    report = models.ForeignKey(Report, on_delete=models.CASCADE, related_name="evaluation_objective_answer")
-
-    class Meta:
-        verbose_name = _("Evaluation objective answer")
-        verbose_name_plural = _("Evaluation objective answers")
-
-    def __str__(self):
-        return self.objective.text + ": " + self.answer

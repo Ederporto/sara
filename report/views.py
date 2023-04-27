@@ -5,165 +5,123 @@ from io import BytesIO
 
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, reverse, HttpResponse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.translation import gettext as _
 from django.contrib import messages
 
 from metrics.models import Metric
-from report.models import LearningArea, EvaluationObjective, EvaluationObjectiveAnswer, Editor, Organizer, Partner, \
+from report.models import LearningArea, EvaluationObjective, Editor, Organizer, Partner, \
     Funding, Technology, Report, AreaActivated
 from users.models import TeamArea, UserProfile
-from report.forms import NewReportForm, StrategicLearningQuestionsForm, activities_associated_as_choices,\
+from report.forms import NewReportForm, activities_associated_as_choices,\
     AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm
 
 
 # CREATE
 @login_required
+@permission_required("report.add_report")
 def add_report(request):
     report_form = NewReportForm(request.POST or None, user=request.user)
+    directions_related_set = list(report_form.data.get('directions_related', []))
+    learning_questions_related_set = list(report_form.data.get('learning_questions_related', []))
     if request.method == "POST":
         if report_form.is_valid():
-            report = report_form.save()
+            report = report_form.save(user=request.user)
 
-            user = get_object_or_404(UserProfile, user=request.user)
-            editors = get_or_create_editors(request.POST["editors_string"])
-            organizers = get_or_create_organizers(request.POST["organizers_string"])
-
-            report.editors.set(editors)
-            report.organizers.set(organizers)
-            report.created_by = user
-            report.modified_by = user
-
-            report.save()
-
-            strategic_learning_questions_form = StrategicLearningQuestionsForm(request.POST)
-            if strategic_learning_questions_form.is_valid():
-                strategic_learning_questions_form.save()
-            else:
-                pass
-            form_valid_message = _("Report registered successfully!")
-            messages.success(request, form_valid_message)
+            messages.success(request, _("Report registered successfully!"))
             return redirect(reverse("report:detail_report", kwargs={"report_id": report.id}))
 
-        # else, the form is invalid, and there should be an error list:
-        form_invalid_message = _("Something went wrong!")
-        messages.error(request, form_invalid_message)
-        for field, error in report_form.errors.items():
-            messages.error(request, field + ": " + error[0])
-        context = {"report_form": report_form,
-                   "directions_related_set": [],
-                   "learning_questions_related_set": []}
+        else:
+            messages.error(request, _("Something went wrong!"))
+            for field, error in report_form.errors.items():
+                messages.error(request, field + ": " + error[0])
+            context = {
+                "directions_related_set": directions_related_set,
+                "learning_questions_related_set": learning_questions_related_set,
+                "report_form": report_form
+            }
+            return render(request, "report/add_report.html", context)
+    else:
+        context = {"directions_related_set": directions_related_set,
+                   "learning_questions_related_set": learning_questions_related_set,
+                   "report_form": report_form}
+
         return render(request, "report/add_report.html", context)
-    else:
-        strategic_learning_questions_form = StrategicLearningQuestionsForm()
-
-    context = {"report_form": report_form,
-               "strategic_learning_questions_form": strategic_learning_questions_form,
-               "directions_related_set": [],
-               "learning_questions_related_set": []}
-
-    return render(request, "report/add_report.html", context)
 
 
+@login_required
+@permission_required("report.add_areaactivated")
 def add_area_activated(request):
+    area_form = AreaActivatedForm(request.POST or None)
     if request.method == "POST":
-        area_form = AreaActivatedForm(request.POST)
         if area_form.is_valid():
-            if not AreaActivated.objects.filter(text=area_form.instance.text).count():
-                area_form.save()
-            return redirect(reverse("report:list_areas_activated"))
-        context = {"area_form": area_form}
-        return render(request, "area_activated/add_area.html", context)
+            area, created = AreaActivated.objects.get_or_create(text=area_form.cleaned_data['text'])
+            return JsonResponse({"id": area.id, "text": area.text})
+        else:
+            return JsonResponse({"id": None})
     else:
-        area_form = AreaActivatedForm()
         context = {"area_form": area_form}
         return render(request, "area_activated/add_area.html", context)
 
 
-def list_areas(request):
-    areas = AreaActivated.objects.all()
-
-    context = {"dataset": areas}
-    return render(request, "area_activated/list_areas.html", context)
-
-
+@login_required
+@permission_required("report.add_funding")
 def add_funding(request):
+    funding_associated_form = FundingForm(request.POST or None)
     if request.method == "POST":
-        funding_form = FundingForm(request.POST)
-        if funding_form.is_valid():
-            if not Funding.objects.filter(name=funding_form.instance.name, value=funding_form.instance.value).count():
-                funding_form.save()
-            return redirect(reverse("report:list_fundings"))
-        context = {"funding_form": funding_form}
-        return render(request, "funding/add_funding.html", context)
+        if funding_associated_form.is_valid():
+            funding, created = Funding.objects.get_or_create(name=funding_associated_form.cleaned_data["name"], value=funding_associated_form.cleaned_data["value"])
+            return JsonResponse({"id": funding.id, "text": funding.name})
+        else:
+            return JsonResponse({"id": None, "text": None})
     else:
-        funding_form = FundingForm()
-        context = {"funding_form": funding_form}
+        context = {"funding_form": funding_associated_form}
         return render(request, "funding/add_funding.html", context)
 
 
-def list_fundings(request):
-    fundings = Funding.objects.all()
-
-    context = {"dataset": fundings}
-    return render(request, "funding/list_fundings.html", context)
-
-
+@login_required
+@permission_required("report.add_partner")
 def add_partner(request):
+    partner_form = PartnerForm(request.POST or None)
     if request.method == "POST":
-        partner_form = PartnerForm(request.POST)
         if partner_form.is_valid():
-            if not Partner.objects.filter(name=partner_form.instance.name).count():
-                partner_form.save()
-            return redirect(reverse("report:list_partners"))
-        context = {"partner_form": partner_form}
-        return render(request, "partners/add_partner.html", context)
+            partner, created = Partner.objects.get_or_create(name=partner_form.cleaned_data["name"])
+            return JsonResponse({"id": partner.id, "text": partner.name})
+        else:
+            return JsonResponse({"id": None, "text": None})
     else:
-        partner_form = PartnerForm()
         context = {"partner_form": partner_form}
         return render(request, "partners/add_partner.html", context)
 
 
-def list_partners(request):
-    partners = Partner.objects.all()
-
-    context = {"dataset": partners}
-    return render(request, "partners/list_partners.html", context)
-
-
+@login_required
+@permission_required("report.add_technology")
 def add_technology(request):
+    technology_form = TechnologyForm(request.POST or None)
     if request.method == "POST":
-        technology_form = TechnologyForm(request.POST)
         if technology_form.is_valid():
-            if not Technology.objects.filter(name=technology_form.instance.name).count():
-                technology_form.save()
-            return redirect(reverse("report:list_technologies"))
-        context = {"technology_form": technology_form}
-        return render(request, "technologies/add_technology.html", context)
+            technology, created = Technology.objects.get_or_create(name=technology_form.cleaned_data["name"])
+            return JsonResponse({"id": technology.id, "text": technology.name})
+        else:
+            return JsonResponse({"id": None, "text": None})
     else:
-        technology_form = TechnologyForm()
         context = {"technology_form": technology_form}
         return render(request, "technologies/add_technology.html", context)
 
-
-def list_technologies(request):
-    technologies = Technology.objects.all()
-
-    context = {"dataset": technologies}
-    return render(request, "technologies/list_technologies.html", context)
 
 # REVIEW
 @login_required
+@permission_required("report.view_report")
 def list_reports(request):
-    context = {"dataset": Report.objects.order_by('-modified_at'), "mine": False}
+    context = {"dataset": Report.objects.order_by('-created_at'), "mine": False}
 
     return render(request, "report/list_reports.html", context)
 
 
 @login_required
+@permission_required("report.view_report")
 def detail_report(request, report_id):
-    context = {"data": Report.objects.get(id=report_id),
-               "evaluation_objective": EvaluationObjectiveAnswer.objects.filter(report_id=report_id)}
+    context = {"data": Report.objects.get(id=report_id)}
 
     return render(request, "report/detail_report.html", context)
 
@@ -186,7 +144,6 @@ def add_excel_file(report_id=None):
     export_directions_related(report_id).to_excel(writer, sheet_name='Directions', index=False)
     export_editors(report_id).to_excel(writer, sheet_name='Editors', index=False)
     export_learning_questions_related(report_id).to_excel(writer, sheet_name='Learning questions', index=False)
-    # export_evaluation_objectives(report_id).to_excel(writer, sheet_name='Evaluation objectives', index=False)
     export_organizers(report_id).to_excel(writer, sheet_name='Organizers', index=False)
     export_partners_activated(report_id).to_excel(writer, sheet_name='Partners', index=False)
     export_technologies_used(report_id).to_excel(writer, sheet_name='Technologies', index=False)
@@ -196,6 +153,7 @@ def add_excel_file(report_id=None):
 
 
 @login_required
+@permission_required("report.view_report")
 def export_report(request, report_id=None):
     buffer = BytesIO()
     zip_file = zipfile.ZipFile(buffer, mode="w")
@@ -208,7 +166,7 @@ def export_report(request, report_id=None):
         zip_name = _("SARA - Reports")
         identifier = ""
 
-    posfix = identifier + " - {}".format(datetime.datetime.today().strftime('%Y-%m-%d %H-%M-%S'))
+    posfix = identifier + " - {}".format(datetime.datetime.today().strftime('%Y-%m-%d'))
     files = [[export_report_instance, sub_directory + 'Report' + posfix],
              [export_metrics, sub_directory + 'Metrics' + posfix],
              [export_user_profile, sub_directory + 'Users' + posfix],
@@ -216,7 +174,6 @@ def export_report(request, report_id=None):
              [export_directions_related, sub_directory + 'Directions' + posfix],
              [export_editors, sub_directory + 'Editors' + posfix],
              [export_learning_questions_related, sub_directory + 'Learning questions' + posfix],
-             # [export_evaluation_objectives, sub_directory + 'Evaluation objectives' + posfix],
              [export_organizers, sub_directory + 'Organizers' + posfix],
              [export_partners_activated, sub_directory + 'Partners' + posfix],
              [export_technologies_used, sub_directory + 'Technologies' + posfix]]
@@ -257,20 +214,26 @@ def export_report_instance(report_id=None):
     for report in reports:
         # Database
         id_ = report.id
-        created_by = report.created_by
+        created_by = report.created_by.id
         created_at = report.created_at
-        modified_by = report.modified_by
+        modified_by = report.modified_by.id
         modified_at = report.modified_at
 
         # Administrative
-        activity_associated = report.activity_associated
+        activity_associated = report.activity_associated.id
         activity_other = report.activity_other or ""
-        area_responsible = report.area_responsible
-        area_activated = "; ".join(map(str, report.area_activated.values_list("id", flat=True)))
+        area_responsible = report.area_responsible.id
+        if report.area_activated.exists():
+            area_activated = "; ".join(map(str, report.area_activated.values_list("id", flat=True)))
+        else:
+            area_activated = ""
         initial_date = report.initial_date
         end_date = report.end_date
         description = report.description
-        funding_associated = report.funding_associated
+        if report.funding_associated.exists():
+            funding_associated = "; ".join(map(str, report.funding_associated.values_list("id", flat=True)))
+        else:
+            funding_associated = ""
         links = report.links.replace("\r\n", "; ")
         public_communication = report.public_communication
 
@@ -278,10 +241,22 @@ def export_report_instance(report_id=None):
         participants = report.participants
         resources = report.resources
         feedbacks = report.feedbacks
-        editors = "; ".join(report.editors.values_list("username", flat=True))
-        organizers = "; ".join([x["name"] for x in report.organizers.values("name", "institution__name")])
-        partners_activated = "; ".join(report.partners_activated.values_list("name", flat=True))
-        technologies_used = "; ".join(report.technologies_used.values_list("name", flat=True))
+        if report.editors.exists():
+            editors = "; ".join(map(str, report.editors.values_list("id", flat=True)))
+        else:
+            editors = ""
+        if report.organizers.exists():
+            organizers = "; ".join(map(str, report.organizers.values_list("id", flat=True)))
+        else:
+            organizers = ""
+        if report.partners_activated.exists():
+            partners_activated = "; ".join(map(str, report.partners_activated.values_list("id", flat=True)))
+        else:
+            partners_activated = ""
+        if report.technologies_used.exists():
+            technologies_used = "; ".join(map(str, report.technologies_used.values_list("id", flat=True)))
+        else:
+            technologies_used = ""
 
         # Wikimedia
         wikipedia_created = report.wikipedia_created
@@ -312,11 +287,17 @@ def export_report_instance(report_id=None):
         mediawiki_edited = report.mediawiki_edited
 
         # Strategy
-        directions_related = "; ".join(map(str, report.directions_related.values_list("id", flat=True)))
+        if report.directions_related.exists():
+            directions_related = "; ".join(map(str, report.directions_related.values_list("id", flat=True)))
+        else:
+            directions_related = ""
         learning = report.learning.replace("\r\n", "\n")
 
         # Theory
-        learning_questions_related = "; ".join(map(str, report.learning_questions_related.values_list("id", flat=True)))
+        if report.learning_questions_related.exists():
+            learning_questions_related = "; ".join(map(str, report.learning_questions_related.values_list("id", flat=True)))
+        else:
+            learning_questions_related = ""
 
         rows.append([id_, created_by, created_at, modified_by, modified_at, activity_associated, activity_other,
                      area_responsible, area_activated, initial_date, end_date, description, funding_associated, links,
@@ -376,8 +357,9 @@ def export_metrics(report_id=None):
 
 
 def export_user_profile(report_id=None):
-    header = [_('ID'), _('Username on Wiki'), _('First name'), _('Last Name'),
-              _('Email'), _('Lattes'), _('Orcid'), _('Google_scholar')]
+    header = [_('ID'), _('First name'), _('Last Name'), _('Username on Wiki (WMB)'), _('Username on Wiki'),
+              _('Photograph'), _('Position'), _('Twitter'), _('Facebook'), _('Instagram'), _('Email'),
+              _('Wikidata item'), _('LinkedIn'), _('Lattes'), _('Orcid'), _('Google_scholar')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
@@ -387,8 +369,22 @@ def export_user_profile(report_id=None):
     rows = []
     for report in reports:
         for instance in [report.created_by, report.modified_by]:
-            rows.append([instance.id, instance.professional_wiki_handle, instance.user.first_name, instance.user.last_name,
-                         instance.user.email, instance.lattes, instance.orcid, instance.google_scholar])
+            rows.append([instance.id,
+                         instance.user.first_name or "",
+                         instance.user.last_name or "",
+                         instance.professional_wiki_handle or "",
+                         instance.personal_wiki_handle or "",
+                         instance.photograph or "",
+                         instance.position or "",
+                         instance.twitter or "",
+                         instance.facebook or "",
+                         instance.instagram or "",
+                         instance.user.email or "",
+                         instance.wikidata_item or "",
+                         instance.linkedin or "",
+                         instance.lattes or "",
+                         instance.orcid or "",
+                         instance.google_scholar or ""])
 
     df = pd.DataFrame(rows, columns=header).drop_duplicates()
     return df
@@ -462,30 +458,6 @@ def export_learning_questions_related(report_id=None):
     return df
 
 
-# def export_evaluation_objectives(report_id=None):
-#     header = [_('ID'), _('Evaluation objectives'), _('Evaluation answers'), _('Learning area ID'), _('Learning area')]
-#
-#     if report_id:
-#         reports = Report.objects.filter(pk=report_id)
-#     else:
-#         reports = Report.objects.all()
-#
-#     rows = []
-#     for report in reports:
-#         objectives = EvaluationObjective.objects.filter(
-#             learning_area_of_objective__strategic_question__in=report.learning_questions_related.all())
-#         for instance in objectives.all():
-#             answer = EvaluationObjectiveAnswer.objects.get(objective=instance, report=report)
-#             rows.append([instance.id,
-#                          instance.text,
-#                          answer.answer,
-#                          instance.learning_area_of_objective_id,
-#                          instance.learning_area_of_objective.text])
-#
-#     df = pd.DataFrame(rows, columns=header).drop_duplicates()
-#     return df
-
-
 def export_organizers(report_id=None):
     header = [_('ID'), _("Organizer's name"), _("Organizer's institution ID"), _("Organizer institution's name")]
 
@@ -497,8 +469,7 @@ def export_organizers(report_id=None):
     rows = []
     for report in reports:
         for instance in report.organizers.all():
-            if instance.id == 24:
-                rows.append([instance.id, instance.name, ";".join(map(str, instance.institution.values_list("id", flat=True))), ";".join(map(str, instance.institution.values_list("name", flat=True)))])
+            rows.append([instance.id, instance.name, ";".join(map(str, instance.institution.values_list("id", flat=True))), ";".join(map(str, instance.institution.values_list("name", flat=True)))])
 
     df = pd.DataFrame(rows, columns=header).drop_duplicates()
     return df
@@ -540,11 +511,11 @@ def export_technologies_used(report_id=None):
 
 # UPDATE
 @login_required
+@permission_required("report.change_report")
 def update_report(request, report_id):
     obj = get_object_or_404(Report, id=report_id)
-    report_form = NewReportForm(request.POST or None, instance=obj)
-
     if request.method == "POST":
+        report_form = NewReportForm(request.POST or None, instance=obj, user=request.user)
         if report_form.is_valid():
             report_instance = report_form.save(commit=False)
             user_profile = UserProfile.objects.get(user=request.user)
@@ -557,36 +528,18 @@ def update_report(request, report_id):
             report_instance.modified_at = datetime.datetime.now()
 
             report_instance.save()
-            update_answers(report_instance.learning_questions_related.all(), report_id)
-            save_answers(request.POST, report_id)
             return redirect(reverse("report:detail_report", kwargs={"report_id": report_id}))
-
-    context = {"report_form": report_form,
-               "directions_related_set": list(obj.directions_related.values_list("id", flat=True)),
-               "learning_questions_related_set": list(obj.learning_questions_related.values_list("id", flat=True))}
-
-    return render(request, "report/add_report.html", context)
-
-
-def update_answers(learning_areas, report_id):
-    filtered_answers = EvaluationObjectiveAnswer.objects.filter(report_id=report_id)
-    excluded_answers = filtered_answers.exclude(
-        objective__learning_area_of_objective_id__in=list(learning_areas.values_list("id", flat=True)))
-    excluded_answers.delete()
-
-
-def save_answers(form, report_id):
-    objectives = EvaluationObjective.objects.values_list("id", flat=True)
-    for objective_id in objectives:
-        if "objective_answer_" + str(objective_id) in form:
-            answer, answer_created = EvaluationObjectiveAnswer.objects.get_or_create(objective_id=objective_id,
-                                                                                     report_id=report_id)
-            answer.answer = form["objective_answer_" + str(objective_id)]
-            answer.save()
+    else:
+        report_form = NewReportForm(instance=obj, user=request.user)
+        context = {"report_form": report_form,
+                   "directions_related_set": list(obj.directions_related.values_list("id", flat=True)),
+                   "learning_questions_related_set": list(obj.learning_questions_related.values_list("id", flat=True))}
+        return render(request, "report/update_report.html", context)
 
 
 # DELETE
 @login_required
+@permission_required("report.delete_report")
 def delete_report(request, report_id):
     report = Report.objects.get(id=report_id)
     context = {"report": report}
@@ -605,7 +558,8 @@ def get_or_create_editors(editors_string):
     if editors_string:
         for editor in editors_list:
             new_editor, created = Editor.objects.get_or_create(username=editor)
-            editors.append(new_editor)
+            if new_editor not in editors:
+                editors.append(new_editor)
 
     return editors
 
@@ -617,68 +571,17 @@ def get_or_create_organizers(organizers_string):
         for organizer in organizers_list:
             organizer_name, institution_name = (organizer + ";").split(";", maxsplit=1)
             new_organizer, new_organizer_created = Organizer.objects.get_or_create(name=organizer_name)
+            print(f"Created organizer: {new_organizer} (created={new_organizer_created})")
             if institution_name:
                 for partner_name in institution_name.split(";"):
                     if partner_name:
                         partner, partner_created = Partner.objects.get_or_create(name=partner_name)
+                        print(f"Created partner: {partner} (created={partner_created})")
+                        print(f"Organizer institutions before add: {new_organizer.institution.all()}")
                         new_organizer.institution.add(partner)
+                        print(f"Organizer institutions after add: {new_organizer.institution.all()}")
                 new_organizer.save()
+                print(f"Created organizer: {new_organizer} (created={new_organizer_created}) e {new_organizer.institution.all()}")
             organizers.append(new_organizer)
     return organizers
 
-
-@login_required
-def get_activities(request):
-    activities = activities_associated_as_choices()
-    return JsonResponse({'activities': list(activities)})
-
-
-@login_required
-def get_areas(request):
-    areas = AreaActivated.objects.all()
-    return JsonResponse({'areas': list(areas.values())})
-
-
-@login_required
-def get_fundings(request):
-    fundings = Funding.objects.all()
-    return JsonResponse({'fundings': list(fundings.values())})
-
-
-@login_required
-def get_partnerships(request):
-    partnerships = Partner.objects.all()
-    return JsonResponse({'partnerships': list(partnerships.values())})
-
-
-@login_required
-def get_technologies(request):
-    technologies = Technology.objects.all()
-    return JsonResponse({'technologies': list(technologies.values())})
-
-
-@login_required
-def get_metrics(request):
-    activity_id = int(request.GET["id"])
-    metrics = Metric.objects.filter(activity_id=activity_id)
-    return JsonResponse({'metrics': list(metrics.values())})
-
-
-@login_required
-def get_objectives(request):
-    strategic_learning_question_id = int(request.GET["question_id"])
-    report_id_aux = request.GET["report_id"]
-    report_id = int(report_id_aux) if report_id_aux != "None" else 0
-    learning_area = LearningArea.objects.get(strategic_question=strategic_learning_question_id)
-    if report_id and EvaluationObjectiveAnswer.objects.filter(objective__learning_area_of_objective=learning_area,
-                                                              report_id=report_id).count():
-        answers = EvaluationObjectiveAnswer.objects.filter(objective__learning_area_of_objective=learning_area,
-                                                           report_id=report_id)
-        return JsonResponse({'answers': list(answers.values_list("id", "answer", "objective__id", "objective__text"))})
-    else:
-        objectives = EvaluationObjective.objects.filter(learning_area_of_objective=learning_area)
-        answers = []
-        for objective in objectives:
-            answers.append([None, None, objective.id, objective.text])
-
-        return JsonResponse({'answers': answers})

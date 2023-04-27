@@ -1,8 +1,12 @@
+from django.utils import timezone
 from django import forms
-from .models import Report, StrategicLearningQuestion, LearningArea, AreaActivated, Funding, Partner, Technology
+from django.shortcuts import get_object_or_404
+from django.db.models.functions import Lower
+from .models import Report, StrategicLearningQuestion, LearningArea, AreaActivated, Funding, Partner, Technology,\
+    Editor, Organizer
 from metrics.models import Area
 from strategy.models import StrategicAxis
-from users.models import TeamArea
+from users.models import TeamArea, UserProfile
 
 
 class NewReportForm(forms.ModelForm):
@@ -12,17 +16,74 @@ class NewReportForm(forms.ModelForm):
         exclude = ["created_by", "created_at", "modified_by", "modified_at"]
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
+        user = kwargs.pop("user", None)
         super(NewReportForm, self).__init__(*args, **kwargs)
-        self.fields['activity_associated'].choices = activities_associated_as_choices()
-        self.fields['directions_related'].choices = directions_associated_as_choices()
-        self.fields['learning_questions_related'].choices = learning_questions_as_choices()
+        self.fields["activity_associated"].choices = activities_associated_as_choices()
+        self.fields["directions_related"].choices = directions_associated_as_choices()
+        self.fields["learning_questions_related"].choices = learning_questions_as_choices()
+        self.fields["area_responsible"].queryset = TeamArea.objects.order_by(Lower("text"))
+        self.fields["funding_associated"].queryset = Funding.objects.order_by(Lower("name"))
+        self.fields["area_activated"].queryset = AreaActivated.objects.order_by(Lower("text"))
+        self.fields["partners_activated"].queryset = Partner.objects.order_by(Lower("name"))
+        self.fields["technologies_used"].queryset = Technology.objects.order_by(Lower("name"))
         if user:
-            self.fields['area_responsible'].initial = area_responsible_of_user(user)
+            self.fields["area_responsible"].initial = area_responsible_of_user(user)
+
+    def clean_editors(self):
+        editors_string = self.data.get("editors_string", "")
+        editors_list = editors_string.split("\r\n") if editors_string else []
+        editors = []
+        for editor in editors_list:
+            editor_object, created = Editor.objects.get_or_create(username=editor)
+            editors.append(editor_object)
+        return editors
+
+    def clean_organizers(self):
+        organizers_string = self.data.get("organizers_string", "")
+        organizers_list = organizers_string.split("\r\n") if organizers_string else []
+        organizers = []
+        for organizer in organizers_list:
+            organizer_name, institution_name = (organizer + ";").split(";", maxsplit=1)
+            organizer_object, created = Organizer.objects.get_or_create(name=organizer_name)
+            if institution_name:
+                for partner_name in institution_name.split(";"):
+                    if partner_name:
+                        partner, partner_created = Partner.objects.get_or_create(name=partner_name)
+                        organizer_object.institution.add(partner)
+                organizer_object.save()
+            organizers.append(organizer_object)
+        return organizers
+
+    def clean_initial_date(self):
+        initial_date = self.cleaned_data.get('initial_date')
+        return initial_date
+
+    def save(self, commit=True, user=None, *args, **kwargs):
+        report = super(NewReportForm, self).save(commit=False)
+        if commit:
+            user_profile = get_object_or_404(UserProfile, user=user)
+            report.created_by = user_profile
+            report.modified_by = user_profile
+            report.save()
+            report.editors.clear()
+            report.organizers.clear()
+            report.editors.set(self.cleaned_data['editors'])
+            report.organizers.set(self.cleaned_data['organizers'])
+            report.partners_activated.set(self.cleaned_data['partners_activated'])
+            report.technologies_used.set(self.cleaned_data['technologies_used'])
+            report.area_activated.set(self.cleaned_data['area_activated'])
+            report.directions_related.set(self.cleaned_data['directions_related'])
+            report.learning_questions_related.set(self.cleaned_data['learning_questions_related'])
+            report.end_date = report.initial_date
+        return report
 
 
 def area_responsible_of_user(user):
-    return TeamArea.objects.filter(team_area_of_position=user.userprofile.position).first().pk
+    try:
+        team_area = TeamArea.objects.get(team_area_of_position=user.userprofile.position)
+        return team_area.id
+    except TeamArea.DoesNotExist:
+        return ""
 
 
 def activities_associated_as_choices():
@@ -55,16 +116,6 @@ def learning_questions_as_choices():
         learning_areas.append((learning_area.text, tuple(learning_questions)))
 
     return tuple(learning_areas)
-
-
-class StrategicLearningQuestionsForm(forms.ModelForm):
-    class Meta:
-        model = StrategicLearningQuestion
-        fields = "__all__"
-
-    def __init__(self, *args, **kwargs):
-        super(StrategicLearningQuestionsForm, self).__init__(*args, **kwargs)
-        self.fields['learning_area'].choices = learning_areas_as_choices()
 
 
 def learning_areas_as_choices():

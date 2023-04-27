@@ -30,7 +30,6 @@ def update_profile(request, user_id):
 def register(request):
     if request.method == "POST":
         form = NewUserForm(request.POST)
-        print(form.errors)
         if form.is_valid():
             user = form.save()
             user.refresh_from_db()

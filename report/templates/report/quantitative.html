@@ -1,115 +1,128 @@
 {% load i18n %}
 <div class="w3-container">
-    <div class="w3-third formfield form-left">
-        <label class="formfieldtitle" for="participants">{% translate "Number of participants" %}</label>
-        <input type="number" min="0" value="{{ report_form.instance.participants }}" id="number_of_participants" name="participants"/>
+    <div class="w3-row">
+        <div class="w3-third formfield form-left">
+            <label class="formfieldtitle" for="participants">{% translate "Number of participants" %}</label>
+            <input type="number" min="0" value="{{ report_form.instance.participants }}" id="number_of_participants" name="participants"/>
+        </div>
+        <div class="w3-third formfield form-left form-right">
+            <label class="formfieldtitle" for="resources">{% translate "Number of resources" %}</label>
+            <input type="number" min="0" value="{{ report_form.instance.resources }}" id="number_of_resources" name="resources"/>
+        </div>
+        <div class="w3-third formfield form-right">
+            <label class="formfieldtitle" for="feedbacks">{% translate "Number of feedbacks" %}</label>
+            <input type="number" min="0" value="{{ report_form.instance.feedbacks }}" id="number_of_feedbacks" name="feedbacks"/>
+        </div>
     </div>
-    <div class="w3-third formfield form-left form-right">
-        <label class="formfieldtitle" for="resources">{% translate "Number of resources" %}</label>
-        <input type="number" min="0" value="{{ report_form.instance.resources }}" id="number_of_resources" name="resources"/>
-    </div>
-    <div class="w3-third formfield form-right">
-        <label class="formfieldtitle" for="feedbacks">{% translate "Number of feedbacks" %}</label>
-        <input type="number" min="0" value="{{ report_form.instance.feedbacks }}" id="number_of_feedbacks" name="feedbacks"/>
-    </div>
-    <div class="w3-half formfield form-left">
+    <div class="w3-row">
+        <div class="w3-half formfield form-left">
         <label class="formfieldtitle" for="editors">{% translate "Editors" %}</label>
         <textarea id="editors" name="editors_string" rows="4">{% if report_form.instance.id %}{% for editor in report_form.instance.editors.all %}{{ editor.username }}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}{% endif %}</textarea>
     </div>
-    <div class="w3-half formfield form-right">
+        <div class="w3-half formfield form-right">
         <label class="formfieldtitle" for="organizers">{% translate "Organizers" %}</label>
         <textarea id="organizers" name="organizers_string" rows="4">{% if report_form.instance.id %}{% for organizer in report_form.instance.organizers.all %}{{ organizer.name }}{% for institution in organizer.institution.all %};{{ institution.name }}{% endfor %}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}{% endif %}</textarea>
     </div>
-    <div class="w3-half formfield form-left">
-        <label class="formfieldtitle" for="partners">{% translate "Partnerships activated" %}</label>
-        <select id="partners" name="partners" multiple>
-            {% for partner in report_form.fields.partners_activated.queryset %}
-                <option value="{{ partner.id }}" {% if partner in report_form.instance.partners.all %}selected{% endif %}>{{ partner.name }}</option>
-            {% endfor %}
-        </select>
-        <a target="_blank" href="{% url 'report:add_partner' %}" aria-label="{% translate 'Add partner' %}">
-            <button type="button" class="add_button"><i class="fa-solid fa-plus"></i> {% translate "Add" %}</button>
-        </a>
-        <button type="button" class="refresh_button" onclick="update_partnerships()"><i class="fa-solid fa-refresh"></i> {% translate "Refresh" %}</button>
     </div>
-    <div class="w3-half formfield form-right">
-        <label class="formfieldtitle" for="technologies_used">{% translate "Technologies used" %}</label>
-        <select id="technologies_used" name="technologies_used" multiple>
-            {% for technology in report_form.fields.technologies_used.queryset %}
-                <option value="{{ technology.id }}" {% if technology in report_form.instance.technologies_used.all %}selected{% endif %}>{{ technology.name }}</option>
-            {% endfor %}
-        </select>
-        <a target="_blank" href="{% url 'report:add_technology' %}" aria-label="{% translate 'Add technology' %}">
-            <button type="button" class="add_button"><i class="fa-solid fa-plus"></i> {% translate "Add" %}</button>
-        </a>
-        <button type="button" class="refresh_button" onclick="update_technologies()"><i class="fa-solid fa-refresh"></i> {% translate "Refresh" %}</button>
+    <div class="w3-row">
+        <div class="w3-half formfield form-left">
+            <label class="formfieldtitle" for="partners_activated">{% translate "Partnerships activated" %}</label>
+            <select id="partners_activated" name="partners_activated" multiple>
+                {% for partner in report_form.fields.partners_activated.queryset %}
+                    <option value="{{ partner.id }}" {% if partner in report_form.instance.partners_activated.all %}selected{% endif %}>{{ partner.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="button" id="add_partnerships" class="add_button"><i class="fa-solid fa-plus"></i> {% translate "Add" %}</button>
+        </div>
+        <div class="w3-half formfield form-right">
+            <label class="formfieldtitle" for="technologies_used">{% translate "Technologies used" %}</label>
+            <select id="technologies_used" name="technologies_used" multiple>
+                {% for technology in report_form.fields.technologies_used.queryset %}
+                    <option value="{{ technology.id }}" {% if technology in report_form.instance.technologies_used.all %}selected{% endif %}>{{ technology.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="button" id="add_technology" class="add_button"><i class="fa-solid fa-plus"></i> {% translate "Add" %}</button>
+        </div>
     </div>
     <div class="w3-container">
         <h3 id="Wikimedia projects">{% translate "Wikimedia projects" %}</h3>
         <div class="w3-row formfieldtitle">{% translate "Which projects are you reporting?" %}</div>
         <div class="w3-row">
             <label class="w3-third formfield toggle" for="wikipedia">
-                <input class="toggle__input wiki" type="checkbox" id="wikipedia" onclick="toggle_field(this.id)" {% if report_form.instance.wikipedia_created or report_form.instance.wikipedia_edited %}checked{% endif %}/>
+                <input class="toggle__input wiki" type="checkbox" id="wikipedia" onclick="toggle_field(this.id)"
+                       {% if report_form.instance.wikipedia_created or report_form.instance.wikipedia_edited %}checked{% endif %}/>
                 <span class="toggle__fill"></span>
                 <span>{% translate "Wikipedia" %}</span>
             </label>
             <label class="w3-third formfield toggle" for="commons">
-                <input class="toggle__input wiki" type="checkbox" id="commons" onclick="toggle_field(this.id)" {% if report_form.instance.commons_created or report_form.instance.commons_edited %}checked{% endif %}/>
+                <input class="toggle__input wiki" type="checkbox" id="commons" onclick="toggle_field(this.id)"
+                       {% if report_form.instance.commons_created or report_form.instance.commons_edited %}checked{% endif %}/>
                 <span class="toggle__fill"></span>
                 <span>{% translate "Wikimedia Commons" %}</span>
             </label>
             <label class="w3-third formfield toggle" for="wikidata">
-                <input class="toggle__input wiki" type="checkbox" id="wikidata" onclick="toggle_field(this.id)" {% if report_form.instance.wikidata_created or report_form.instance.wikidata_edited %}checked{% endif %}/>
+                <input class="toggle__input wiki" type="checkbox" id="wikidata" onclick="toggle_field(this.id)"
+                       {% if report_form.instance.wikidata_created or report_form.instance.wikidata_edited %}checked{% endif %}/>
                 <span class="toggle__fill"></span>
                 <span>{% translate "Wikidata" %}</span>
             </label>
             <label class="w3-third formfield toggle" for="wikiversity">
-                <input class="toggle__input wiki" type="checkbox" id="wikiversity" onclick="toggle_field(this.id)" {% if report_form.instance.wikiversity_created or report_form.instance.wikiversity_edited %}checked{% endif %}/>
+                <input class="toggle__input wiki" type="checkbox" id="wikiversity" onclick="toggle_field(this.id)"
+                       {% if report_form.instance.wikiversity_created or report_form.instance.wikiversity_edited %}checked{% endif %}/>
                 <span class="toggle__fill"></span>
                 <span>{% translate "Wikiversity" %}</span>
             </label>
-            <label class="w3-third formfield toggle" for="wikibooks">
-                <input class="toggle__input wiki" type="checkbox" id="wikibooks" onclick="toggle_field(this.id)" {% if report_form.instance.wikibooks_created or report_form.instance.wikibooks_edited %}checked{% endif %}/>
-                <span class="toggle__fill"></span>
-                <span>{% translate "Wikibooks" %}</span>
-            </label>
             <label class="w3-third formfield toggle" for="wikisource">
-                <input class="toggle__input wiki" type="checkbox" id="wikisource" onclick="toggle_field(this.id)" {% if report_form.instance.wikisource_created or report_form.instance.wikisource_edited %}checked{% endif %}/>
+                <input class="toggle__input wiki" type="checkbox" id="wikisource" onclick="toggle_field(this.id)"
+                       {% if report_form.instance.wikisource_created or report_form.instance.wikisource_edited %}checked{% endif %}/>
                 <span class="toggle__fill"></span>
                 <span>{% translate "Wikisource" %}</span>
             </label>
+            <label class="w3-third formfield toggle" for="wikibooks">
+                <input class="toggle__input wiki" type="checkbox" id="wikibooks" onclick="toggle_field(this.id)"
+                       {% if report_form.instance.wikibooks_created or report_form.instance.wikibooks_edited %}checked{% endif %}/>
+                <span class="toggle__fill"></span>
+                <span>{% translate "Wikibooks" %}</span>
+            </label>
             <label class="w3-third formfield toggle" for="wikinews">
-                <input class="toggle__input wiki" type="checkbox" id="wikinews" onclick="toggle_field(this.id)" {% if report_form.instance.wikinews_created or report_form.instance.wikinews_edited %}checked{% endif %}/>
+                <input class="toggle__input wiki" type="checkbox" id="wikinews" onclick="toggle_field(this.id)"
+                       {% if report_form.instance.wikinews_created or report_form.instance.wikinews_edited %}checked{% endif %}/>
                 <span class="toggle__fill"></span>
                 <span>{% translate "Wikinews" %}</span>
             </label>
             <label class="w3-third formfield toggle" for="wikiquote">
-                <input class="toggle__input wiki" type="checkbox" id="wikiquote" onclick="toggle_field(this.id)" {% if report_form.instance.wikiquote_created or report_form.instance.wikiquote_edited %}checked{% endif %}/>
+                <input class="toggle__input wiki" type="checkbox" id="wikiquote" onclick="toggle_field(this.id)"
+                       {% if report_form.instance.wikiquote_created or report_form.instance.wikiquote_edited %}checked{% endif %}/>
                 <span class="toggle__fill"></span>
                 <span>{% translate "Wikiquote" %}</span>
             </label>
             <label class="w3-third formfield toggle" for="wiktionary">
-                <input class="toggle__input wiki" type="checkbox" id="wiktionary" onclick="toggle_field(this.id)" {% if report_form.instance.wiktionary_created or report_form.instance.wiktionary_edited %}checked{% endif %}/>
+                <input class="toggle__input wiki" type="checkbox" id="wiktionary" onclick="toggle_field(this.id)"
+                       {% if report_form.instance.wiktionary_created or report_form.instance.wiktionary_edited %}checked{% endif %}/>
                 <span class="toggle__fill"></span>
                 <span>{% translate "Wiktionary" %}</span>
             </label>
             <label class="w3-third formfield toggle" for="wikivoyage">
-                <input class="toggle__input wiki" type="checkbox" id="wikivoyage" onclick="toggle_field(this.id)" {% if report_form.instance.wikivoyage_created or report_form.instance.wikivoyage_edited %}checked{% endif %}/>
+                <input class="toggle__input wiki" type="checkbox" id="wikivoyage" onclick="toggle_field(this.id)"
+                       {% if report_form.instance.wikivoyage_created or report_form.instance.wikivoyage_edited %}checked{% endif %}/>
                 <span class="toggle__fill"></span>
                 <span>{% translate "Wikivoyage" %}</span>
             </label>
             <label class="w3-third formfield toggle" for="wikispecies">
-                <input class="toggle__input wiki" type="checkbox" id="wikispecies" onclick="toggle_field(this.id)" {% if report_form.instance.wikispecies_created or report_form.instance.wikispecies_edited %}checked{% endif %}/>
+                <input class="toggle__input wiki" type="checkbox" id="wikispecies" onclick="toggle_field(this.id)"
+                       {% if report_form.instance.wikispecies_created or report_form.instance.wikispecies_edited %}checked{% endif %}/>
                 <span class="toggle__fill"></span>
                 <span>{% translate "Wikispecies" %}</span>
             </label>
             <label class="w3-third formfield toggle" for="metawiki">
-                <input class="toggle__input wiki" type="checkbox" id="metawiki" onclick="toggle_field(this.id)" {% if report_form.instance.metawiki_created or report_form.instance.metawiki_edited %}checked{% endif %}/>
+                <input class="toggle__input wiki" type="checkbox" id="metawiki" onclick="toggle_field(this.id)"
+                       {% if report_form.instance.metawiki_created or report_form.instance.metawiki_edited %}checked{% endif %}/>
                 <span class="toggle__fill"></span>
                 <span>{% translate "MetaWiki" %}</span>
             </label>
             <label class="w3-third formfield toggle" for="mediawiki">
-                <input class="toggle__input wiki" type="checkbox" id="mediawiki" onclick="toggle_field(this.id)" {% if report_form.instance.mediawiki_created or report_form.instance.mediawiki_edited %}checked{% endif %}/>
+                <input class="toggle__input wiki" type="checkbox" id="mediawiki" onclick="toggle_field(this.id)"
+                       {% if report_form.instance.mediawiki_created or report_form.instance.mediawiki_edited %}checked{% endif %}/>
                 <span class="toggle__fill"></span>
                 <span>{% translate "MediaWiki" %}</span>
             </label>
@@ -158,17 +171,6 @@
                 <small><label for="wikiversity_edited">{% translate "Edited" %}</label></small>
             </div>
         </div>
-        <div class="w3-row invisible_field wikibooks">
-            <div class="w3-third formfieldtitle">{% translate "Wikibooks" %}</div>
-            <div class="w3-third formfield form-left">
-                <input id="wikibooks_created" name="wikibooks_created" type="number" min="0" value="{{ report_form.instance.wikibooks_created }}"/>
-                <small><label for="wikibooks_created">{% translate "Created" %}</label></small>
-            </div>
-            <div class="w3-third formfield form-right">
-                <input id="wikibooks_edited" name="wikibooks_edited" type="number" min="0" value="{{ report_form.instance.wikibooks_edited }}"/>
-                <small><label for="wikibooks_edited">{% translate "Edited" %}</label></small>
-            </div>
-        </div>
         <div class="w3-row invisible_field wikisource">
             <div class="w3-third formfieldtitle">{% translate "Wikisource" %}</div>
             <div class="w3-third formfield form-left">
@@ -178,6 +180,17 @@
             <div class="w3-third formfield form-right">
                 <input id="wikisource_edited" name="wikisource_edited" type="number" min="0" value="{{ report_form.instance.wikisource_edited }}"/>
                 <small><label for="wikisource_edited">{% translate "Edited" %}</label></small>
+            </div>
+        </div>
+        <div class="w3-row invisible_field wikibooks">
+            <div class="w3-third formfieldtitle">{% translate "Wikibooks" %}</div>
+            <div class="w3-third formfield form-left">
+                <input id="wikibooks_created" name="wikibooks_created" type="number" min="0" value="{{ report_form.instance.wikibooks_created }}"/>
+                <small><label for="wikibooks_created">{% translate "Created" %}</label></small>
+            </div>
+            <div class="w3-third formfield form-right">
+                <input id="wikibooks_edited" name="wikibooks_edited" type="number" min="0" value="{{ report_form.instance.wikibooks_edited }}"/>
+                <small><label for="wikibooks_edited">{% translate "Edited" %}</label></small>
             </div>
         </div>
         <div class="w3-row invisible_field wikinews">
@@ -266,4 +279,55 @@
             <button type="button" class="tablinks submitbutton" onclick="openTab(this, 'Strategy')">{% translate "Fill strategy report" %}</button>
         </div>
     </div>
+    <script>
+        $("#add_partnerships").on('click', function (){
+            let url = "{% url 'report:add_partner' %}";
+            let popup = window.open(url, 'partnerships_popup', 'width=800,height=600')
+
+             popup.postMessage({
+                 action: 'add_partnerships'
+             }, '*');
+
+            $(window).on('message', function(event){
+                if(event.originalEvent.source === popup && event.originalEvent.data.action === "add_partnerships") {
+                    let partners = $('#partners');
+                    let existingOption = partners.find('option[value="' + event.originalEvent.data.id + '"]');
+                    if (existingOption.length === 0) {
+                        partners.append($('<option>', {
+                            value: event.originalEvent.data.id,
+                            text: event.originalEvent.data.text,
+                            selected: true
+                        }));
+                    } else {
+                        existingOption.prop('selected', true);
+                    }
+                }
+            })
+        });
+
+        $("#add_technology").on('click', function (){
+            let url = "{% url 'report:add_technology' %}";
+            let popup = window.open(url, 'technologies_popup', 'width=800,height=600')
+
+             popup.postMessage({
+                 action: 'add_technology'
+             }, '*');
+
+            $(window).on('message', function(event){
+                if(event.originalEvent.source === popup && event.originalEvent.data.action === "add_technology") {
+                    let technologies = $('#technologies_used');
+                    let existingOption = technologies.find('option[value="' + event.originalEvent.data.id + '"]');
+                    if (existingOption.length === 0) {
+                        technologies.append($('<option>', {
+                            value: event.originalEvent.data.id,
+                            text: event.originalEvent.data.text,
+                            selected: true
+                        }));
+                    } else {
+                        existingOption.prop('selected', true);
+                    }
+                }
+            })
+        });
+    </script>
 </div>

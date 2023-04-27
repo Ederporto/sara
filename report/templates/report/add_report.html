@@ -54,8 +54,6 @@
         });
 
         function toggle_field(selectObject) {
-            $("#"+selectObject+"_created").val(0);
-            $("#"+selectObject+"_edited").val(0);
             $("."+selectObject).toggleClass("invisible_field");
         }
 
@@ -82,81 +80,6 @@
             } else {
                 $(".activity_others").removeClass("invisible_field");
             }
-        }
-
-        function update_activities() {
-            $.ajax({
-                method: 'GET',
-                url: 'get_activities/',
-                success: function (response) {
-                    let other_option = '{% translate "Other (not listed)" %}';
-                    let optgroup = '<option selected>----------</option><option value="0">' + other_option + '</option>';
-                    $.each(response["activities"], function (i, area) {
-                        optgroup = optgroup + '<optgroup label="' + area[0] + '">';
-                        $.each(area[1], function (i, activity) {
-                            optgroup = optgroup + '<option value="' + activity[0] + '">' + activity[1] + '</option>';
-                        });
-                        optgroup = optgroup + '</optgroup>';
-                    });
-                    document.getElementById("activity_associated").innerHTML = optgroup;
-                }
-            });
-        }
-
-        function update_areas() {
-            $.ajax({
-                method: 'GET',
-                url: 'get_areas/',
-                success: function (response) {
-                    let options = '';
-                    $.each(response["areas"], function (i, area) {
-                        options = options + '<option value="' + area.id + '">' + area.text + '</option>';
-                    });
-                    document.getElementById("area_activated").innerHTML = options;
-                }
-            });
-        }
-
-        function update_fundings() {
-            $.ajax({
-                method: 'GET',
-                url: 'get_fundings/',
-                success: function (response) {
-                    let options = '';
-                    $.each(response["fundings"], function (i, funding) {
-                        options = options + '<option value="' + funding.id + '">' + funding.name + '</option>';
-                    });
-                    document.getElementById("funding_associated").innerHTML = options;
-                }
-            });
-        }
-
-        function update_partnerships() {
-            $.ajax({
-                method: 'GET',
-                url: 'get_partnerships/',
-                success: function (response) {
-                    let options = '';
-                    $.each(response["partnerships"], function (i, partnership) {
-                        options = options + '<option value="' + partnership.id + '">' + partnership.name + '</option>';
-                    });
-                    document.getElementById("partners").innerHTML = options;
-                }
-            });
-        }
-
-        function update_technologies() {
-            $.ajax({
-                method: 'GET',
-                url: 'get_technologies/',
-                success: function (response) {
-                    let options = '';
-                    $.each(response["technologies"], function (i, technology) {
-                        options = options + '<option value="' + technology.id + '">' + technology.name + '</option>';
-                    });
-                    document.getElementById("technologies_used").innerHTML = options;
-                }
-            });
         }
     </script>
 {% endblock %}

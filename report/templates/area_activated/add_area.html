@@ -23,7 +23,7 @@
                         <div class="w3-quarter dissapear">&nbsp;</div>
                         <div class="w3-half">
                             {% for field in area_form %}
-                                <label class="w3-third formfieldtitle" for="id_{{ field.text }}">
+                                <label class="w3-third formfieldtitle" for="id_{{ field.name }}">
                                     {{ field.label }}{% if field.field.required %}*{% endif %}
                                 </label>
                                 <div class="w3-twothird formfield">{{ field }}</div>
@@ -45,4 +45,25 @@
             </div>
         </div>
     </div>
+    <script>
+    $(document).ready(function() {
+        $("form").submit(function(event) {
+            event.preventDefault();
+            var form_data = $(this).serialize();
+            $.ajax({
+                url: '{% url "report:add_area_activated" %}',
+                method: 'POST',
+                data: form_data,
+                success: function (response) {
+                    window.opener.postMessage({
+                        action: 'add_area_activated',
+                        id: response.id,
+                        text:response.text
+                    }, '*');
+                    window.close();
+                }
+            });
+        });
+    })
+    </script>
 {% endblock %}

@@ -51,7 +51,7 @@ class UserProfile(models.Model):
     professional_wiki_handle = models.CharField(_("WMB username"), max_length=50, null=True, blank=True)
     personal_wiki_handle = models.CharField(_("Wiki username"), max_length=50, null=True, blank=True)
     photograph = models.CharField(_("Photograph"), max_length=420, null=True, blank=True)
-    position = models.ForeignKey(Position, on_delete=models.RESTRICT, related_name="position")
+    position = models.ForeignKey(Position, on_delete=models.RESTRICT, related_name="position", null=True, editable=False)
 
     twitter = models.CharField(max_length=100, null=True, blank=True)
     facebook = models.CharField(max_length=100, null=True, blank=True)

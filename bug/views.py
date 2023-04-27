@@ -61,9 +61,7 @@ def export_bugs(request):
         rows.append([bug.pk, bug.title, bug.description, bug.type_of_bug, bug.status, bug.date_of_report, bug.reporter_id, bug.update_date, observation, date_of_answer])
 
     df = pd.DataFrame(rows, columns=header).drop_duplicates()
-    print(df.dtypes)
     df = df.astype(dtype={_("ID"): int, _("Title"): str, _("Description"): str, _("Type"): int, _("Status"): int, _("Date of report"): "datetime64[ns]", _("Reporter"): int, _("Update date"): "datetime64[ns]", _("Observation"): str, _("Answer date"): "datetime64[ns]"})
-    print(df.dtypes)
     df[_("Date of report")] = df[_("Date of report")].dt.tz_localize(None)
     df[_("Update date")] = df[_("Update date")].dt.tz_localize(None)
     df[_("Answer date")] = df[_("Answer date")].dt.tz_localize(None)

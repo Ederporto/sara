@@ -4,14 +4,15 @@
     <h3 id="Theory of Change">{% translate "Theory of Change" %}</h3>
     <div class="w3-container formfield">
         <h4 class="formfieldtitle">{% translate "Strategic learning questions related to the activity being reported" %}*</h4>
-        <fieldset class="subcontainer">
+        <fieldset id="strategic_questions_fieldset" class="subcontainer">
             <legend>{% translate "Strategic learning questions related to the activity being reported" %}</legend>
             {% for learning_area in report_form.fields.learning_questions_related.choices %}
                 <div class="w3-container formfieldtitle" style="color:var(--main-color);">{{ learning_area.0 }}</div>
                 {% for learning_question in learning_area.1 %}
                     <label class="select-container">{{ learning_question.1 }}
-                        <input type="checkbox" name="learning_questions_related"
-                               data-learning-area="{{ learning_area.0 }}" onclick="show_objectives(this)"
+                        <input type="checkbox" class="rank-choice"
+                               name="learning_questions_related"
+                               data-learning-area="{{ learning_area.0 }}"
                                value="{{ learning_question.0 }}"
                                {% if learning_question.0 in learning_questions_related_set %}checked{% endif %}>
                         <span class="checkmark"></span>
@@ -21,8 +22,13 @@
         </fieldset>
     </div>
     <div class="w3-container formfield">
+        <p class="formfieldtitle">{% translate "Strategic learning questions selected" %}</p>
+        <fieldset class="selected-choices"></fieldset>
+    </div>
+    <div class="w3-container formfield">
         <label class="formfieldtitle" for="learning">{% translate "Learning" %}*</label>
-        <textarea type="text" id="learning" name="learning" rows="10" placeholder="{% translate "Describe the learning with this activity and how it relates with the strategy axis and directions" %}">{{ report_form.instance.learning }}</textarea>
+        <textarea type="text" id="learning" name="learning" rows="10" placeholder="{% translate "Describe the learning with this activity and how it relates with the strategy axis and directions" %}" onkeyup="countCharacters()">{{ report_form.instance.learning }}</textarea>
+        <span id="character_count" class="btn-round {% if report_form.instance.learning|length > 500 %}btn-view{% else %}btn-delete{% endif %}" style="float: right; color:black;">{{ report_form.instance.learning|length }}/500</span>
     </div>
     <div class="w3-row">
         <div class="w3-half formfield form-left">
@@ -33,4 +39,56 @@
             <button class="custombutton" type="submit">{% translate "Submit" %}</button>
         </div>
     </div>
+    <script>
+        $(document).ready(function () {
+            $('#strategic_questions_fieldset input[type="checkbox"]').on('change', function () {
+                if ($('#strategic_questions_fieldset input[type="checkbox"]:checked').length > 3) {
+                    $(this).prop('checked', false);
+                }
+            });
+        });
+
+        const choices = document.querySelectorAll('.rank-choice');
+        let selectedChoices = [];
+
+        choices.forEach(choice => {
+            choice.addEventListener('click', () => {
+                if (choice.checked) {
+                    if (selectedChoices.length < 3) {
+                        selectedChoices.push(choice.value);
+                    } else {
+                        choice.checked = false;
+                    }
+                } else {
+                    selectedChoices = selectedChoices.filter(value => value !== choice.value);
+                }
+                updateChoices();
+            });
+        });
+
+        function updateChoices() {
+            const selectedContainer = document.querySelector('.selected-choices');
+            selectedContainer.innerHTML = '';
+
+            selectedChoices.forEach((choice, index) => {
+                const label = document.querySelector(`input[value="${choice}"]`).parentNode.textContent;
+                selectedContainer.innerHTML += `<p>${index + 1}. ${label}</p>`;
+            });
+        }
+
+        function countCharacters() {
+            let learning = $("#learning");
+            let count = learning.val().length;
+            let counter = $("#character_count");
+            counter.text(count+"/500");
+
+            if (count < 500) {
+                counter.removeClass("btn-view");
+                counter.addClass("btn-delete");
+            } else {
+                counter.removeClass("btn-delete");
+                counter.addClass("btn-view");
+    }
+        }
+    </script>
 </div>

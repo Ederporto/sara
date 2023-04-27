@@ -45,4 +45,25 @@
             </div>
         </div>
     </div>
+    <script>
+    $(document).ready(function() {
+        $("form").submit(function(event) {
+            event.preventDefault();
+            var form_data = $(this).serialize();
+            $.ajax({
+                url: '{% url "report:add_funding" %}',
+                method: 'POST',
+                data: form_data,
+                success: function (response) {
+                    window.opener.postMessage({
+                        action: 'add_funding',
+                        id: response.id,
+                        text:response.text
+                    }, '*');
+                    window.close();
+                }
+            });
+        });
+    })
+    </script>
 {% endblock %}

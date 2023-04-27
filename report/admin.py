@@ -1,10 +1,9 @@
 from django.contrib import admin
-from .models import EvaluationObjective, Report, EvaluationObjectiveAnswer, AreaActivated, Editor, Funding, \
+from .models import EvaluationObjective, Report, AreaActivated, Editor, Funding, \
     LearningArea, Organizer, Partner, Technology, StrategicLearningQuestion
 
 admin.site.register(EvaluationObjective)
 admin.site.register(Report)
-admin.site.register(EvaluationObjectiveAnswer)
 admin.site.register(Editor)
 admin.site.register(Funding)
 admin.site.register(LearningArea)
