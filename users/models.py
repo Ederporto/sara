@@ -44,7 +44,7 @@ class UserProfile(models.Model):
         F = "2", _("Female")
         NB = "3", _("Non Binary")
         X = "4", _("Other")
-        ND = "5", _("Não declarado")
+        ND = "5", _("Not declared")
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, editable=False)
     gender = models.CharField(max_length=2, choices=GenderChoices.choices, null=True, blank=True, default=GenderChoices.ND)
