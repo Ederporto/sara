@@ -8,7 +8,6 @@
 {% block content %}
     <div class="w3-row"> {# style="background-color: var(--light-color); "> #}
         <div class="w3-quarter index index-box">
-            <a href="#projects" aria-label="projects"><b>{% trans "Projects" %}</b></a><br>
             {% if total_done.wikipedia_created or total_done.wikipedia_edited or total_sum.wikipedia_created or total_sum.wikipedia_edited or total_done.commons_created or total_done.commons_edited or total_sum.commons_created or total_sum.commons_edited or total_done.wikidata_created or total_done.wikidata_edited or total_sum.wikidata_created or total_sum.wikidata_edited or total_done.wikiversity_created or total_done.wikiversity_edited or total_sum.wikiversity_created or total_sum.wikiversity_edited or total_done.wikibooks_created or total_done.wikibooks_edited or total_sum.wikibooks_created or total_sum.wikibooks_edited or total_done.wikisource_created or total_done.wikisource_edited or total_sum.wikisource_created or total_sum.wikisource_edited or total_done.wikinews_created or total_done.wikinews_edited or total_sum.wikinews_created or total_sum.wikinews_edited or total_done.wikiquote_created or total_done.wikiquote_edited or total_sum.wikiquote_created or total_sum.wikiquote_edited or total_done.wiktionary_created or total_done.wiktionary_edited or total_sum.wiktionary_created or total_sum.wiktionary_edited or total_done.wikivoyage_created or total_done.wikivoyage_edited or total_sum.wikivoyage_created or total_sum.wikivoyage_edited or total_done.wikispecies_created or total_done.wikispecies_edited or total_sum.wikispecies_created or total_sum.wikispecies_edited or total_done.metawiki_created or total_done.metawiki_edited or total_sum.metawiki_created or total_sum.metawiki_edited or total_done.mediawiki_created or total_done.mediawiki_edited or total_sum.mediawiki_created or total_sum.mediawiki_edited %}<b>{% trans "Wikimedia Projects" %}</b>
                 <ul>
                     {% if total_done.wikipedia_created or total_done.wikipedia_edited or total_sum.wikipedia_created or total_sum.wikipedia_edited %}<li><a href="#wikipedia" aria-label="wikipedia">{% trans "Wikipedia" %}</a></li>{% endif %}
@@ -42,16 +41,6 @@
             {% endif %}
         </div>
         <div class="w3-threequarter userform" style="background-color: var(--light-color);">
-            <h2 id="projects">{% trans "Projects" %}</h2>
-            {% for project in fundings_metrics %}
-                <label class="select-container">{{ project.funding }}
-                    <input type="checkbox" class="rank-choice"
-                           name="projects"
-                           data-funding="{{ project.funding }}"
-                           id="project_{{ forloop.counter }}">
-                    <span class="checkmark"></span>
-                </label>
-            {% endfor %}
             <h2 id="wikimedia_projects">{% trans "Wikimedia Projects" %}</h2>
             {% if total_done.wikipedia_created or total_done.wikipedia_edited or total_sum.wikipedia_created or total_sum.wikipedia_edited %}
                 <div class="w3-row formfield">
