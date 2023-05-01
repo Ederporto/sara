@@ -3,9 +3,9 @@
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="activity_associated">{% translate "Activity associated" %}*</label>
         <div class="w3-twothird formfield">
-            <select id="activity_associated" name="activity_associated" required>
+            <select id="activity_associated" name="activity_associated">
                 <option value="" selected>----------</option>
-                <option value="other">{% translate "Other (not listed)" %}</option>
+                <option value="1">{% translate "Other (not listed)" %}</option>
                 {% for area in report_form.fields.activity_associated.choices %}
                     <optgroup label="{{ area.0 }}">
                         {% for activity in area.1 %}

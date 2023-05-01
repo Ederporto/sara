@@ -147,7 +147,7 @@ class Report(models.Model):
     modified_at = models.DateTimeField(auto_now_add=True)
 
     # Administrative fields
-    activity_associated = models.ForeignKey(Activity, on_delete=models.RESTRICT, related_name="activity_associated")
+    activity_associated = models.ForeignKey(Activity, on_delete=models.RESTRICT, related_name="activity_associated", null=True, blank=True)
     activity_other = models.TextField(max_length=420, blank=True, default="")
     area_responsible = models.ForeignKey(TeamArea, on_delete=models.RESTRICT, related_name="responsible")
     area_activated = models.ManyToManyField(AreaActivated, related_name="area_activated", blank=True)

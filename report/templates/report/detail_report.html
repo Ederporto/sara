@@ -34,14 +34,14 @@
             </div>
             <div class="w3-container" style="margin-top: 1em">
                 <a href="{% url 'report:export_report' report_id=data.id %}" aria-label="{% trans 'Export' %}">
-                    <button class="custombutton" type="button">
+                    <button class="custombutton" type="button" style="background-color: var(--attention-color); color:black;">
                         {% trans "Export" %}
                     </button>
                 </a>
             </div>
             <div class="w3-container" style="margin-top: 1em">
                 <a href="{% url 'report:delete_report' report_id=data.id %}" aria-label="{% trans 'Delete' %}">
-                    <button class="custombutton" type="button">
+                    <button class="custombutton" type="button" style="background-color: var(--error-color);">
                         {% trans "Delete" %}
                     </button>
                 </a>

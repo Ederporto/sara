@@ -59,6 +59,15 @@ class NewReportForm(forms.ModelForm):
         initial_date = self.cleaned_data.get('initial_date')
         return initial_date
 
+    def clean_end_date(self):
+        initial_date = self.cleaned_data.get('initial_date')
+        end_date = self.cleaned_data.get('end_date')
+
+        if end_date:
+            return end_date
+        else:
+            return initial_date
+
     def save(self, commit=True, user=None, *args, **kwargs):
         report = super(NewReportForm, self).save(commit=False)
         if commit:

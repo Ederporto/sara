@@ -22,8 +22,8 @@ from report.forms import NewReportForm, activities_associated_as_choices,\
 @permission_required("report.add_report")
 def add_report(request):
     report_form = NewReportForm(request.POST or None, user=request.user)
-    directions_related_set = list(report_form.data.get('directions_related', []))
-    learning_questions_related_set = list(report_form.data.get('learning_questions_related', []))
+    directions_related_set = list(map(int, report_form.data.get('directions_related', [])))
+    learning_questions_related_set = list(map(int, report_form.data.get('learning_questions_related', [])))
     if request.method == "POST":
         if report_form.is_valid():
             report = report_form.save(user=request.user)
