@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from .models import Funding, Editor, Organizer, Partner, Technology, AreaActivated, LearningArea,\
-    StrategicLearningQuestion, EvaluationObjective, Report, StrategicAxis
+    StrategicLearningQuestion, EvaluationObjective, Report, StrategicAxis, Project
 from users.models import TeamArea, UserProfile, User
 from metrics.models import Activity
 from strategy.models import Direction
@@ -12,7 +12,8 @@ class FundingModelTest(TestCase):
     def setUp(self):
         self.name = "Funding"
         self.value = 1000
-        self.funding = Funding.objects.create(name=self.name, value=self.value)
+        self.project = Project.objects.create(text="Project")
+        self.funding = Funding.objects.create(name=self.name, value=self.value, project=self.project)
 
     def test_funding_str_method_returns_its_text(self):
         self.assertEqual(str(self.funding), self.name)
@@ -150,7 +151,8 @@ class ReportModelTest(TestCase):
         self.user_profile = UserProfile.objects.get(user=self.user)
         self.team_area = TeamArea.objects.create(text="Area")
         self.activity = Activity.objects.create(text="Activity")
-        self.funding = Funding.objects.create(name="Funding")
+        project = Project.objects.create(text="Project")
+        self.funding = Funding.objects.create(name="Funding", project=project)
         strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
         self.direction = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
         learning_area = LearningArea.objects.create(text="Learning area")

@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django import forms
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
 from django.db.models.functions import Lower
 from .models import Report, StrategicLearningQuestion, LearningArea, AreaActivated, Funding, Partner, Technology,\
     Editor, Organizer
@@ -147,8 +148,14 @@ class FundingForm(forms.ModelForm):
         fields = "__all__"
         widgets = {
             "name": forms.TextInput(attrs={'required': True}),
+            "project": forms.TextInput(attrs={'required': True}),
             "value": forms.NumberInput()
         }
+
+    def clean_value(self):
+        value = self.cleaned_data.get('value')
+        if not value:
+            return 0
 
 
 class PartnerForm(forms.ModelForm):

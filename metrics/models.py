@@ -55,6 +55,22 @@ class Activity(models.Model):
             raise ValidationError(_("You need to fill the text field"))
 
 
+class Project(models.Model):
+    text = models.CharField(max_length=420)
+    status = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = _("Project")
+        verbose_name_plural = _("Projects")
+
+    def __str__(self):
+        return self.text
+
+    def clean(self):
+        if not self.text:
+            raise ValidationError(_("You need to fill the text field"))
+
+
 class Metric(models.Model):
     text = models.CharField(max_length=420)
 
@@ -99,6 +115,7 @@ class Metric(models.Model):
     observation = models.CharField(null=True, blank=True, max_length=420)
 
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, related_name="metrics")
+    project = models.ManyToManyField(Project, related_name="project_associated", blank=True)
 
     class Meta:
         verbose_name = _("Metric")

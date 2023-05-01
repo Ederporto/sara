@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
-from .models import Objective, Area, Metric, Activity
+from .models import Objective, Area, Metric, Activity, Project
 from report.models import Report, Editor
 from users.models import User, UserProfile, TeamArea
 from strategy.models import StrategicAxis
@@ -65,6 +65,21 @@ class ActivityModelTests(TestCase):
         with self.assertRaises(ValidationError):
             empty_activity = Activity(text="", area=self.area)
             empty_activity.full_clean()
+
+
+class ProjectModelTests(TestCase):
+    def setUp(self):
+        self.text = "text"
+        self.status = True
+        self.project = Project.objects.create(text=self.text, status=self.status)
+
+    def test_project_str_returns_text(self):
+        self.assertEqual(str(self.project), self.text)
+
+    def test_project_text_cant_be_empty(self):
+        with self.assertRaises(ValidationError):
+            empty_project = Project(text="")
+            empty_project.full_clean()
 
 
 class MetricModelTests(TestCase):
@@ -155,9 +170,24 @@ class MetricViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertIn("wikipedia_created", str(response.context["total_sum"]))
-        self.assertIn("<canvas id=\"wikipedia_pie_chart\" style=\"width:100%; height:300px; \">", str(response.content))
-        self.assertIn("<canvas id=\"wikipedia_timeline_chart\" style=\"width:100%; height:300px; \">", str(response.content))
-        self.assertNotIn("<canvas id=\"commons_pie_chart\" style=\"width:100%; height:300px; \">", str(response.content))
+        self.assertIn("<canvas id=\"wikipedia_pie_chart\">", str(response.content))
+        self.assertIn("<canvas id=\"wikipedia_timeline_chart\">", str(response.content))
+        self.assertNotIn("<canvas id=\"commons_pie_chart\">", str(response.content))
+
+    def test_show_metrics_shows_projects_metrics_as_charts(self):
+        self.client.login(username=self.username, password=self.password)
+
+        area = Area.objects.create(text="Area")
+        activity = Activity.objects.create(text="Activity", area=area)
+        project = Project.objects.create(text="Project")
+        metric = Metric.objects.create(text="Metric 1", activity=activity, wikipedia_created=4)
+        metric.project.add(project)
+        metric.save()
+
+        url = reverse("metrics:metrics")
+        response = self.client.get(url)
+
+        self.assertIn(project.text, str(response.context["projects_metrics"]))
 
 
 class MetricFunctionsTests(TestCase):

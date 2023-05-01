@@ -8,7 +8,7 @@ from django.urls import reverse
 from unittest.mock import patch, MagicMock
 from django.utils.translation import gettext as _
 from .models import Funding, Partner, Technology, AreaActivated, StrategicLearningQuestion, Report, StrategicAxis,\
-    Editor, LearningArea, Organizer
+    Editor, LearningArea, Organizer, Project
 from metrics.models import Metric, StrategicAxis
 from users.models import TeamArea, UserProfile, User
 from metrics.models import Activity, Area
@@ -366,7 +366,8 @@ class ReportExportViewTest(TestCase):
         self.report_2.save()
 
         self.area_activated = AreaActivated.objects.create(text="Area activated")
-        self.funding_associated = Funding.objects.create(name="Funding")
+        self.project = Project.objects.create(text="Project")
+        self.funding_associated = Funding.objects.create(name="Funding", project=self.project)
         self.editors = Editor.objects.create(username="Editor")
         self.organizers = Organizer.objects.create(name="Organizer")
         self.partners_activated = Partner.objects.create(name="Partner")
@@ -1086,7 +1087,8 @@ class OtherViewsTest(TestCase):
 
     def test_funding_view_post_with_valid_data(self):
         self.client.login(username=self.username, password=self.password)
-        data = {"name": "Funding"}
+        project = Project.objects.create(text="Project")
+        data = {"name": "Funding", "project": project.id}
         response = self.client.post(reverse("report:add_funding"), data=data)
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response, JsonResponse)

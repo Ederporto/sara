@@ -70,7 +70,7 @@ def add_funding(request):
     funding_associated_form = FundingForm(request.POST or None)
     if request.method == "POST":
         if funding_associated_form.is_valid():
-            funding, created = Funding.objects.get_or_create(name=funding_associated_form.cleaned_data["name"], value=funding_associated_form.cleaned_data["value"])
+            funding, created = Funding.objects.get_or_create(name=funding_associated_form.cleaned_data["name"], value=funding_associated_form.cleaned_data["value"], project=funding_associated_form.cleaned_data["project"])
             return JsonResponse({"id": funding.id, "text": funding.name})
         else:
             return JsonResponse({"id": None, "text": None})
@@ -571,17 +571,12 @@ def get_or_create_organizers(organizers_string):
         for organizer in organizers_list:
             organizer_name, institution_name = (organizer + ";").split(";", maxsplit=1)
             new_organizer, new_organizer_created = Organizer.objects.get_or_create(name=organizer_name)
-            print(f"Created organizer: {new_organizer} (created={new_organizer_created})")
             if institution_name:
                 for partner_name in institution_name.split(";"):
                     if partner_name:
                         partner, partner_created = Partner.objects.get_or_create(name=partner_name)
-                        print(f"Created partner: {partner} (created={partner_created})")
-                        print(f"Organizer institutions before add: {new_organizer.institution.all()}")
                         new_organizer.institution.add(partner)
-                        print(f"Organizer institutions after add: {new_organizer.institution.all()}")
                 new_organizer.save()
-                print(f"Created organizer: {new_organizer} (created={new_organizer_created}) e {new_organizer.institution.all()}")
             organizers.append(new_organizer)
     return organizers
 

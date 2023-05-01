@@ -8,6 +8,7 @@
 {% block content %}
     <div class="w3-row"> {# style="background-color: var(--light-color); "> #}
         <div class="w3-quarter index index-box">
+            <a href="#projects" aria-label="projects"><b>{% trans "Projects" %}</b></a><br>
             {% if total_done.wikipedia_created or total_done.wikipedia_edited or total_sum.wikipedia_created or total_sum.wikipedia_edited or total_done.commons_created or total_done.commons_edited or total_sum.commons_created or total_sum.commons_edited or total_done.wikidata_created or total_done.wikidata_edited or total_sum.wikidata_created or total_sum.wikidata_edited or total_done.wikiversity_created or total_done.wikiversity_edited or total_sum.wikiversity_created or total_sum.wikiversity_edited or total_done.wikibooks_created or total_done.wikibooks_edited or total_sum.wikibooks_created or total_sum.wikibooks_edited or total_done.wikisource_created or total_done.wikisource_edited or total_sum.wikisource_created or total_sum.wikisource_edited or total_done.wikinews_created or total_done.wikinews_edited or total_sum.wikinews_created or total_sum.wikinews_edited or total_done.wikiquote_created or total_done.wikiquote_edited or total_sum.wikiquote_created or total_sum.wikiquote_edited or total_done.wiktionary_created or total_done.wiktionary_edited or total_sum.wiktionary_created or total_sum.wiktionary_edited or total_done.wikivoyage_created or total_done.wikivoyage_edited or total_sum.wikivoyage_created or total_sum.wikivoyage_edited or total_done.wikispecies_created or total_done.wikispecies_edited or total_sum.wikispecies_created or total_sum.wikispecies_edited or total_done.metawiki_created or total_done.metawiki_edited or total_sum.metawiki_created or total_sum.metawiki_edited or total_done.mediawiki_created or total_done.mediawiki_edited or total_sum.mediawiki_created or total_sum.mediawiki_edited %}<b>{% trans "Wikimedia Projects" %}</b>
                 <ul>
                     {% if total_done.wikipedia_created or total_done.wikipedia_edited or total_sum.wikipedia_created or total_sum.wikipedia_edited %}<li><a href="#wikipedia" aria-label="wikipedia">{% trans "Wikipedia" %}</a></li>{% endif %}
@@ -41,96 +42,106 @@
             {% endif %}
         </div>
         <div class="w3-threequarter userform" style="background-color: var(--light-color);">
+            <h2 id="projects">{% trans "Projects" %}</h2>
+            {% for project in fundings_metrics %}
+                <label class="select-container">{{ project.funding }}
+                    <input type="checkbox" class="rank-choice"
+                           name="projects"
+                           data-funding="{{ project.funding }}"
+                           id="project_{{ forloop.counter }}">
+                    <span class="checkmark"></span>
+                </label>
+            {% endfor %}
             <h2 id="wikimedia_projects">{% trans "Wikimedia Projects" %}</h2>
             {% if total_done.wikipedia_created or total_done.wikipedia_edited or total_sum.wikipedia_created or total_sum.wikipedia_edited %}
                 <div class="w3-row formfield">
                     <h3 id="wikipedia">{% trans "Wikipedia" %}</h3>
-                    <div class="w3-quarter"><canvas id="wikipedia_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="wikipedia_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="wikipedia_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="wikipedia_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.commons_created or total_done.commons_edited or total_sum.commons_created or total_sum.commons_edited %}
                 <div class="w3-row formfield">
                     <h3 id="commons">{% trans "Wikimedia Commons" %}</h3>
-                    <div class="w3-quarter"><canvas id="commons_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="commons_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="commons_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="commons_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.wikidata_created or total_done.wikidata_edited or total_sum.wikidata_created or total_sum.wikidata_edited %}
                 <div class="w3-row formfield">
                     <h3 id="wikidata">{% trans "Wikidata" %}</h3>
-                    <div class="w3-quarter"><canvas id="wikidata_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="wikidata_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="wikidata_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="wikidata_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.wikiversity_created or total_done.wikiversity_edited or total_sum.wikiversity_created or total_sum.wikiversity_edited %}
                 <div class="w3-row formfield">
                     <h3 id="wikiversity">{% trans "Wikiversity" %}</h3>
-                    <div class="w3-quarter"><canvas id="wikiversity_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="wikiversity_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="wikiversity_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="wikiversity_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.wikibooks_created or total_done.wikibooks_edited or total_sum.wikibooks_created or total_sum.wikibooks_edited %}
                 <div class="w3-row formfield">
                     <h3 id="wikibooks">{% trans "Wikibooks" %}</h3>
-                    <div class="w3-quarter"><canvas id="wikibooks_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="wikibooks_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-quarter"><canvas id="wikibooks_pie_chart"></canvas></div>
+                    <div class="w3-threequarter"><canvas id="wikibooks_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.wikisource_created or total_done.wikisource_edited or total_sum.wikisource_created or total_sum.wikisource_edited %}
                 <div class="w3-row formfield">
                     <h3 id="wikisource">{% trans "Wikisource" %}</h3>
-                    <div class="w3-quarter"><canvas id="wikisource_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="wikisource_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="wikisource_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="wikisource_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.wikinews_created or total_done.wikinews_edited or total_sum.wikinews_created or total_sum.wikinews_edited %}
                     <div class="w3-row formfield">
                         <h3 id="wikinews">{% trans "Wikinews" %}</h3>
-                        <div class="w3-quarter"><canvas id="wikinews_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                        <div class="w3-threequarter"><canvas id="wikinews_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                        <div class="w3-third"><canvas id="wikinews_pie_chart"></canvas></div>
+                        <div class="w3-twothird"><canvas id="wikinews_timeline_chart"></canvas></div>
                     </div>
                 {% endif %}
             {% if total_done.wikiquote_created or total_done.wikiquote_edited or total_sum.wikiquote_created or total_sum.wikiquote_edited %}
                 <div class="w3-row formfield">
                     <h3 id="wikiquote">{% trans "Wikiquote" %}</h3>
-                    <div class="w3-quarter"><canvas id="wikiquote_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="wikiquote_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="wikiquote_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="wikiquote_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.wiktionary_created or total_done.wiktionary_edited or total_sum.wiktionary_created or total_sum.wiktionary_edited %}
                 <div class="w3-row formfield">
                     <h3 id="wiktionary">{% trans "Wiktionary" %}</h3>
-                    <div class="w3-quarter"><canvas id="wiktionary_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="wiktionary_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="wiktionary_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="wiktionary_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.wikivoyage_created or total_done.wikivoyage_edited or total_sum.wikivoyage_created or total_sum.wikivoyage_edited %}
                 <div class="w3-row formfield">
                     <h3 id="wikivoyage">{% trans "Wikivoyage" %}</h3>
-                    <div class="w3-quarter"><canvas id="wikivoyage_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="wikivoyage_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="wikivoyage_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="wikivoyage_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.wikispecies_created or total_done.wikispecies_edited or total_sum.wikispecies_created or total_sum.wikispecies_edited %}
                 <div class="w3-row formfield">
                     <h3 id="wikispecies">{% trans "Wikispecies" %}</h3>
-                    <div class="w3-quarter"><canvas id="wikispecies_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="wikispecies_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="wikispecies_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="wikispecies_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.metawiki_created or total_done.metawiki_edited or total_sum.metawiki_created or total_sum.metawiki_edited %}
                 <div class="w3-row formfield">
                     <h3 id="metawiki">{% trans "Metawiki" %}</h3>
-                    <div class="w3-quarter"><canvas id="metawiki_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="metawiki_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="metawiki_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="metawiki_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.mediawiki_created or total_done.mediawiki_edited or total_sum.mediawiki_created or total_sum.mediawiki_edited %}
                 <div class="w3-row formfield">
                     <h3 id="mediawiki">{% trans "Mediawiki" %}</h3>
-                    <div class="w3-quarter"><canvas id="mediawiki_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="mediawiki_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="mediawiki_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="mediawiki_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
 
@@ -138,22 +149,22 @@
             {% if total_done.participants or total_sum.participants %}
                 <div class="w3-row formfield">
                     <h3 id="participants">{% trans "Participants" %}</h3>
-                    <div class="w3-quarter"><canvas id="participants_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="participants_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="participants_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="participants_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.editors or total_sum.editors %}
                 <div class="w3-row formfield">
                     <h3 id="editors">{% trans "Editors" %}</h3>
-                    <div class="w3-quarter"><canvas class="w3-half" id="editors_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="editors_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas class="w3-quarter" id="editors_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="editors_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.organizers or total_sum.organizers %}
                 <div class="w3-row formfield">
                     <h3 id="organizers">{% trans "Organizers" %}</h3>
-                    <div class="w3-quarter"><canvas id="organizers_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="organizers_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="organizers_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="organizers_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
 
@@ -161,22 +172,22 @@
             {% if total_done.resources or total_sum.resources %}
                     <div class="w3-row formfield">
                         <h3 id="resources">{% trans "Resources" %}</h3>
-                        <div class="w3-quarter"><canvas id="resources_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                        <div class="w3-threequarter"><canvas id="resources_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                        <div class="w3-third"><canvas id="resources_pie_chart"></canvas></div>
+                        <div class="w3-twothird"><canvas id="resources_timeline_chart"></canvas></div>
                     </div>
                 {% endif %}
             {% if total_done.feedbacks or total_sum.feedbacks %}
                 <div class="w3-row formfield">
                     <h3 id="feedbacks">{% trans "Feedbacks" %}</h3>
-                    <div class="w3-quarter"><canvas id="feedbacks_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="feedbacks_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="feedbacks_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="feedbacks_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.partnerships or total_sum.partnerships %}
                 <div class="w3-row formfield">
                     <h3 id="partnerships">{% trans "Partnerships activated" %}</h3>
-                    <div class="w3-quarter"><canvas id="partnerships_pie_chart" style="width:100%; height:300px; "></canvas></div>
-                    <div class="w3-threequarter"><canvas id="partnerships_timeline_chart" style="width:100%; height:300px; "></canvas></div>
+                    <div class="w3-third"><canvas id="partnerships_pie_chart"></canvas></div>
+                    <div class="w3-twothird"><canvas id="partnerships_timeline_chart"></canvas></div>
                 </div>
             {% endif %}
         </div>
@@ -190,26 +201,26 @@
         let label_1 = "{% trans 'Done' %}";
         let label_2 = "{% trans 'Not done' %}";
         let xLabel = "{% trans 'Date' %}";
-        create_doughnut("wikipedia_pie_chart", label_1, label_2, {{ total_done.wikipedia_created }} + {{ total_done.wikipedia_edited }}, {{ total_sum.wikipedia_created }} + {{ total_sum.wikipedia_edited }}, "{% trans 'Number of articles created or edited' %}");
-        create_doughnut("commons_pie_chart", label_1, label_2, {{ total_done.commons_created }} + {{ total_done.commons_edited }}, {{ total_sum.commons_created }} + {{ total_sum.commons_edited }}, "{% trans 'Number of media files created or edited' %}");
-        create_doughnut("wikidata_pie_chart", label_1, label_2, {{ total_done.wikidata_created }} + {{ total_done.wikidata_edited }}, {{ total_sum.wikidata_created }} + {{ total_sum.wikidata_edited }}, "{% trans 'Number of items created or edited' %}");
-        create_doughnut("wikiversity_pie_chart", label_1, label_2, {{ total_done.wikiversity_created }} + {{ total_done.wikiversity_edited }}, {{ total_sum.wikiversity_created }} + {{ total_sum.wikiversity_edited }}, "{% trans 'Number of pages created or edited' %}");
-        create_doughnut("wikibooks_pie_chart", label_1, label_2, {{ total_done.wikibooks_created }} + {{ total_done.wikibooks_edited }}, {{ total_sum.wikibooks_created }} + {{ total_sum.wikibooks_edited }}, "{% trans 'Number of pages created or edited' %}");
-        create_doughnut("wikisource_pie_chart", label_1, label_2, {{ total_done.wikisource_created }} + {{ total_done.wikisource_edited }}, {{ total_sum.wikisource_created }} + {{ total_sum.wikisource_edited }}, "{% trans 'Number of pages created or edited' %}");
-        create_doughnut("wikinews_pie_chart", label_1, label_2, {{ total_done.wikinews_created }} + {{ total_done.wikinews_edited }}, {{ total_sum.wikinews_created }} + {{ total_sum.wikinews_edited }}, "{% trans 'Number of pages created or edited' %}");
-        create_doughnut("wikiquote_pie_chart", label_1, label_2, {{ total_done.wikiquote_created }} + {{ total_done.wikiquote_edited }}, {{ total_sum.wikiquote_created }} + {{ total_sum.wikiquote_edited }}, "{% trans 'Number of pages created or edited' %}");
-        create_doughnut("wiktionary_pie_chart", label_1, label_2, {{ total_done.wiktionary_created }} + {{ total_done.wiktionary_edited }}, {{ total_sum.wiktionary_created }} + {{ total_sum.wiktionary_edited }}, "{% trans 'Number of pages created or edited' %}");
-        create_doughnut("wikivoyage_pie_chart", label_1, label_2, {{ total_done.wikivoyage_created }} + {{ total_done.wikivoyage_edited }}, {{ total_sum.wikivoyage_created }} + {{ total_sum.wikivoyage_edited }}, "{% trans 'Number of pages created or edited' %}");
-        create_doughnut("wikispecies_pie_chart", label_1, label_2, {{ total_done.wikispecies_created }} + {{ total_done.wikispecies_edited }}, {{ total_sum.wikispecies_created }} + {{ total_sum.wikispecies_edited }}, "{% trans 'Number of pages created or edited' %}");
-        create_doughnut("metawiki_pie_chart", label_1, label_2, {{ total_done.metawiki_created }} + {{ total_done.metawiki_edited }}, {{ total_sum.metawiki_created }} + {{ total_sum.metawiki_edited }}, "{% trans 'Number of pages created or edited' %}");
-        create_doughnut("mediawiki_pie_chart", label_1, label_2, {{ total_done.mediawiki_created }} + {{ total_done.mediawiki_edited }}, {{ total_sum.mediawiki_created }} + {{ total_sum.mediawiki_edited }}, "{% trans 'Number of pages created or edited' %}");
+        create_doughnut("wikipedia_pie_chart", label_1, label_2, {{ total_done.wikipedia_created }} + {{ total_done.wikipedia_edited }}, {{ total_sum.wikipedia_created }} + {{ total_sum.wikipedia_edited }}, "{% trans 'Number of articles created or edited' %}", ["wikipedia_created", "wikipedia_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("commons_pie_chart", label_1, label_2, {{ total_done.commons_created }} + {{ total_done.commons_edited }}, {{ total_sum.commons_created }} + {{ total_sum.commons_edited }}, "{% trans 'Number of media files created or edited' %}", ["commons_created", "commons_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("wikidata_pie_chart", label_1, label_2, {{ total_done.wikidata_created }} + {{ total_done.wikidata_edited }}, {{ total_sum.wikidata_created }} + {{ total_sum.wikidata_edited }}, "{% trans 'Number of items created or edited' %}", ["wikidata_created", "wikidata_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("wikiversity_pie_chart", label_1, label_2, {{ total_done.wikiversity_created }} + {{ total_done.wikiversity_edited }}, {{ total_sum.wikiversity_created }} + {{ total_sum.wikiversity_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikiversity_created", "wikiversity_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("wikibooks_pie_chart", label_1, label_2, {{ total_done.wikibooks_created }} + {{ total_done.wikibooks_edited }}, {{ total_sum.wikibooks_created }} + {{ total_sum.wikibooks_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikibooks_created", "wikibooks_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("wikisource_pie_chart", label_1, label_2, {{ total_done.wikisource_created }} + {{ total_done.wikisource_edited }}, {{ total_sum.wikisource_created }} + {{ total_sum.wikisource_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikisource_created", "wikisource_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("wikinews_pie_chart", label_1, label_2, {{ total_done.wikinews_created }} + {{ total_done.wikinews_edited }}, {{ total_sum.wikinews_created }} + {{ total_sum.wikinews_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikinews_created", "wikinews_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("wikiquote_pie_chart", label_1, label_2, {{ total_done.wikiquote_created }} + {{ total_done.wikiquote_edited }}, {{ total_sum.wikiquote_created }} + {{ total_sum.wikiquote_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikiquote_created", "wikiquote_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("wiktionary_pie_chart", label_1, label_2, {{ total_done.wiktionary_created }} + {{ total_done.wiktionary_edited }}, {{ total_sum.wiktionary_created }} + {{ total_sum.wiktionary_edited }}, "{% trans 'Number of pages created or edited' %}", ["wiktionary_created", "wiktionary_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("wikivoyage_pie_chart", label_1, label_2, {{ total_done.wikivoyage_created }} + {{ total_done.wikivoyage_edited }}, {{ total_sum.wikivoyage_created }} + {{ total_sum.wikivoyage_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikivoyage_created", "wikivoyage_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("wikispecies_pie_chart", label_1, label_2, {{ total_done.wikispecies_created }} + {{ total_done.wikispecies_edited }}, {{ total_sum.wikispecies_created }} + {{ total_sum.wikispecies_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikispecies_created", "wikispecies_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("metawiki_pie_chart", label_1, label_2, {{ total_done.metawiki_created }} + {{ total_done.metawiki_edited }}, {{ total_sum.metawiki_created }} + {{ total_sum.metawiki_edited }}, "{% trans 'Number of pages created or edited' %}", ["metawiki_created", "metawiki_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("mediawiki_pie_chart", label_1, label_2, {{ total_done.mediawiki_created }} + {{ total_done.mediawiki_edited }}, {{ total_sum.mediawiki_created }} + {{ total_sum.mediawiki_edited }}, "{% trans 'Number of pages created or edited' %}", ["mediawiki_created", "mediawiki_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
 
-        create_doughnut("participants_pie_chart", label_1, label_2, {{ total_done.participants }}, {{ total_sum.participants }}, "{% trans 'Number of participants' %}");
-        create_doughnut("resources_pie_chart", label_1, label_2, {{ total_done.resources }}, {{ total_sum.resources }}, "{% trans 'Number of resources' %}");
-        create_doughnut("feedbacks_pie_chart", label_1, label_2, {{ total_done.feedbacks }}, {{ total_sum.feedbacks }}, "{% trans 'Number of feedbacks' %}");
-        create_doughnut("editors_pie_chart", label_1, label_2, {{ total_done.editors }}, {{ total_sum.editors }}, "{% trans 'Number of editors' %}");
-        create_doughnut("organizers_pie_chart", label_1, label_2, {{ total_done.organizers }}, {{ total_sum.organizers }}, "{% trans 'Number of organizers' %}");
-        create_doughnut("partnerships_pie_chart", label_1, label_2, {{ total_done.partnerships }}, {{ total_sum.partnerships }}, "{% trans 'Number of partnerships' %}");
+        create_doughnut("participants_pie_chart", label_1, label_2, {{ total_done.participants }}, {{ total_sum.participants }}, "{% trans 'Number of participants' %}", ["participants"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("resources_pie_chart", label_1, label_2, {{ total_done.resources }}, {{ total_sum.resources }}, "{% trans 'Number of resources' %}", ["resources"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("feedbacks_pie_chart", label_1, label_2, {{ total_done.feedbacks }}, {{ total_sum.feedbacks }}, "{% trans 'Number of feedbacks' %}", ["feedbacks"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("editors_pie_chart", label_1, label_2, {{ total_done.editors }}, {{ total_sum.editors }}, "{% trans 'Number of editors' %}", ["editors"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("organizers_pie_chart", label_1, label_2, {{ total_done.organizers }}, {{ total_sum.organizers }}, "{% trans 'Number of organizers' %}", ["organizers"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        create_doughnut("partnerships_pie_chart", label_1, label_2, {{ total_done.partnerships }}, {{ total_sum.partnerships }}, "{% trans 'Number of partnerships' %}", ["partnerships"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
 
         create_timeline("wikipedia_timeline_chart", {{ timeline.wikipedia|safe }}, xLabel, "{% trans 'Number of articles' %}", "{% trans 'Wikipedia' %}", "{% trans 'Number of articles created or edited' %}");
         create_timeline("commons_timeline_chart", {{ timeline.commons|safe }}, xLabel, "{% trans 'Number of media files' %}", "{% trans 'Wikimedia Commons' %}", "{% trans 'Number of media files created or edited' %}");

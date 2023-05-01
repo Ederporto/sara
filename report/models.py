@@ -5,13 +5,14 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.core.validators import MinLengthValidator
 
-from metrics.models import Activity
+from metrics.models import Activity, Project
 from users.models import TeamArea, UserProfile
 from strategy.models import StrategicAxis, Direction
 
 
 class Funding(models.Model):
     name = models.CharField(max_length=420)
+    project = models.ForeignKey(Project, related_name="project_related", on_delete=models.RESTRICT)
     value = models.FloatField(null=True, blank=True, default=0)
 
     class Meta:
