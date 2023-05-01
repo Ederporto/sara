@@ -17,7 +17,6 @@
 .form-left { padding-right: 1em; }
 .form-right { padding-left: 1em; }
 .view-field {
-    width: 100%;
     color: var(--dark-color);
     border: none;
     background-color: var(--light-color);

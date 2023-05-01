@@ -20,7 +20,7 @@
                 <button id="nav_Learning" class="tablinks" onclick="openTab(this, 'Learning')">{% translate "Learning" %}</button>
             </div>
             <div class="w3-row userform">
-                <form id="report" method="post" onsubmit="validateForm()">
+                <form id="report" method="post">
                     {% csrf_token %}
                     <div class="w3-container">
                         <div class="w3-container tabcontent active" id="Administrative">
@@ -81,5 +81,60 @@
                 $(".activity_others").removeClass("invisible_field");
             }
         }
+
+        $("#submit_report").click(function(event) {
+            event.preventDefault();
+            validateForm();
+        });
+
+        function focus_is_empty(input_) { return input_.val() === ""; }
+
+        function validateForm(){
+            let form = $("#report");
+            let admin_tab = $("#nav_Administrative");
+            let strategy_tab = $("#nav_Strategy");
+            let learning_tab = $("#nav_Learning");
+            let admin_fields = ["#activity_associated", "#area_responsible", "#initial_date", "#description", "#links"];
+            let learning_fields = ["#learning"];
+
+            for (let i = 0; i < admin_fields.length; i++ ){
+                if (focus_is_empty(form.find(admin_fields[i]), admin_tab)){
+                    admin_tab.click();
+                    form.find(admin_fields[i]).focus();
+                    return;
+                }
+            }
+
+            if ($("#directions_fieldset input[type='checkbox']:checked").length === 0) {
+                strategy_tab.click();
+                $("#directions_fieldset input[value=1]").focus();
+                return;
+            }
+
+            if ($("#strategic_questions_fieldset input[type='checkbox']:checked").length === 0) {
+                learning_tab.click();
+                $("#strategic_questions_fieldset input[value=1]").focus();
+                return;
+            }
+
+            let learning = $("#learning");
+
+            if (learning.val() === 0 || learning.val().length < 500 ) {
+                learning_tab.click();
+                learning.focus();
+                return;
+            }
+
+            for (let i = 0; i < learning_fields.length; i++ ){
+                if (focus_is_empty(form.find(learning_fields[i]))){
+                    learning_tab.click();
+                    form.find(learning_fields[i]).focus();
+                    return;
+                }
+            }
+
+            form.submit();
+        }
+
     </script>
 {% endblock %}

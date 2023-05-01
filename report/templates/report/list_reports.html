@@ -18,11 +18,12 @@
         <div class="w3-row">
             <div class="w3-row">
                 <div class="w3-half dissapear" style="text-align: center">
+                    <a title="{% trans 'Track metrics' %}" href="{% url 'metrics:metrics' %}"><button type="button" class="btn-round btn-view"><i class="fa-solid fa-chart-pie"></i> {% trans 'Track metrics' %}</button></a>
                     <a title="{% trans 'Export all reports' %}" href="{% url 'report:export_all_reports' %}"><button type="button" class="btn-round btn-export"><i class="fa-solid fa-file-export"></i> {% trans 'Export all reports' %}</button></a>
                 </div>
                 <div class="w3-half formfield"><input id="customSearch" type="search" placeholder="{% trans 'Search' %}" aria-label="{% trans 'Search' %}" autocomplete="off" ></div>
             </div>
-            <table id="reports" class="table table-striped table-sara"
+            <table id="reports" class="table table-striped table-fixed table-sara"
                    data-mobile-responsive="true"
                    data-check-on-init="true"
                    data-filter-control="true"
@@ -36,8 +37,7 @@
                     <th data-field="actions">{% trans "Actions" %}</th>
                     <th data-field="initial_date" data-sorter="datesSorter" data-sortable="true">{% trans "Initial date" %}</th>
                     <th data-field="end_date" data-sorter="datesSorter" data-sortable="true">{% trans "End date" %}</th>
-                    <th data-field="responsible" data-sortable="true" data-filter-control="select">{% trans "Responsible" %}</th>
-                    <th data-field="has_learning" data-sortable="true" data-filter-control="select">{% trans "Has learning?" %}</th>
+                    <th data-field="responsible" data-sortable="true" data-filter-control="select">{% trans "Area responsible" %}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -45,7 +45,7 @@
                     <tr class="{% if data.learning %}has-learning{% else %}hasnt-learning{% endif %}">
                         <th scope="row">{{ data.id }}</th>
                         <td>{{ data.description }}</td>
-                        <td>
+                        <td style="white-space: nowrap;">
                             <a title="{% trans 'View' %}" href="{% url 'report:detail_report' report_id=data.id %}"><button title="{% trans 'View' %}" type="button" class="btn-circle btn-view"><i class="fa-solid fa-eye"></i></button></a>
                             <a title="{% trans 'Update' %}" href="{% url 'report:update_report' report_id=data.id %}"><button title="{% trans 'Update' %}" type="button" class="btn-circle btn-update"><i class="fa-solid fa-pen"></i></button></a>
                             <br class="appear">
@@ -54,8 +54,7 @@
                         </td>
                         <td>{{ data.initial_date|date:'Y-m-d' }}</td>
                         <td>{{ data.end_date|date:'Y-m-d' }}</td>
-                        <td>{{ data.area_responsible.manager.user.first_name }}</td>
-                        <td>{% if data.learning %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
+                        <td>{{ data.area_responsible }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

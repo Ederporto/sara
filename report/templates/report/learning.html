@@ -27,7 +27,7 @@
     </div>
     <div class="w3-container formfield">
         <label class="formfieldtitle" for="learning">{% translate "Learning" %}*</label>
-        <textarea type="text" id="learning" name="learning" rows="10" placeholder="{% translate "Describe the learning with this activity and how it relates with the strategy axis and directions" %}" onkeyup="countCharacters()">{{ report_form.instance.learning }}</textarea>
+        <textarea type="text" id="learning" name="learning" rows="10" placeholder="{% translate "Describe the learning with this activity and how it relates with the strategy axis and directions" %}" onkeyup="countCharacters()" required>{{ report_form.instance.learning }}</textarea>
         <span id="character_count" class="btn-round {% if report_form.instance.learning|length > 500 %}btn-view{% else %}btn-delete{% endif %}" style="float: right; color:black;">{{ report_form.instance.learning|length }}/500</span>
     </div>
     <div class="w3-row">
@@ -36,7 +36,7 @@
                     onclick="openTab(this, 'Strategy')">{% translate "Go back to strategy report" %}</button>
         </div>
         <div class="w3-half formfield form-right">
-            <button class="custombutton" type="submit">{% translate "Submit" %}</button>
+            <button id="submit_report" class="custombutton" type="submit">{% translate "Submit" %}</button>
         </div>
     </div>
     <script>

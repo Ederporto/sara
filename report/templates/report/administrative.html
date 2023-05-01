@@ -20,7 +20,7 @@
         <label class="w3-third formfieldtitle" for="area_responsible">{% translate "Area responsible" %}*</label>
         <div class="w3-twothird formfield">
             <select id="area_responsible" name="area_responsible" required>
-                <option selected>----------</option>
+                <option value="" selected>----------</option>
                 {% for area_responsible in report_form.fields.area_responsible.queryset %}
                     <option value="{{ area_responsible.id }}" {% if area_responsible.id == report_form.fields.area_responsible.initial %}selected{% endif %}>{{ area_responsible.text }}</option>
                 {% endfor %}

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% block styles %}<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">{% endblock %}
 
 {% block content %}
     <div class="w3-container">
@@ -64,7 +65,7 @@
                     <div class="w3-third formfieldtitle">{% trans "Area responsible" %}</div>
                     <div class="w3-twothird formfield view-field">{{ data.area_responsible }}</div>
                 </div>
-                {% if not data.area_activated.count %}
+                {% if data.area_activated.count %}
                     <div class="w3-row">
                         <div class="w3-third formfieldtitle">{% trans "Areas activated" %}</div>
                         <div class="w3-twothird formfield view-field">{% for area in data.area_activated.all %}{{ area.text }}{% if not forloop.last %};{% endif %}{% endfor %}</div>
@@ -74,24 +75,30 @@
                     <div class="w3-third formfieldtitle">{% trans "Initial date" %}</div>
                     <div class="w3-twothird formfield view-field">{{ data.initial_date }}</div>
                 </div>
-                <div class="w3-row">
-                    <div class="w3-third formfieldtitle">{% trans "End date" %}</div>
-                    <div class="w3-twothird formfield view-field">{{ data.end_date }}</div>
-                </div>
-                {% if data.funding_associated %}
+                {% if data.end_date %}
+                    <div class="w3-row">
+                        <div class="w3-third formfieldtitle">{% trans "End date" %}</div>
+                        <div class="w3-twothird formfield view-field">{{ data.end_date }}</div>
+                    </div>
+                {% endif %}
+                {% if data.funding_associated.count %}
                     <div class="w3-row">
                         <div class="w3-third formfieldtitle">{% trans "Funding associated" %}</div>
-                        <div class="w3-twothird formfield view-field">{{ data.funding_associated }}</div>
+                        {% for funding in data.funding_associated.all %}
+                            <div class="w3-twothird formfield view-field">{{ funding.name }}</div>
+                        {% endfor %}
                     </div>
                 {% endif %}
                 <div class="w3-row">
                     <div class="w3-third formfieldtitle">{% trans "Links" %}</div>
                     <div class="w3-twothird formfield view-field">{{ data.links|linebreaksbr }}</div>
                 </div>
-                <div class="w3-row">
-                    <div class="w3-third formfieldtitle">{% trans "Public communication" %}</div>
-                    <div class="w3-twothird formfield view-field">{{ data.public_communication|linebreaksbr }}</div>
-                </div>
+                {% if data.public_communication %}
+                    <div class="w3-row">
+                        <div class="w3-third formfieldtitle">{% trans "Public communication" %}</div>
+                        <div class="w3-twothird formfield view-field">{{ data.public_communication|linebreaksbr }}</div>
+                    </div>
+                {% endif %}
             </div>
             {% if data.participants or data.resources or data.feedbacks or data.editors.count or data.organizers.count or data.partners_activated.count or data.technologies_used.count or wikipedia_created or data.wikipedia_edited or data.commons_created or data.commons_edited or data.wikidata_created or data.wikidata_edited or data.wikiversity_created or data.wikiversity_edited or data.wikibooks_created or data.wikibooks_edited or data.wikisource_created or data.wikisource_edited or data.wikinews_created or data.wikinews_edited or data.wikiquote_created or data.wikiquote_edited or data.wiktionary_created or data.wiktionary_edited or data.wikivoyage_created or data.wikivoyage_edited or data.wikispecies_created or data.wikispecies_edited or data.metawiki_created or data.metawiki_edited or data.mediawiki_created or data.mediawiki_edited %}
                 <h3 id="Quantitative">{% trans "Quantitative" %}</h3>
