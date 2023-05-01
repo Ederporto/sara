@@ -1,10 +1,10 @@
 /* NAVIGATION ELEMENTS */
 .navbar_wrapper {
-    flex-basis: 10em;
+    flex-basis: 9em;
     flex-shrink: 0;
     text-align: center;
     background-color: var(--dark-color);
-    padding: 3em 0;
+    padding: 2em 0;
     flex-direction: column;
     display: flex;
     justify-content: space-between;
@@ -12,7 +12,7 @@
 .nav_separator {
     border: 1px dashed var(--main-color);
     width: 6em;
-    margin: 1em auto;
+    margin: 0.6em auto;
     opacity: 0.25;
 }
 .nav_icon {
@@ -25,7 +25,7 @@
     width: 100%;
     height: fit-content;
     font-weight: 700;
-    font-size: 1em;
+    font-size: 0.9em;
     text-transform: uppercase;
     font-family: var(--main-font);
 }
