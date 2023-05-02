@@ -1,7 +1,7 @@
 export function create_doughnut(chart_id, label_1, label_2, data_1, data_2, title, fields, other_datasets=null, label_main_dataset="") {
     let datasets = []
     if (other_datasets != null) {
-        for (let i = 1; i < other_datasets.length; i++){
+        for (let i = 0; i < other_datasets.length; i++){
             let total_sum = 0;
             for(let j = 0; j < fields.length; j++){ total_sum += other_datasets[i]["total_sum"][fields[j]] }
             let dataset = {
