@@ -12,6 +12,15 @@ class BugForm(forms.ModelForm):
         super(BugForm, self).__init__(*args, **kwargs)
 
 
+class BugUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Bug
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(BugUpdateForm, self).__init__(*args, **kwargs)
+
+
 class ObservationForm(forms.ModelForm):
     class Meta:
         model = Observation

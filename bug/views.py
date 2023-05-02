@@ -5,9 +5,10 @@ from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render, redirect, reverse, get_object_or_404, HttpResponse
 from django.utils.translation import gettext as _
 from django.contrib import messages
-from .forms import BugForm, ObservationForm
+from .forms import BugForm, ObservationForm, BugUpdateForm
 from .models import Bug, Observation
 import zipfile
+from django.contrib.auth.models import Permission
 from io import BytesIO
 
 
@@ -96,7 +97,11 @@ def update_bug(request, bug_id):
     bug = get_object_or_404(Bug, pk=bug_id)
 
     if request.method == "POST":
-        bug_form = BugForm(request.POST, instance=bug)
+        obs_permission = Permission.objects.get(codename="change_observation")
+        if obs_permission in request.user.user_permissions.get(obs_permission):
+            bug_form = BugUpdateForm(request.POST, instance=bug)
+        else:
+            bug_form = BugForm(request.POST, instance=bug)
 
         if bug_form.is_valid():
             bug = bug_form.save(commit=False)
@@ -109,7 +114,11 @@ def update_bug(request, bug_id):
             bug_form = BugForm(instance=bug)
             messages.error(request, _("Something went wrong!"))
     else:
-        bug_form = BugForm(instance=bug)
+        obs_permission = Permission.objects.get(codename="change_observation")
+        if obs_permission in request.user.user_permissions.all():
+            bug_form = BugUpdateForm(instance=bug)
+        else:
+            bug_form = BugForm(instance=bug)
     return render(request, "bug/update_bug.html", {"bugform": bug_form})
 
 
