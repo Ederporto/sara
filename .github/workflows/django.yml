@@ -1,4 +1,4 @@
-name: Django CI
+name: Django tests
 
 on:
   push:
@@ -25,6 +25,8 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Run Tests
+    - name: Coverage report
       run: |
-        python manage.py test
+        pip install coverage
+        coverage run manage.py test
+        coverage report
