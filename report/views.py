@@ -148,7 +148,7 @@ def add_excel_file(report_id=None):
     export_partners_activated(report_id).to_excel(writer, sheet_name='Partners', index=False)
     export_technologies_used(report_id).to_excel(writer, sheet_name='Technologies', index=False)
 
-    writer.save()
+    writer.close()
     return excel_file
 
 

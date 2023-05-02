@@ -73,7 +73,7 @@ def export_bugs(request):
     excel_file = BytesIO()
     writer = pd.ExcelWriter(excel_file, engine="xlsxwriter")
     df.to_excel(writer, sheet_name="Report", index=False)
-    writer.save()
+    writer.close()
     zip_file.writestr("{}.xlsx".format("Bug report" + posfix), excel_file.getvalue())
 
     zip_file.close()
