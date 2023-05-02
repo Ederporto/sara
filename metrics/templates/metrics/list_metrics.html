@@ -181,55 +181,95 @@
             {% endif %}
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-labels@1.1.0"></script>
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/Chart.js/4.3.0/chart.umd.js"></script>
     <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/moment.js/2.29.4/moment.js"></script>
     <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/chartjs-adapter-moment/1.0.1/chartjs-adapter-moment.min.js"></script>
-    <script src="{% static 'scripts/chart.js' %}"></script>
-    <script>
+
+    <script type="module" src="{% static 'scripts/chart.js' %}"></script>
+    <script type="module">
+        import { create_doughnut, create_timeline } from '{% static 'scripts/chart.js' %}';
         let label_1 = "{% trans 'Done' %}";
         let label_2 = "{% trans 'Not done' %}";
         let xLabel = "{% trans 'Date' %}";
-        create_doughnut("wikipedia_pie_chart", label_1, label_2, {{ total_done.wikipedia_created }} + {{ total_done.wikipedia_edited }}, {{ total_sum.wikipedia_created }} + {{ total_sum.wikipedia_edited }}, "{% trans 'Number of articles created or edited' %}", ["wikipedia_created", "wikipedia_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("commons_pie_chart", label_1, label_2, {{ total_done.commons_created }} + {{ total_done.commons_edited }}, {{ total_sum.commons_created }} + {{ total_sum.commons_edited }}, "{% trans 'Number of media files created or edited' %}", ["commons_created", "commons_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("wikidata_pie_chart", label_1, label_2, {{ total_done.wikidata_created }} + {{ total_done.wikidata_edited }}, {{ total_sum.wikidata_created }} + {{ total_sum.wikidata_edited }}, "{% trans 'Number of items created or edited' %}", ["wikidata_created", "wikidata_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("wikiversity_pie_chart", label_1, label_2, {{ total_done.wikiversity_created }} + {{ total_done.wikiversity_edited }}, {{ total_sum.wikiversity_created }} + {{ total_sum.wikiversity_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikiversity_created", "wikiversity_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("wikibooks_pie_chart", label_1, label_2, {{ total_done.wikibooks_created }} + {{ total_done.wikibooks_edited }}, {{ total_sum.wikibooks_created }} + {{ total_sum.wikibooks_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikibooks_created", "wikibooks_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("wikisource_pie_chart", label_1, label_2, {{ total_done.wikisource_created }} + {{ total_done.wikisource_edited }}, {{ total_sum.wikisource_created }} + {{ total_sum.wikisource_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikisource_created", "wikisource_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("wikinews_pie_chart", label_1, label_2, {{ total_done.wikinews_created }} + {{ total_done.wikinews_edited }}, {{ total_sum.wikinews_created }} + {{ total_sum.wikinews_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikinews_created", "wikinews_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("wikiquote_pie_chart", label_1, label_2, {{ total_done.wikiquote_created }} + {{ total_done.wikiquote_edited }}, {{ total_sum.wikiquote_created }} + {{ total_sum.wikiquote_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikiquote_created", "wikiquote_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("wiktionary_pie_chart", label_1, label_2, {{ total_done.wiktionary_created }} + {{ total_done.wiktionary_edited }}, {{ total_sum.wiktionary_created }} + {{ total_sum.wiktionary_edited }}, "{% trans 'Number of pages created or edited' %}", ["wiktionary_created", "wiktionary_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("wikivoyage_pie_chart", label_1, label_2, {{ total_done.wikivoyage_created }} + {{ total_done.wikivoyage_edited }}, {{ total_sum.wikivoyage_created }} + {{ total_sum.wikivoyage_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikivoyage_created", "wikivoyage_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("wikispecies_pie_chart", label_1, label_2, {{ total_done.wikispecies_created }} + {{ total_done.wikispecies_edited }}, {{ total_sum.wikispecies_created }} + {{ total_sum.wikispecies_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikispecies_created", "wikispecies_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("metawiki_pie_chart", label_1, label_2, {{ total_done.metawiki_created }} + {{ total_done.metawiki_edited }}, {{ total_sum.metawiki_created }} + {{ total_sum.metawiki_edited }}, "{% trans 'Number of pages created or edited' %}", ["metawiki_created", "metawiki_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("mediawiki_pie_chart", label_1, label_2, {{ total_done.mediawiki_created }} + {{ total_done.mediawiki_edited }}, {{ total_sum.mediawiki_created }} + {{ total_sum.mediawiki_edited }}, "{% trans 'Number of pages created or edited' %}", ["mediawiki_created", "mediawiki_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
 
-        create_doughnut("participants_pie_chart", label_1, label_2, {{ total_done.participants }}, {{ total_sum.participants }}, "{% trans 'Number of participants' %}", ["participants"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("resources_pie_chart", label_1, label_2, {{ total_done.resources }}, {{ total_sum.resources }}, "{% trans 'Number of resources' %}", ["resources"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("feedbacks_pie_chart", label_1, label_2, {{ total_done.feedbacks }}, {{ total_sum.feedbacks }}, "{% trans 'Number of feedbacks' %}", ["feedbacks"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("editors_pie_chart", label_1, label_2, {{ total_done.editors }}, {{ total_sum.editors }}, "{% trans 'Number of editors' %}", ["editors"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("organizers_pie_chart", label_1, label_2, {{ total_done.organizers }}, {{ total_sum.organizers }}, "{% trans 'Number of organizers' %}", ["organizers"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
-        create_doughnut("partnerships_pie_chart", label_1, label_2, {{ total_done.partnerships }}, {{ total_sum.partnerships }}, "{% trans 'Number of partnerships' %}", ["partnerships"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");
+        let wikipedia_pie_chart = {{ total_sum.wikipedia_created }} || {{ total_sum.wikipedia_edited }} || {{ total_done.wikipedia_created }} || {{ total_done.wikipedia_edited }}
+        let commons_pie_chart = {{ total_sum.commons_created }} || {{ total_sum.commons_edited }} || {{ total_done.commons_created }} || {{ total_done.commons_edited }}
+        let wikidata_pie_chart = {{ total_sum.wikidata_created }} || {{ total_sum.wikidata_edited }} || {{ total_done.wikidata_created }} || {{ total_done.wikidata_edited }}
+        let wikiversity_pie_chart = {{ total_sum.wikiversity_created }} || {{ total_sum.wikiversity_edited }} || {{ total_done.wikiversity_created }} || {{ total_done.wikiversity_edited }}
+        let wikibooks_pie_chart = {{ total_sum.wikibooks_created }} || {{ total_sum.wikibooks_edited }} || {{ total_done.wikibooks_created }} || {{ total_done.wikibooks_edited }}
+        let wikisource_pie_chart = {{ total_sum.wikisource_created }} || {{ total_sum.wikisource_edited }} || {{ total_done.wikisource_created }} || {{ total_done.wikisource_edited }}
+        let wikinews_pie_chart = {{ total_sum.wikinews_created }} || {{ total_sum.wikinews_edited }} || {{ total_done.wikinews_created }} || {{ total_done.wikinews_edited }}
+        let wikiquote_pie_chart = {{ total_sum.wikiquote_created }} || {{ total_sum.wikiquote_edited }} || {{ total_done.wikiquote_created }} || {{ total_done.wikiquote_edited }}
+        let wiktionary_pie_chart = {{ total_sum.wiktionary_created }} || {{ total_sum.wiktionary_edited }} || {{ total_done.wiktionary_created }} || {{ total_done.wiktionary_edited }}
+        let wikivoyage_pie_chart = {{ total_sum.wikivoyage_created }} || {{ total_sum.wikivoyage_edited }} || {{ total_done.wikivoyage_created }} || {{ total_done.wikivoyage_edited }}
+        let wikispecies_pie_chart = {{ total_sum.wikispecies_created }} || {{ total_sum.wikispecies_edited }} || {{ total_done.wikispecies_created }} || {{ total_done.wikispecies_edited }}
+        let metawiki_pie_chart = {{ total_sum.metawiki_created }} || {{ total_sum.metawiki_edited }} || {{ total_done.metawiki_created }} || {{ total_done.metawiki_edited }}
+        let mediawiki_pie_chart = {{ total_sum.mediawiki_created }} || {{ total_sum.mediawiki_edited }} || {{ total_done.mediawiki_created }} || {{ total_done.mediawiki_edited }}
+        let participants_pie_chart = {{ total_sum.participants }} || {{ total_done.participants }}
+        let resources_pie_chart = {{ total_sum.resources }} || {{ total_done.resources }}
+        let feedbacks_pie_chart = {{ total_sum.feedbacks }} || {{ total_done.feedbacks }}
+        let editors_pie_chart = {{ total_sum.editors }} || {{ total_done.editors }}
+        let organizers_pie_chart = {{ total_sum.organizers }} || {{ total_done.organizers }}
+        let partnerships_pie_chart = {{ total_sum.partnerships }} || {{ total_done.partnerships }}
 
-        create_timeline("wikipedia_timeline_chart", {{ timeline.wikipedia|safe }}, xLabel, "{% trans 'Number of articles' %}", "{% trans 'Wikipedia' %}", "{% trans 'Number of articles created or edited' %}");
-        create_timeline("commons_timeline_chart", {{ timeline.commons|safe }}, xLabel, "{% trans 'Number of media files' %}", "{% trans 'Wikimedia Commons' %}", "{% trans 'Number of media files created or edited' %}");
-        create_timeline("wikidata_timeline_chart", {{ timeline.wikidata|safe }}, xLabel, "{% trans 'Number of items' %}", "{% trans 'Wikidata' %}", "{% trans 'Number of items created or edited' %}");
-        create_timeline("wikiversity_timeline_chart", {{ timeline.wikiversity|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikiversity' %}", "{% trans 'Number of pages created or edited' %}");
-        create_timeline("wikibooks_timeline_chart", {{ timeline.wikibooks|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikibooks' %}", "{% trans 'Number of pages created or edited' %}");
-        create_timeline("wikisource_timeline_chart", {{ timeline.wikisource|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikisource' %}", "{% trans 'Number of pages created or edited' %}");
-        create_timeline("wikinews_timeline_chart", {{ timeline.wikinews|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikinews' %}", "{% trans 'Number of pages created or edited' %}");
-        create_timeline("wikiquote_timeline_chart", {{ timeline.wikiquote|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikiquote' %}", "{% trans 'Number of pages created or edited' %}");
-        create_timeline("wiktionary_timeline_chart", {{ timeline.wiktionary|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wiktionary' %}", "{% trans 'Number of pages created or edited' %}");
-        create_timeline("wikivoyage_timeline_chart", {{ timeline.wikivoyage|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikivoyage' %}", "{% trans 'Number of pages created or edited' %}");
-        create_timeline("wikispecies_timeline_chart", {{ timeline.wikispecies|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikispecies' %}", "{% trans 'Number of pages created or edited' %}");
-        create_timeline("metawiki_timeline_chart", {{ timeline.metawiki|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Metawiki' %}", "{% trans 'Number of pages created or edited' %}");
-        create_timeline("mediawiki_timeline_chart", {{ timeline.mediawiki|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'MediaWiki' %}", "{% trans 'Number of pages created or edited' %}");
+        if(wikipedia_pie_chart){create_doughnut("wikipedia_pie_chart", label_1, label_2, {{ total_done.wikipedia_created }} + {{ total_done.wikipedia_edited }}, {{ total_sum.wikipedia_created }} + {{ total_sum.wikipedia_edited }}, "{% trans 'Number of articles created or edited' %}", ["wikipedia_created", "wikipedia_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(commons_pie_chart){create_doughnut("commons_pie_chart", label_1, label_2, {{ total_done.commons_created }} + {{ total_done.commons_edited }}, {{ total_sum.commons_created }} + {{ total_sum.commons_edited }}, "{% trans 'Number of media files created or edited' %}", ["commons_created", "commons_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(wikidata_pie_chart){create_doughnut("wikidata_pie_chart", label_1, label_2, {{ total_done.wikidata_created }} + {{ total_done.wikidata_edited }}, {{ total_sum.wikidata_created }} + {{ total_sum.wikidata_edited }}, "{% trans 'Number of items created or edited' %}", ["wikidata_created", "wikidata_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(wikiversity_pie_chart){create_doughnut("wikiversity_pie_chart", label_1, label_2, {{ total_done.wikiversity_created }} + {{ total_done.wikiversity_edited }}, {{ total_sum.wikiversity_created }} + {{ total_sum.wikiversity_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikiversity_created", "wikiversity_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(wikibooks_pie_chart){create_doughnut("wikibooks_pie_chart", label_1, label_2, {{ total_done.wikibooks_created }} + {{ total_done.wikibooks_edited }}, {{ total_sum.wikibooks_created }} + {{ total_sum.wikibooks_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikibooks_created", "wikibooks_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(wikisource_pie_chart){create_doughnut("wikisource_pie_chart", label_1, label_2, {{ total_done.wikisource_created }} + {{ total_done.wikisource_edited }}, {{ total_sum.wikisource_created }} + {{ total_sum.wikisource_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikisource_created", "wikisource_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(wikinews_pie_chart){create_doughnut("wikinews_pie_chart", label_1, label_2, {{ total_done.wikinews_created }} + {{ total_done.wikinews_edited }}, {{ total_sum.wikinews_created }} + {{ total_sum.wikinews_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikinews_created", "wikinews_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(wikiquote_pie_chart){create_doughnut("wikiquote_pie_chart", label_1, label_2, {{ total_done.wikiquote_created }} + {{ total_done.wikiquote_edited }}, {{ total_sum.wikiquote_created }} + {{ total_sum.wikiquote_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikiquote_created", "wikiquote_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(wiktionary_pie_chart){create_doughnut("wiktionary_pie_chart", label_1, label_2, {{ total_done.wiktionary_created }} + {{ total_done.wiktionary_edited }}, {{ total_sum.wiktionary_created }} + {{ total_sum.wiktionary_edited }}, "{% trans 'Number of pages created or edited' %}", ["wiktionary_created", "wiktionary_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(wikivoyage_pie_chart){create_doughnut("wikivoyage_pie_chart", label_1, label_2, {{ total_done.wikivoyage_created }} + {{ total_done.wikivoyage_edited }}, {{ total_sum.wikivoyage_created }} + {{ total_sum.wikivoyage_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikivoyage_created", "wikivoyage_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(wikispecies_pie_chart){create_doughnut("wikispecies_pie_chart", label_1, label_2, {{ total_done.wikispecies_created }} + {{ total_done.wikispecies_edited }}, {{ total_sum.wikispecies_created }} + {{ total_sum.wikispecies_edited }}, "{% trans 'Number of pages created or edited' %}", ["wikispecies_created", "wikispecies_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(metawiki_pie_chart){create_doughnut("metawiki_pie_chart", label_1, label_2, {{ total_done.metawiki_created }} + {{ total_done.metawiki_edited }}, {{ total_sum.metawiki_created }} + {{ total_sum.metawiki_edited }}, "{% trans 'Number of pages created or edited' %}", ["metawiki_created", "metawiki_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(mediawiki_pie_chart){create_doughnut("mediawiki_pie_chart", label_1, label_2, {{ total_done.mediawiki_created }} + {{ total_done.mediawiki_edited }}, {{ total_sum.mediawiki_created }} + {{ total_sum.mediawiki_edited }}, "{% trans 'Number of pages created or edited' %}", ["mediawiki_created", "mediawiki_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(participants_pie_chart){create_doughnut("participants_pie_chart", label_1, label_2, {{ total_done.participants }}, {{ total_sum.participants }}, "{% trans 'Number of participants' %}", ["participants"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(resources_pie_chart){create_doughnut("resources_pie_chart", label_1, label_2, {{ total_done.resources }}, {{ total_sum.resources }}, "{% trans 'Number of resources' %}", ["resources"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(feedbacks_pie_chart){create_doughnut("feedbacks_pie_chart", label_1, label_2, {{ total_done.feedbacks }}, {{ total_sum.feedbacks }}, "{% trans 'Number of feedbacks' %}", ["feedbacks"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(editors_pie_chart){create_doughnut("editors_pie_chart", label_1, label_2, {{ total_done.editors }}, {{ total_sum.editors }}, "{% trans 'Number of editors' %}", ["editors"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(organizers_pie_chart){create_doughnut("organizers_pie_chart", label_1, label_2, {{ total_done.organizers }}, {{ total_sum.organizers }}, "{% trans 'Number of organizers' %}", ["organizers"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(partnerships_pie_chart){create_doughnut("partnerships_pie_chart", label_1, label_2, {{ total_done.partnerships }}, {{ total_sum.partnerships }}, "{% trans 'Number of partnerships' %}", ["partnerships"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
 
-        create_timeline("participants_timeline_chart", {{ timeline.participants|safe }}, xLabel, "{% trans 'Number of participants' %}", "{% trans 'Participants' %}", "{% trans 'Number of participants' %}");
-        create_timeline("resources_timeline_chart", {{ timeline.resources|safe }}, xLabel, "{% trans 'Number of resources' %}", "{% trans 'Resources' %}", "{% trans 'Number of resources' %}");
-        create_timeline("feedbacks_timeline_chart", {{ timeline.feedbacks|safe }}, xLabel, "{% trans 'Number of feedbacks' %}", "{% trans 'Feedbacks' %}", "{% trans 'Number of feedbacks' %}");
-        create_timeline("editors_timeline_chart", {{ timeline.editors|safe }}, xLabel, "{% trans 'Number of editors' %}", "{% trans 'Editors' %}", "{% trans 'Number of editors' %}");
-        create_timeline("organizers_timeline_chart", {{ timeline.organizers|safe }}, xLabel, "{% trans 'Number of organizers' %}", "{% trans 'Organizers' %}", "{% trans 'Number of organizers' %}");
-        create_timeline("partnerships_timeline_chart", {{ timeline.partnerships|safe }}, xLabel, "{% trans 'Number of partnerships' %}", "{% trans 'Partnerships' %}", "{% trans 'Number of partnerships' %}");
+        let wikipedia_timeline_chart = {{ timeline.wikipedia|safe }};
+        let commons_timeline_chart = {{ timeline.commons|safe }};
+        let wikidata_timeline_chart = {{ timeline.wikidata|safe }};
+        let wikiversity_timeline_chart = {{ timeline.wikiversity|safe }};
+        let wikibooks_timeline_chart = {{ timeline.wikibooks|safe }};
+        let wikisource_timeline_chart = {{ timeline.wikisource|safe }};
+        let wikinews_timeline_chart = {{ timeline.wikinews|safe }};
+        let wikiquote_timeline_chart = {{ timeline.wikiquote|safe }};
+        let wiktionary_timeline_chart = {{ timeline.wiktionary|safe }};
+        let wikivoyage_timeline_chart = {{ timeline.wikivoyage|safe }};
+        let wikispecies_timeline_chart = {{ timeline.wikispecies|safe }};
+        let metawiki_timeline_chart = {{ timeline.metawiki|safe }};
+        let mediawiki_timeline_chart = {{ timeline.mediawiki|safe }};
+        let participants_timeline_chart = {{ timeline.participants|safe }};
+        let resources_timeline_chart = {{ timeline.resources|safe }};
+        let feedbacks_timeline_chart = {{ timeline.feedbacks|safe }};
+        let editors_timeline_chart = {{ timeline.editors|safe }};
+        let organizers_timeline_chart = {{ timeline.organizers|safe }};
+        let partnerships_timeline_chart = {{ timeline.partnerships|safe }};
+
+        if(wikipedia_timeline_chart.length !== 0){create_timeline("wikipedia_timeline_chart", wikipedia_timeline_chart, xLabel, "{% trans 'Number of articles' %}", "{% trans 'Wikipedia' %}", "{% trans 'Number of articles created or edited' %}");}
+        if(commons_timeline_chart.length !== 0){create_timeline("commons_timeline_chart", commons_timeline_chart, xLabel, "{% trans 'Number of media files' %}", "{% trans 'Wikimedia Commons' %}", "{% trans 'Number of media files created or edited' %}");}
+        if(wikidata_timeline_chart.length !== 0){create_timeline("wikidata_timeline_chart", wikidata_timeline_chart, xLabel, "{% trans 'Number of items' %}", "{% trans 'Wikidata' %}", "{% trans 'Number of items created or edited' %}");}
+        if(wikiversity_timeline_chart.length !== 0){create_timeline("wikiversity_timeline_chart", wikiversity_timeline_chart, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikiversity' %}", "{% trans 'Number of pages created or edited' %}");}
+        if(wikibooks_timeline_chart.length !== 0){create_timeline("wikibooks_timeline_chart", wikibooks_timeline_chart, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikibooks' %}", "{% trans 'Number of pages created or edited' %}");}
+        if(wikisource_timeline_chart.length !== 0){create_timeline("wikisource_timeline_chart", wikisource_timeline_chart, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikisource' %}", "{% trans 'Number of pages created or edited' %}");}
+        if(wikinews_timeline_chart.length !== 0){create_timeline("wikinews_timeline_chart", wikinews_timeline_chart, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikinews' %}", "{% trans 'Number of pages created or edited' %}");}
+        if(wikiquote_timeline_chart.length !== 0){create_timeline("wikiquote_timeline_chart", wikiquote_timeline_chart, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikiquote' %}", "{% trans 'Number of pages created or edited' %}");}
+        if(wiktionary_timeline_chart.length !== 0){create_timeline("wiktionary_timeline_chart", wiktionary_timeline_chart, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wiktionary' %}", "{% trans 'Number of pages created or edited' %}");}
+        if(wikivoyage_timeline_chart.length !== 0){create_timeline("wikivoyage_timeline_chart", wikivoyage_timeline_chart, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikivoyage' %}", "{% trans 'Number of pages created or edited' %}");}
+        if(wikispecies_timeline_chart.length !== 0){create_timeline("wikispecies_timeline_chart", wikispecies_timeline_chart, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikispecies' %}", "{% trans 'Number of pages created or edited' %}");}
+        if(metawiki_timeline_chart.length !== 0){create_timeline("metawiki_timeline_chart", metawiki_timeline_chart, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Metawiki' %}", "{% trans 'Number of pages created or edited' %}");}
+        if(mediawiki_timeline_chart.length !== 0){create_timeline("mediawiki_timeline_chart", mediawiki_timeline_chart, xLabel, "{% trans 'Number of pages' %}", "{% trans 'MediaWiki' %}", "{% trans 'Number of pages created or edited' %}");}
+        if(participants_timeline_chart.length !== 0){create_timeline("participants_timeline_chart", participants_timeline_chart, xLabel, "{% trans 'Number of participants' %}", "{% trans 'Participants' %}", "{% trans 'Number of participants' %}");}
+        if(resources_timeline_chart.length !== 0){create_timeline("resources_timeline_chart", resources_timeline_chart, xLabel, "{% trans 'Number of resources' %}", "{% trans 'Resources' %}", "{% trans 'Number of resources' %}");}
+        if(feedbacks_timeline_chart.length !== 0){create_timeline("feedbacks_timeline_chart", feedbacks_timeline_chart, xLabel, "{% trans 'Number of feedbacks' %}", "{% trans 'Feedbacks' %}", "{% trans 'Number of feedbacks' %}");}
+        if(editors_timeline_chart.length !== 0){create_timeline("editors_timeline_chart", editors_timeline_chart, xLabel, "{% trans 'Number of editors' %}", "{% trans 'Editors' %}", "{% trans 'Number of editors' %}");}
+        if(organizers_timeline_chart.length !== 0){create_timeline("organizers_timeline_chart", organizers_timeline_chart, xLabel, "{% trans 'Number of organizers' %}", "{% trans 'Organizers' %}", "{% trans 'Number of organizers' %}");}
+        if(partnerships_timeline_chart.length !== 0){create_timeline("partnerships_timeline_chart", partnerships_timeline_chart, xLabel, "{% trans 'Number of partnerships' %}", "{% trans 'Partnerships' %}", "{% trans 'Number of partnerships' %}");}
     </script>
 {% endblock %}
