@@ -469,8 +469,8 @@ class ReportExportViewTest(TestCase):
                            _('# Wikinews edited'), _('# Wikiquote created'), _('# Wikiquote edited'),
                            _('# Wiktionary created'), _('# Wiktionary edited'), _('# Wikivoyage created'),
                            _('# Wikivoyage edited'), _('# Wikispecies created'), _('# Wikispecies edited'),
-                           _('# Metawiki created'), _('# Metawiki edited'), _('# Mediawiki created'),
-                           _('# Mediawiki edited'), _('Directions related'), _('Learning'),
+                           _('# Metawiki created'), _('# Metawiki edited'), _('# MediaWiki created'),
+                           _('# MediaWiki edited'), _('Directions related'), _('Learning'),
                            _('Learning questions related')]
 
         self.report_1.area_activated.add(self.area_activated)
@@ -553,8 +553,8 @@ class ReportExportViewTest(TestCase):
                            _('# Wikinews edited'), _('# Wikiquote created'), _('# Wikiquote edited'),
                            _('# Wiktionary created'), _('# Wiktionary edited'), _('# Wikivoyage created'),
                            _('# Wikivoyage edited'), _('# Wikispecies created'), _('# Wikispecies edited'),
-                           _('# Metawiki created'), _('# Metawiki edited'), _('# Mediawiki created'),
-                           _('# Mediawiki edited'), _('Directions related'), _('Learning'),
+                           _('# Metawiki created'), _('# Metawiki edited'), _('# MediaWiki created'),
+                           _('# MediaWiki edited'), _('Directions related'), _('Learning'),
                            _('Learning questions related')]
 
         area_activated = [""]
@@ -623,8 +623,8 @@ class ReportExportViewTest(TestCase):
                            _('# Wikinews edited'), _('# Wikiquote created'), _('# Wikiquote edited'),
                            _('# Wiktionary created'), _('# Wiktionary edited'), _('# Wikivoyage created'),
                            _('# Wikivoyage edited'), _('# Wikispecies created'), _('# Wikispecies edited'),
-                           _('# Metawiki created'), _('# Metawiki edited'), _('# Mediawiki created'),
-                           _('# Mediawiki edited'), _('Directions related'), _('Learning'),
+                           _('# Metawiki created'), _('# Metawiki edited'), _('# MediaWiki created'),
+                           _('# MediaWiki edited'), _('Directions related'), _('Learning'),
                            _('Learning questions related')]
 
         expected_row = [self.report_1.id,
@@ -695,7 +695,7 @@ class ReportExportViewTest(TestCase):
                            _('# Wikiquote created'), _('# Wikiquote edited'), _('# Wiktionary created'),
                            _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'),
                            _('# Wikispecies created'), _('# Wikispecies edited'), _('# Metawiki created'),
-                           _('# Metawiki edited'), _('# Mediawiki created'), _('# Mediawiki edited')]
+                           _('# Metawiki edited'), _('# MediaWiki created'), _('# MediaWiki edited')]
 
         metric = Metric.objects.create(text="Metric", activity=self.activity_associated)
         expected_row = [metric.id,
@@ -754,7 +754,7 @@ class ReportExportViewTest(TestCase):
                            _('# Wikiquote created'), _('# Wikiquote edited'), _('# Wiktionary created'),
                            _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'),
                            _('# Wikispecies created'), _('# Wikispecies edited'), _('# Metawiki created'),
-                           _('# Metawiki edited'), _('# Mediawiki created'), _('# Mediawiki edited')]
+                           _('# Metawiki edited'), _('# MediaWiki created'), _('# MediaWiki edited')]
 
         metric_1 = Metric.objects.create(text="Metric 1", activity=self.activity_associated)
         metric_2 = Metric.objects.create(text="Metric 2", activity=self.activity_associated)

@@ -202,8 +202,8 @@ def export_report_instance(report_id=None):
               _('# Wikibooks edited'), _('# Wikisource created'), _('# Wikisource edited'), _('# Wikinews created'),
               _('# Wikinews edited'), _('# Wikiquote created'), _('# Wikiquote edited'), _('# Wiktionary created'),
               _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'), _('# Wikispecies created'),
-              _('# Wikispecies edited'), _('# Metawiki created'), _('# Metawiki edited'), _('# Mediawiki created'),
-              _('# Mediawiki edited'), _('Directions related'), _('Learning'), _('Learning questions related')]
+              _('# Wikispecies edited'), _('# Metawiki created'), _('# Metawiki edited'), _('# MediaWiki created'),
+              _('# MediaWiki edited'), _('Directions related'), _('Learning'), _('Learning questions related')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
@@ -327,7 +327,7 @@ def export_metrics(report_id=None):
               _('# Wikinews created'), _('# Wikinews edited'), _('# Wikiquote created'), _('# Wikiquote edited'),
               _('# Wiktionary created'), _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'),
               _('# Wikispecies created'), _('# Wikispecies edited'), _('# Metawiki created'), _('# Metawiki edited'),
-              _('# Mediawiki created'), _('# Mediawiki edited')]
+              _('# MediaWiki created'), _('# MediaWiki edited')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
@@ -518,14 +518,43 @@ def update_report(request, report_id):
         report_form = NewReportForm(request.POST or None, instance=obj, user=request.user)
         if report_form.is_valid():
             report_instance = report_form.save(commit=False)
-            user_profile = UserProfile.objects.get(user=request.user)
-            editors = get_or_create_editors(request.POST["editors_string"])
-            organizers = get_or_create_organizers(request.POST["organizers_string"])
 
+            # Editors
+            editors = get_or_create_editors(request.POST["editors_string"])
             report_instance.editors.set(editors)
+
+            # Organizers
+            organizers = get_or_create_organizers(request.POST["organizers_string"])
             report_instance.organizers.set(organizers)
+
+            # Modified by and Modified at
+            user_profile = UserProfile.objects.get(user=request.user)
             report_instance.modified_by = user_profile
             report_instance.modified_at = datetime.datetime.now()
+
+            # Fundings
+            fundings_associated = report_form.cleaned_data["funding_associated"]
+            report_instance.funding_associated.set(fundings_associated)
+
+            # Areas activated
+            areas_activated = report_form.cleaned_data["area_activated"]
+            report_instance.area_activated.set(areas_activated)
+
+            # Partners
+            partners_activated = report_form.cleaned_data["partners_activated"]
+            report_instance.partners_activated.set(partners_activated)
+
+            # Technologies
+            technologies_used = report_form.cleaned_data["technologies_used"]
+            report_instance.technologies_used.set(technologies_used)
+
+            # Directions
+            directions_related = report_form.cleaned_data["directions_related"]
+            report_instance.directions_related.set(directions_related)
+
+            # Learning Questions
+            learning_questions_related = report_form.cleaned_data["learning_questions_related"]
+            report_instance.learning_questions_related.set(learning_questions_related)
 
             report_instance.save()
             return redirect(reverse("report:detail_report", kwargs={"report_id": report_id}))

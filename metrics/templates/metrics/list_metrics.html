@@ -22,17 +22,17 @@
                     {% if total_done.wikivoyage_created or total_done.wikivoyage_edited or total_sum.wikivoyage_created or total_sum.wikivoyage_edited %}<li><a href="#wikivoyage" aria-label="wikivoyage">{% trans "Wikivoyage" %}</a></li>{% endif %}
                     {% if total_done.wikispecies_created or total_done.wikispecies_edited or total_sum.wikispecies_created or total_sum.wikispecies_edited %}<li><a href="#wikispecies" aria-label="wikispecies">{% trans "Wikispecies" %}</a></li>{% endif %}
                     {% if total_done.metawiki_created or total_done.metawiki_edited or total_sum.metawiki_created or total_sum.metawiki_edited %}<li><a href="#metawiki" aria-label="metawiki">{% trans "Metawiki" %}</a></li>{% endif %}
-                    {% if total_done.mediawiki_created or total_done.mediawiki_edited or total_sum.mediawiki_created or total_sum.mediawiki_edited %}<li><a href="#mediawiki" aria-label="mediawiki">{% trans "Mediawiki" %}</a></li>{% endif %}
+                    {% if total_done.mediawiki_created or total_done.mediawiki_edited or total_sum.mediawiki_created or total_sum.mediawiki_edited %}<li><a href="#mediawiki" aria-label="mediawiki">{% trans "MediaWiki" %}</a></li>{% endif %}
                 </ul>
             {% endif %}
-            {% if total_done.participants or total_sum.participants or total_done.editors or total_sum.editors or total_done.organizers or total_sum.organizers %}<b>{% trans "Core Metrics" %}</b>
+            {% if total_done.participants or total_sum.participants or total_done.editors or total_sum.editors or total_done.organizers or total_sum.organizers %}<b>{% trans "Core metrics" %}</b>
                 <ul>
                     {% if total_done.participants or total_sum.participants %}<li><a href="#participants" aria-label="participants">{% trans "Participants" %}</a></li>{% endif %}
                     {% if total_done.editors or total_sum.editors %}<li><a href="#editors" aria-label="editors">{% trans "Editors" %}</a></li>{% endif %}
                     {% if total_done.organizers or total_sum.organizers %}<li><a href="#organizers" aria-label="organizers">{% trans "Organizers" %}</a></li>{% endif %}
                 </ul>
             {% endif %}
-            {% if total_done.resources or total_sum.resources or total_done.feedbacks or total_sum.feedbacks or total_done.partnerships or total_sum.partnerships %}<b>{% trans "Main Metrics" %}</b>
+            {% if total_done.resources or total_sum.resources or total_done.feedbacks or total_sum.feedbacks or total_done.partnerships or total_sum.partnerships %}<b>{% trans "Main metrics" %}</b>
                 <ul>
                     {% if total_done.resources or total_sum.resources %}<li><a href="#resources" aria-label="resources">{% trans "Resources" %}</a></li>{% endif %}
                     {% if total_done.feedbacks or total_sum.feedbacks %}<li><a href="#feedbacks" aria-label="feedbacks">{% trans "Feedbacks" %}</a></li>{% endif %}
@@ -128,7 +128,7 @@
             {% endif %}
             {% if total_done.mediawiki_created or total_done.mediawiki_edited or total_sum.mediawiki_created or total_sum.mediawiki_edited %}
                 <div class="w3-row formfield">
-                    <h3 id="mediawiki">{% trans "Mediawiki" %}</h3>
+                    <h3 id="mediawiki">{% trans "MediaWiki" %}</h3>
                     <div class="w3-third"><canvas id="mediawiki_pie_chart"></canvas></div>
                     <div class="w3-twothird"><canvas id="mediawiki_timeline_chart"></canvas></div>
                 </div>
@@ -223,7 +223,7 @@
         create_timeline("wikivoyage_timeline_chart", {{ timeline.wikivoyage|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikivoyage' %}", "{% trans 'Number of pages created or edited' %}");
         create_timeline("wikispecies_timeline_chart", {{ timeline.wikispecies|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Wikispecies' %}", "{% trans 'Number of pages created or edited' %}");
         create_timeline("metawiki_timeline_chart", {{ timeline.metawiki|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Metawiki' %}", "{% trans 'Number of pages created or edited' %}");
-        create_timeline("mediawiki_timeline_chart", {{ timeline.mediawiki|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'Mediawiki' %}", "{% trans 'Number of pages created or edited' %}");
+        create_timeline("mediawiki_timeline_chart", {{ timeline.mediawiki|safe }}, xLabel, "{% trans 'Number of pages' %}", "{% trans 'MediaWiki' %}", "{% trans 'Number of pages created or edited' %}");
 
         create_timeline("participants_timeline_chart", {{ timeline.participants|safe }}, xLabel, "{% trans 'Number of participants' %}", "{% trans 'Participants' %}", "{% trans 'Number of participants' %}");
         create_timeline("resources_timeline_chart", {{ timeline.resources|safe }}, xLabel, "{% trans 'Number of resources' %}", "{% trans 'Resources' %}", "{% trans 'Number of resources' %}");
