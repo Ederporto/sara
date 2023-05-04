@@ -1,3 +1,5 @@
+moment.locale('pt-BR');
+
 export function create_doughnut(chart_id, label_1, label_2, data_1, data_2, title, fields, other_datasets=null, label_main_dataset="") {
     let datasets = []
     if (other_datasets != null) {
@@ -45,15 +47,15 @@ export function create_doughnut(chart_id, label_1, label_2, data_1, data_2, titl
             plugins: {
                 labels: {
                     fontColor: 'black'
-                }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function (tooltipItems) {
+                            return `${tooltipItems[0].label}`;
+                        },
+                    }
+                },
             },
-            tooltips: {
-                callbacks: {
-                    title: function(tooltipItem, data) {
-                        return data.datasets[tooltipItem[0].datasetIndex].label;
-                    },
-                }
-            }
         }
     });
 }
@@ -70,6 +72,7 @@ export function create_timeline(chart_id, data, xAxesLabel, yAxesLabel, project,
                     borderWidth: 1,
                     data: data, // [{"x":yyyy-mm-dd, "y":int, "label": name of the activity}]
                     tension: 0,
+                    fill: 'origin',
                     pointBackgroundColor: "rgb(0, 0, 0)"
                 }
             ]
@@ -79,6 +82,7 @@ export function create_timeline(chart_id, data, xAxesLabel, yAxesLabel, project,
             maintainAspectRatio: false,
             aspectRatio: 2,
             legend: {display: false},
+            locale: "pt-BR",
             scales: {
                 x: {
                     scaleLabel: {
@@ -89,7 +93,7 @@ export function create_timeline(chart_id, data, xAxesLabel, yAxesLabel, project,
                     time: {
                         unit: "month",
                         displayFormats: {
-                            month: "MMM, YYYY"
+                            month: "MMMM, YYYY"
                         }
                     }
                 },
@@ -103,21 +107,25 @@ export function create_timeline(chart_id, data, xAxesLabel, yAxesLabel, project,
                     }
                 },
             },
-            title: {
-                display: true,
-                text: title
-            },
-            tooltips: {
-                callbacks: {
-                    title: function(tooltipItem, data) {
-                        return data.datasets[tooltipItem[0].datasetIndex].data[tooltipItem[0].index].label;
-                    },
-                    label: function(tooltipItem, data) {
-                        let dataset = data.datasets[tooltipItem.datasetIndex];
-                        let currentValue = dataset.data[tooltipItem.index].y;
-                        let previousValue = tooltipItem.index > 0 ? dataset.data[tooltipItem.index - 1].y : currentValue;
-                        let valueDiff = currentValue - previousValue;
-                        return dataset.label + ': ' + currentValue + ' (+' + valueDiff + ')';
+            plugins: {
+                title: {
+                    display: false,
+                    text: title
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function (tooltipItem) {
+                            return tooltipItem[0].dataset.label;
+                        },
+                        label: function (tooltipItem) {
+                            let dataset = tooltipItem.dataset;
+                            let currentIndex = tooltipItem.dataIndex;
+                            let currentPoint = dataset.data[currentIndex];
+                            let currentValue = currentPoint.y;
+                            let previousValue = currentIndex > 0 ? dataset.data[currentIndex - 1].y : currentValue;
+                            let valueDiff = currentValue - previousValue;
+                            return valueDiff > 0 ? `${currentPoint.label}: ${currentValue} (+${valueDiff})` : `${currentPoint.label}: ${currentValue}`;
+                        }
                     }
                 }
             }
