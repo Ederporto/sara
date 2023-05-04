@@ -145,8 +145,9 @@
             {% if total_done.editors or total_sum.editors %}
                 <div class="w3-row formfield">
                     <h3 id="editors">{% trans "Editors" %}</h3>
-                    <div class="w3-third"><canvas class="w3-quarter" id="editors_pie_chart"></canvas></div>
+                    <div class="w3-third"><canvas id="editors_pie_chart"></canvas></div>
                     <div class="w3-twothird"><canvas id="editors_timeline_chart"></canvas></div>
+                    <div class="w3-third"><canvas id="retained_editors_pie_chart"></canvas></div>
                 </div>
             {% endif %}
             {% if total_done.organizers or total_sum.organizers %}
@@ -154,6 +155,7 @@
                     <h3 id="organizers">{% trans "Organizers" %}</h3>
                     <div class="w3-third"><canvas id="organizers_pie_chart"></canvas></div>
                     <div class="w3-twothird"><canvas id="organizers_timeline_chart"></canvas></div>
+                    <div class="w3-third"><canvas id="retained_organizers_pie_chart"></canvas></div>
                 </div>
             {% endif %}
 
@@ -177,6 +179,7 @@
                     <h3 id="partnerships">{% trans "Partnerships activated" %}</h3>
                     <div class="w3-third"><canvas id="partnerships_pie_chart"></canvas></div>
                     <div class="w3-twothird"><canvas id="partnerships_timeline_chart"></canvas></div>
+                    <div class="w3-third"><canvas id="retained_partnerships_pie_chart"></canvas></div>
                 </div>
             {% endif %}
         </div>
@@ -211,6 +214,9 @@
         let editors_pie_chart = {{ total_sum.editors }} || {{ total_done.editors }}
         let organizers_pie_chart = {{ total_sum.organizers }} || {{ total_done.organizers }}
         let partnerships_pie_chart = {{ total_sum.partnerships }} || {{ total_done.partnerships }}
+        let retained_editors_pie_chart = {{ total_sum.retained_editors }} || {{ total_done.retained_editors }}
+        let retained_organizers_pie_chart = {{ total_sum.retained_organizers }} || {{ total_done.retained_organizers }}
+        let retained_partnerships_pie_chart = {{ total_sum.retained_partnerships }} || {{ total_done.retained_partnerships }}
 
         if(wikipedia_pie_chart){create_doughnut("wikipedia_pie_chart", label_1, label_2, {{ total_done.wikipedia_created }} + {{ total_done.wikipedia_edited }}, {{ total_sum.wikipedia_created }} + {{ total_sum.wikipedia_edited }}, "{% trans 'Number of articles created or edited' %}", ["wikipedia_created", "wikipedia_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
         if(commons_pie_chart){create_doughnut("commons_pie_chart", label_1, label_2, {{ total_done.commons_created }} + {{ total_done.commons_edited }}, {{ total_sum.commons_created }} + {{ total_sum.commons_edited }}, "{% trans 'Number of media files created or edited' %}", ["commons_created", "commons_edited"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
@@ -231,6 +237,9 @@
         if(editors_pie_chart){create_doughnut("editors_pie_chart", label_1, label_2, {{ total_done.editors }}, {{ total_sum.editors }}, "{% trans 'Number of editors' %}", ["editors"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
         if(organizers_pie_chart){create_doughnut("organizers_pie_chart", label_1, label_2, {{ total_done.organizers }}, {{ total_sum.organizers }}, "{% trans 'Number of organizers' %}", ["organizers"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
         if(partnerships_pie_chart){create_doughnut("partnerships_pie_chart", label_1, label_2, {{ total_done.partnerships }}, {{ total_sum.partnerships }}, "{% trans 'Number of partnerships' %}", ["partnerships"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(retained_editors_pie_chart){create_doughnut("retained_editors_pie_chart", label_1, label_2, {{ total_done.retained_editors }}, {{ total_sum.retained_editors }}, "{% trans 'Number of retained editors' %}", ["retained_editors"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(retained_organizers_pie_chart){create_doughnut("retained_organizers_pie_chart", label_1, label_2, {{ total_done.retained_organizers }}, {{ total_sum.retained_organizers }}, "{% trans 'Number of retained organizers' %}", ["retained_organizers"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
+        if(retained_partnerships_pie_chart){create_doughnut("retained_partnerships_pie_chart", label_1, label_2, {{ total_done.retained_partnerships }}, {{ total_sum.retained_partnerships }}, "{% trans 'Number of retained partnerships' %}", ["retained_partnerships"], {{ projects_metrics|safe }}, "{% trans 'Activities plan' %}");}
 
         let wikipedia_timeline_chart = {{ timeline.wikipedia|safe }};
         let commons_timeline_chart = {{ timeline.commons|safe }};

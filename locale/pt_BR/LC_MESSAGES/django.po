@@ -763,7 +763,7 @@ msgstr "Plano de atividades"
 #: .\metrics\templates\metrics\list_metrics.html:194
 #: .\metrics\templates\metrics\list_metrics.html:215
 msgid "Number of media files created or edited"
-msgstr "Número de arquivos de mídica criados ou editados"
+msgstr "Número de arquivos de mídia criados ou editados"
 
 #: .\metrics\templates\metrics\list_metrics.html:195
 #: .\metrics\templates\metrics\list_metrics.html:216

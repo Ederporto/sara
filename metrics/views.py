@@ -52,40 +52,44 @@ def get_aggregated_metrics_data(project=None):
     if project:
         q_filter = Q(project=project)
 
-    wikipedia_created = Metric.objects.filter(q_filter).aggregate(Sum('wikipedia_created'))['wikipedia_created__sum']
-    commons_created = Metric.objects.filter(q_filter).aggregate(Sum('commons_created'))['commons_created__sum']
-    wikidata_created = Metric.objects.filter(q_filter).aggregate(Sum('wikidata_created'))['wikidata_created__sum']
-    wikiversity_created = Metric.objects.filter(q_filter).aggregate(Sum('wikiversity_created'))['wikiversity_created__sum']
-    wikibooks_created = Metric.objects.filter(q_filter).aggregate(Sum('wikibooks_created'))['wikibooks_created__sum']
-    wikisource_created = Metric.objects.filter(q_filter).aggregate(Sum('wikisource_created'))['wikisource_created__sum']
-    wikinews_created = Metric.objects.filter(q_filter).aggregate(Sum('wikinews_created'))['wikinews_created__sum']
-    wikiquote_created = Metric.objects.filter(q_filter).aggregate(Sum('wikiquote_created'))['wikiquote_created__sum']
-    wiktionary_created = Metric.objects.filter(q_filter).aggregate(Sum('wiktionary_created'))['wiktionary_created__sum']
-    wikivoyage_created = Metric.objects.filter(q_filter).aggregate(Sum('wikivoyage_created'))['wikivoyage_created__sum']
-    wikispecies_created = Metric.objects.filter(q_filter).aggregate(Sum('wikispecies_created'))['wikispecies_created__sum']
-    metawiki_created = Metric.objects.filter(q_filter).aggregate(Sum('metawiki_created'))['metawiki_created__sum']
-    mediawiki_created = Metric.objects.filter(q_filter).aggregate(Sum('mediawiki_created'))['mediawiki_created__sum']
+    wikipedia_created = Metric.objects.filter(q_filter).aggregate(Sum('wikipedia_created'))['wikipedia_created__sum'] or 0
+    commons_created = Metric.objects.filter(q_filter).aggregate(Sum('commons_created'))['commons_created__sum'] or 0
+    wikidata_created = Metric.objects.filter(q_filter).aggregate(Sum('wikidata_created'))['wikidata_created__sum'] or 0
+    wikiversity_created = Metric.objects.filter(q_filter).aggregate(Sum('wikiversity_created'))['wikiversity_created__sum'] or 0
+    wikibooks_created = Metric.objects.filter(q_filter).aggregate(Sum('wikibooks_created'))['wikibooks_created__sum'] or 0
+    wikisource_created = Metric.objects.filter(q_filter).aggregate(Sum('wikisource_created'))['wikisource_created__sum'] or 0
+    wikinews_created = Metric.objects.filter(q_filter).aggregate(Sum('wikinews_created'))['wikinews_created__sum'] or 0
+    wikiquote_created = Metric.objects.filter(q_filter).aggregate(Sum('wikiquote_created'))['wikiquote_created__sum'] or 0
+    wiktionary_created = Metric.objects.filter(q_filter).aggregate(Sum('wiktionary_created'))['wiktionary_created__sum'] or 0
+    wikivoyage_created = Metric.objects.filter(q_filter).aggregate(Sum('wikivoyage_created'))['wikivoyage_created__sum'] or 0
+    wikispecies_created = Metric.objects.filter(q_filter).aggregate(Sum('wikispecies_created'))['wikispecies_created__sum'] or 0
+    metawiki_created = Metric.objects.filter(q_filter).aggregate(Sum('metawiki_created'))['metawiki_created__sum'] or 0
+    mediawiki_created = Metric.objects.filter(q_filter).aggregate(Sum('mediawiki_created'))['mediawiki_created__sum'] or 0
 
-    wikipedia_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikipedia_edited'))['wikipedia_edited__sum']
-    commons_edited = Metric.objects.filter(q_filter).aggregate(Sum('commons_edited'))['commons_edited__sum']
-    wikidata_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikidata_edited'))['wikidata_edited__sum']
-    wikiversity_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikiversity_edited'))['wikiversity_edited__sum']
-    wikibooks_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikibooks_edited'))['wikibooks_edited__sum']
-    wikisource_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikisource_edited'))['wikisource_edited__sum']
-    wikinews_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikinews_edited'))['wikinews_edited__sum']
-    wikiquote_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikiquote_edited'))['wikiquote_edited__sum']
-    wiktionary_edited = Metric.objects.filter(q_filter).aggregate(Sum('wiktionary_edited'))['wiktionary_edited__sum']
-    wikivoyage_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikivoyage_edited'))['wikivoyage_edited__sum']
-    wikispecies_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikispecies_edited'))['wikispecies_edited__sum']
-    metawiki_edited = Metric.objects.filter(q_filter).aggregate(Sum('metawiki_edited'))['metawiki_edited__sum']
-    mediawiki_edited = Metric.objects.filter(q_filter).aggregate(Sum('mediawiki_edited'))['mediawiki_edited__sum']
+    wikipedia_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikipedia_edited'))['wikipedia_edited__sum'] or 0
+    commons_edited = Metric.objects.filter(q_filter).aggregate(Sum('commons_edited'))['commons_edited__sum'] or 0
+    wikidata_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikidata_edited'))['wikidata_edited__sum'] or 0
+    wikiversity_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikiversity_edited'))['wikiversity_edited__sum'] or 0
+    wikibooks_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikibooks_edited'))['wikibooks_edited__sum'] or 0
+    wikisource_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikisource_edited'))['wikisource_edited__sum'] or 0
+    wikinews_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikinews_edited'))['wikinews_edited__sum'] or 0
+    wikiquote_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikiquote_edited'))['wikiquote_edited__sum'] or 0
+    wiktionary_edited = Metric.objects.filter(q_filter).aggregate(Sum('wiktionary_edited'))['wiktionary_edited__sum'] or 0
+    wikivoyage_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikivoyage_edited'))['wikivoyage_edited__sum'] or 0
+    wikispecies_edited = Metric.objects.filter(q_filter).aggregate(Sum('wikispecies_edited'))['wikispecies_edited__sum'] or 0
+    metawiki_edited = Metric.objects.filter(q_filter).aggregate(Sum('metawiki_edited'))['metawiki_edited__sum'] or 0
+    mediawiki_edited = Metric.objects.filter(q_filter).aggregate(Sum('mediawiki_edited'))['mediawiki_edited__sum'] or 0
 
-    number_of_participants = Metric.objects.filter(q_filter).aggregate(Sum('number_of_participants'))['number_of_participants__sum']
-    number_of_resources = Metric.objects.filter(q_filter).aggregate(Sum('number_of_resources'))['number_of_resources__sum']
-    number_of_feedbacks = Metric.objects.filter(q_filter).aggregate(Sum('number_of_feedbacks'))['number_of_feedbacks__sum']
-    number_of_editors = Metric.objects.filter(q_filter).aggregate(Sum('number_of_editors'))['number_of_editors__sum']
-    number_of_organizers = Metric.objects.filter(q_filter).aggregate(Sum('number_of_organizers'))['number_of_organizers__sum']
-    number_of_partnerships = Metric.objects.filter(q_filter).aggregate(Sum('number_of_partnerships'))['number_of_partnerships__sum']
+    number_of_participants = Metric.objects.filter(q_filter).aggregate(Sum('number_of_participants'))['number_of_participants__sum'] or 0
+    number_of_resources = Metric.objects.filter(q_filter).aggregate(Sum('number_of_resources'))['number_of_resources__sum'] or 0
+    number_of_feedbacks = Metric.objects.filter(q_filter).aggregate(Sum('number_of_feedbacks'))['number_of_feedbacks__sum'] or 0
+    number_of_editors = Metric.objects.filter(q_filter).aggregate(Sum('number_of_editors'))['number_of_editors__sum'] or 0
+    number_of_organizers = Metric.objects.filter(q_filter).aggregate(Sum('number_of_organizers'))['number_of_organizers__sum'] or 0
+    number_of_partnerships = Metric.objects.filter(q_filter).aggregate(Sum('number_of_partnerships'))['number_of_partnerships__sum'] or 0
+
+    number_of_retained_editors = Metric.objects.filter(q_filter).filter(other_type="retained").aggregate(Sum('number_of_editors'))['number_of_editors__sum'] or 0
+    number_of_retained_organizers = Metric.objects.filter(q_filter).filter(other_type="retained").aggregate(Sum('number_of_organizers'))['number_of_organizers__sum'] or 0
+    number_of_retained_partnerships = Metric.objects.filter(q_filter).filter(other_type="retained").aggregate(Sum('number_of_partnerships'))['number_of_partnerships__sum'] or 0
 
     total_sum["wikipedia_created"] = wikipedia_created
     total_sum["commons_created"] = commons_created
@@ -121,6 +125,9 @@ def get_aggregated_metrics_data(project=None):
     total_sum["editors"] = number_of_editors
     total_sum["organizers"] = number_of_organizers
     total_sum["partnerships"] = number_of_partnerships
+    total_sum["retained_editors"] = number_of_retained_editors
+    total_sum["retained_organizers"] = number_of_retained_organizers
+    total_sum["retained_partnerships"] = number_of_retained_partnerships
 
     return total_sum
 
@@ -162,10 +169,9 @@ def get_aggregated_metrics_data_done():
     number_of_organizers = Report.objects.annotate(num_organizers=Count('organizers')).aggregate(Sum('num_organizers'))['num_organizers__sum']
     number_of_partnerships = Report.objects.annotate(num_partnerships=Count('partners_activated')).aggregate(Sum('num_partnerships'))['num_partnerships__sum']
 
-    editors_in_more_than_one_activity = Report.objects.annotate(num_reports=Count('editors')).filter(num_reports__gt=1).values('editors')
-    organizers_in_more_than_one_activity = Report.objects.annotate(num_reports=Count('organizers')).filter(num_reports__gt=1).values('organizers')
-    number_of_retained_editors = Report.objects.filter(editors__in=editors_in_more_than_one_activity).annotate(num_editors=Count('editors', distinct=True)).values('num_editors').distinct().aggregate(Sum('num_editors'))['num_editors__sum'] or 0
-    number_of_retained_organizers = Report.objects.filter(organizers__in=organizers_in_more_than_one_activity).annotate(num_organizers=Count('organizers', distinct=True)).values('num_organizers').distinct().aggregate(Sum('num_organizers'))['num_organizers__sum'] or 0
+    editors_in_more_than_one_activity = Editor.objects.annotate(report_count=Count('editors')).filter(report_count__gt=1)
+    organizers_in_more_than_one_activity = Organizer.objects.annotate(report_count=Count('organizers')).filter(report_count__gt=1)
+    partners_in_more_than_one_activity = Partner.objects.annotate(report_count=Count('partners')).filter(report_count__gt=1)
 
     total_sum["wikipedia_created"] = wikipedia_created
     total_sum["commons_created"] = commons_created
@@ -202,8 +208,9 @@ def get_aggregated_metrics_data_done():
     total_sum["organizers"] = number_of_organizers
     total_sum["partnerships"] = number_of_partnerships
 
-    total_sum["retained_editors"] = number_of_retained_editors
-    total_sum["retained_organizers"] = number_of_retained_organizers
+    total_sum["retained_editors"] = editors_in_more_than_one_activity.count()
+    total_sum["retained_organizers"] = organizers_in_more_than_one_activity.count()
+    total_sum["retained_partnerships"] = partners_in_more_than_one_activity.count()
 
     return total_sum
 

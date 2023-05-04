@@ -40,13 +40,13 @@ export function create_doughnut(chart_id, label_1, label_2, data_1, data_2, titl
             aspectRatio: 1,
             legend: {display: false},
             scales: {y: {display: false}},
-            title: {
-                display: true,
-                text: title
-            },
             plugins: {
                 labels: {
                     fontColor: 'black'
+                },
+                title: {
+                    display: true,
+                    text: title
                 },
                 tooltip: {
                     callbacks: {
@@ -109,7 +109,7 @@ export function create_timeline(chart_id, data, xAxesLabel, yAxesLabel, project,
             },
             plugins: {
                 title: {
-                    display: false,
+                    display: true,
                     text: title
                 },
                 tooltip: {
@@ -132,4 +132,3 @@ export function create_timeline(chart_id, data, xAxesLabel, yAxesLabel, project,
         }
     });
 }
-
