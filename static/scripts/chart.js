@@ -93,7 +93,7 @@ export function create_timeline(chart_id, data, xAxesLabel, yAxesLabel, project,
                     time: {
                         unit: "month",
                         displayFormats: {
-                            month: "MMMM, YYYY"
+                            month: "MMM, YYYY"
                         }
                     }
                 },
