@@ -1,7 +1,7 @@
 import csv
 import datetime
 import pandas as pd
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, user_passes_test
 from django.shortcuts import render, redirect, reverse, get_object_or_404, HttpResponse
 from django.utils.translation import gettext as _
 from django.contrib import messages
@@ -96,29 +96,20 @@ def detail_bug(request, bug_id):
 def update_bug(request, bug_id):
     bug = get_object_or_404(Bug, pk=bug_id)
 
-    if request.method == "POST":
-        obs_permission = Permission.objects.get(codename="change_observation")
-        if obs_permission in request.user.user_permissions.get(obs_permission):
-            bug_form = BugUpdateForm(request.POST, instance=bug)
-        else:
-            bug_form = BugForm(request.POST, instance=bug)
+    if request.user.has_perm("bug.add_observation"):
+        bug_form = BugUpdateForm(request.POST or None, instance=bug)
+    else:
+        bug_form = BugForm(request.POST or None, instance=bug)
 
+    if request.method == "POST":
         if bug_form.is_valid():
             bug = bug_form.save(commit=False)
             bug.update_date = datetime.datetime.today()
             bug.save()
             messages.success(request, _("Changes made successfully!"))
-
             return redirect(reverse("bug:detail_bug", kwargs={"bug_id": bug_id}))
         else:
-            bug_form = BugForm(instance=bug)
             messages.error(request, _("Something went wrong!"))
-    else:
-        obs_permission = Permission.objects.get(codename="change_observation")
-        if obs_permission in request.user.user_permissions.all():
-            bug_form = BugUpdateForm(instance=bug)
-        else:
-            bug_form = BugForm(instance=bug)
     return render(request, "bug/update_bug.html", {"bugform": bug_form})
 
 
@@ -156,8 +147,8 @@ def edit_observation(request, bug_id):
 
             return redirect(reverse("bug:detail_bug", kwargs={"bug_id": bug_id}))
         else:
-            obs_form = BugForm(instance=obs)
+            obs_form = ObservationForm(instance=obs)
             messages.error(request, _("Something went wrong!"))
     else:
-        obs_form = BugForm(instance=obs)
+        obs_form = ObservationForm(instance=obs)
     return render(request, "bug/update_observation.html", {"obsform": obs_form})

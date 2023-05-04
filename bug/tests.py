@@ -120,6 +120,7 @@ class BugViewsTests(TestCase):
         self.assertRedirects(response, reverse('bug:detail_bug', kwargs={'bug_id': bug.pk}))
         self.assertEqual(bug.reporter.user, self.user)
 
+
     def test_add_bug_view_post_fails_with_invalid_parameters(self):
         self.client.login(username=self.username, password=self.password)
         url = reverse("bug:create_bug")
@@ -175,6 +176,24 @@ class BugViewsTests(TestCase):
         data = {
             "title": "Testess",
             "status": Bug.Status.DONE,
+            "description": "This is an updated test bug.",
+            "type_of_bug": Bug.BugType.ERROR,
+            "reporter": self.user
+        }
+
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.post(url, data=data)
+        self.assertRedirects(response, reverse("bug:detail_bug", args=[self.bug.id]))
+
+    def test_update_bug_view_when_user_isnt_developer(self):
+        self.user.user_permissions.remove(self.add_obs_permission)
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("bug:edit_bug", args=[self.bug.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        data = {
+            "title": "Testess",
             "description": "This is an updated test bug.",
             "type_of_bug": Bug.BugType.ERROR,
             "reporter": self.user

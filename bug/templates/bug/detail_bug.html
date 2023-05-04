@@ -48,28 +48,32 @@
                         <div class="w3-twothird formfield">{{ data.observation }}</div>
                     </div>
                 {% endif %}
-                <div class="w3-row">
-                    <div class="w3-third note formfieldtitle">&nbsp;</div>
-                    <div class="w3-twothird formfield">
-                        <a href="{% url 'bug:edit_bug' bug_id=data.id %}" tabindex="0" target="_self" aria-label="{% translate 'Update' %}">
-                            <button class="submitbutton" type="button">{% translate "Update" %}</button>
-                        </a>
-                    </div>
-                </div>
-                <div class="w3-row">
-                    <div class="w3-third note formfieldtitle">&nbsp;</div>
-                    <div class="w3-twothird formfield">
-                        {% if data.observation %}
-                            <a href="{% url 'bug:edit_obs' bug_id=data.id %}" tabindex="0" target="_self" aria-label="{% translate 'Edit observation' %}">
-                                <button class="submitbutton" type="button">{% translate "Edit observation" %}</button>
+                {% if perms.bug.change_bug %}
+                    <div class="w3-row">
+                        <div class="w3-third note formfieldtitle">&nbsp;</div>
+                        <div class="w3-twothird formfield">
+                            <a href="{% url 'bug:edit_bug' bug_id=data.id %}" tabindex="0" target="_self" aria-label="{% translate 'Update' %}">
+                                <button class="submitbutton" type="button">{% translate "Update" %}</button>
                             </a>
-                        {% else %}
-                            <a href="{% url 'bug:add_obs' bug_id=data.id %}" tabindex="0" target="_self" aria-label="{% translate 'Add observation' %}">
-                                <button class="submitbutton" type="button">{% translate "Add observation" %}</button>
-                            </a>
-                        {% endif %}
+                        </div>
                     </div>
-                </div>
+                {% endif %}
+                {% if perms.bug.add_obs %}
+                    <div class="w3-row">
+                        <div class="w3-third note formfieldtitle">&nbsp;</div>
+                        <div class="w3-twothird formfield">
+                            {% if data.observation %}
+                                <a href="{% url 'bug:edit_obs' bug_id=data.id %}" tabindex="0" target="_self" aria-label="{% translate 'Edit observation' %}">
+                                    <button class="submitbutton" type="button">{% translate "Edit observation" %}</button>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'bug:add_obs' bug_id=data.id %}" tabindex="0" target="_self" aria-label="{% translate 'Add observation' %}">
+                                    <button class="submitbutton" type="button">{% translate "Add observation" %}</button>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

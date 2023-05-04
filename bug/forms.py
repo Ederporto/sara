@@ -19,6 +19,8 @@ class BugUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(BugUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['title'].widget.attrs['readonly'] = True
+        self.fields['description'].widget.attrs['readonly'] = True
 
 
 class ObservationForm(forms.ModelForm):
