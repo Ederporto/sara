@@ -233,9 +233,9 @@ def get_activities():
     chart_data["metawiki"] = get_chart_data(activities, "metawiki_created", "metawiki_edited")
     chart_data["mediawiki"] = get_chart_data(activities, "mediawiki_created", "mediawiki_edited")
 
-    chart_data["participants"] = get_chart_data(activities, "participants", "participants")
-    chart_data["resources"] = get_chart_data(activities, "resources", "resources")
-    chart_data["feedbacks"] = get_chart_data(activities, "feedbacks", "feedbacks")
+    chart_data["participants"] = get_chart_data(activities, "participants")
+    chart_data["resources"] = get_chart_data(activities, "resources")
+    chart_data["feedbacks"] = get_chart_data(activities, "feedbacks")
     chart_data["editors"] = get_chart_data_many_to_many(activities, "editors")
     chart_data["organizers"] = get_chart_data_many_to_many(activities, "organizers")
     chart_data["partnerships"] = get_chart_data_many_to_many(activities, "partners_activated")
@@ -243,12 +243,16 @@ def get_activities():
     return chart_data
 
 
-def get_chart_data(activities, created_field, edited_field):
-    filtered_activities = activities.filter(Q(**{created_field + '__gt': 0}) | Q(**{edited_field + '__gt': 0})).order_by("end_date")
+def get_chart_data(activities, created_field=None, edited_field=None):
+    created_filter = Q(**{created_field + '__gt': 0}) if created_field else Q()
+    edited_filter = Q(**{edited_field + '__gt': 0}) if edited_field else Q()
+    filtered_activities = activities.filter(created_filter | edited_filter).order_by("end_date")
     chart_data = []
     total_ = 0
     for activity in filtered_activities:
-        total_ += getattr(activity, created_field) + getattr(activity, edited_field)
+        total_created = getattr(activity, created_field) if created_field else 0
+        total_edited = getattr(activity, edited_field) if edited_field else 0
+        total_ += total_created + total_edited
         chart_data.append({"x": activity.end_date.isoformat(), "y": total_, "label": activity.description})
     return chart_data
 
