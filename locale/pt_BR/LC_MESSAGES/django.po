@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-01 23:45-0300\n"
+"POT-Creation-Date: 2023-05-04 22:33-0300\n"
 "PO-Revision-Date: 2023-03-16 03:28-0300\n"
 "Last-Translator: Éder Porto <eder.porto@wmnobrasil.org>\n"
 "Language-Team: PT_BR <LL@li.org>\n"
@@ -188,7 +188,7 @@ msgid "Search"
 msgstr "Buscar"
 
 #: .\agenda\templates\agenda\list_events.html:34
-#: .\bug\templates\bug\list_bugs.html:40 .\bug\views.py:49 .\bug\views.py:64
+#: .\bug\templates\bug\list_bugs.html:40 .\bug\views.py:50 .\bug\views.py:65
 #: .\report\templates\area_activated\list_areas.html:33
 #: .\report\templates\funding\list_fundings.html:32
 #: .\report\templates\partners\list_partners.html:32
@@ -246,8 +246,8 @@ msgstr "Responsável"
 msgid "Changes done successfully!"
 msgstr "Mudanças feitas com sucesso!"
 
-#: .\agenda\views.py:62 .\agenda\views.py:106 .\bug\views.py:27
-#: .\bug\views.py:110 .\bug\views.py:129 .\bug\views.py:151
+#: .\agenda\views.py:62 .\agenda\views.py:106 .\bug\views.py:28
+#: .\bug\views.py:112 .\bug\views.py:129 .\bug\views.py:151
 #: .\report\views.py:35 .\users\tests.py:156 .\users\views.py:22
 msgid "Something went wrong!"
 msgstr "Algo deu errado!"
@@ -264,7 +264,7 @@ msgstr "Em progresso"
 msgid "Testing"
 msgstr "Em teste"
 
-#: .\bug\models.py:12 .\metrics\templates\metrics\list_metrics.html:190
+#: .\bug\models.py:12 .\metrics\templates\metrics\list_metrics.html:194
 msgid "Done"
 msgstr "Feito"
 
@@ -285,12 +285,12 @@ msgid "Question or clarification"
 msgstr "Dúvida ou clarificação"
 
 #: .\bug\models.py:20 .\bug\templates\bug\detail_bug.html:15
-#: .\bug\templates\bug\list_bugs.html:41 .\bug\views.py:49 .\bug\views.py:64
+#: .\bug\templates\bug\list_bugs.html:41 .\bug\views.py:50 .\bug\views.py:65
 msgid "Title"
 msgstr "Título"
 
-#: .\bug\models.py:21 .\bug\templates\bug\detail_bug.html:20 .\bug\views.py:49
-#: .\bug\views.py:64 .\report\templates\report\administrative.html:50
+#: .\bug\models.py:21 .\bug\templates\bug\detail_bug.html:20 .\bug\views.py:50
+#: .\bug\views.py:65 .\report\templates\report\administrative.html:50
 #: .\report\templates\report\detail_report.html:55
 #: .\report\templates\report\list_reports.html:36 .\report\tests_views.py:461
 #: .\report\tests_views.py:545 .\report\tests_views.py:615
@@ -299,28 +299,28 @@ msgid "Description"
 msgstr "Descrição"
 
 #: .\bug\models.py:22 .\bug\templates\bug\detail_bug.html:42
-#: .\bug\templates\bug\list_bugs.html:44 .\bug\views.py:49 .\bug\views.py:64
+#: .\bug\templates\bug\list_bugs.html:44 .\bug\views.py:50 .\bug\views.py:65
 msgid "Type"
 msgstr "Tipo"
 
 #: .\bug\models.py:23 .\bug\templates\bug\detail_bug.html:38
-#: .\bug\templates\bug\list_bugs.html:45 .\bug\views.py:49 .\bug\views.py:64
+#: .\bug\templates\bug\list_bugs.html:45 .\bug\views.py:50 .\bug\views.py:65
 msgid "Status"
 msgstr "Status"
 
 #: .\bug\models.py:24 .\bug\templates\bug\detail_bug.html:24
-#: .\bug\templates\bug\list_bugs.html:42 .\bug\views.py:49 .\bug\views.py:64
-#: .\bug\views.py:65
+#: .\bug\templates\bug\list_bugs.html:42 .\bug\views.py:50 .\bug\views.py:65
+#: .\bug\views.py:66
 msgid "Date of report"
 msgstr "Data de submissão"
 
-#: .\bug\models.py:26 .\bug\templates\bug\detail_bug.html:29 .\bug\views.py:49
-#: .\bug\views.py:64 .\bug\views.py:66
+#: .\bug\models.py:26 .\bug\templates\bug\detail_bug.html:29 .\bug\views.py:50
+#: .\bug\views.py:65 .\bug\views.py:67
 msgid "Update date"
 msgstr "Data de atualização"
 
-#: .\bug\models.py:34 .\bug\templates\bug\detail_bug.html:47 .\bug\views.py:49
-#: .\bug\views.py:64 .\report\tests_views.py:690 .\report\tests_views.py:749
+#: .\bug\models.py:34 .\bug\templates\bug\detail_bug.html:47 .\bug\views.py:50
+#: .\bug\views.py:65 .\report\tests_views.py:690 .\report\tests_views.py:749
 #: .\report\views.py:323
 msgid "Observation"
 msgstr "Observação"
@@ -331,25 +331,25 @@ msgid "Bug nº %(id_)s"
 msgstr "Bug nº %(id_)s"
 
 #: .\bug\templates\bug\detail_bug.html:34 .\bug\templates\bug\list_bugs.html:43
-#: .\bug\views.py:49 .\bug\views.py:64
+#: .\bug\views.py:50 .\bug\views.py:65
 msgid "Reporter"
 msgstr "Pessoa relatando"
 
-#: .\bug\templates\bug\detail_bug.html:54
 #: .\bug\templates\bug\detail_bug.html:55
+#: .\bug\templates\bug\detail_bug.html:56
 #: .\report\templates\report\detail_report.html:29
 #: .\report\templates\report\detail_report.html:31
 #: .\report\templates\report\list_reports.html:50
 msgid "Update"
 msgstr "Atualizar"
 
-#: .\bug\templates\bug\detail_bug.html:63
-#: .\bug\templates\bug\detail_bug.html:64
+#: .\bug\templates\bug\detail_bug.html:66
+#: .\bug\templates\bug\detail_bug.html:67
 msgid "Edit observation"
 msgstr "Editar observação"
 
-#: .\bug\templates\bug\detail_bug.html:67
-#: .\bug\templates\bug\detail_bug.html:68
+#: .\bug\templates\bug\detail_bug.html:70
+#: .\bug\templates\bug\detail_bug.html:71
 msgid "Add observation"
 msgstr "Adicionar observação"
 
@@ -365,19 +365,19 @@ msgstr "Exportar relatório de bugs"
 msgid "Add bug report"
 msgstr "Adicionar relatório de bug"
 
-#: .\bug\views.py:23
+#: .\bug\views.py:24
 msgid "Reported sucessfully!"
 msgstr "Registrado com sucesso!"
 
-#: .\bug\views.py:46
+#: .\bug\views.py:47
 msgid "SARA - Bugs"
 msgstr "SARA - Bugs"
 
-#: .\bug\views.py:49 .\bug\views.py:64 .\bug\views.py:67
+#: .\bug\views.py:50 .\bug\views.py:65 .\bug\views.py:68
 msgid "Answer date"
 msgstr "Data da resposta"
 
-#: .\bug\views.py:105 .\bug\views.py:146
+#: .\bug\views.py:109 .\bug\views.py:146
 msgid "Changes made successfully!"
 msgstr "Mudanças feitas com sucesso!"
 
@@ -471,7 +471,7 @@ msgid ""
 "                            Text license: <a class=\"underlined\" "
 "target='_blank' href='https://creativecommons.org/licenses/by-sa/3.0/'>CC-BY-"
 "SA 3.0 International</a><br>\n"
-"                            Version 1.0\n"
+"                            Version 1.1\n"
 "                        "
 msgstr ""
 "\n"
@@ -548,7 +548,7 @@ msgstr "Projetos Wikimedia"
 
 #: .\metrics\templates\metrics\list_metrics.html:13
 #: .\metrics\templates\metrics\list_metrics.html:47
-#: .\metrics\templates\metrics\list_metrics.html:214
+#: .\metrics\templates\metrics\list_metrics.html:264
 #: .\report\templates\report\detail_report.html:159
 #: .\report\templates\report\quantitative.html:55
 #: .\report\templates\report\quantitative.html:131
@@ -557,7 +557,7 @@ msgstr "Wikipédia"
 
 #: .\metrics\templates\metrics\list_metrics.html:14
 #: .\metrics\templates\metrics\list_metrics.html:54
-#: .\metrics\templates\metrics\list_metrics.html:215
+#: .\metrics\templates\metrics\list_metrics.html:265
 #: .\report\templates\report\detail_report.html:166
 #: .\report\templates\report\quantitative.html:61
 #: .\report\templates\report\quantitative.html:142
@@ -566,7 +566,7 @@ msgstr "Wikimedia Commons"
 
 #: .\metrics\templates\metrics\list_metrics.html:15
 #: .\metrics\templates\metrics\list_metrics.html:61
-#: .\metrics\templates\metrics\list_metrics.html:216
+#: .\metrics\templates\metrics\list_metrics.html:266
 #: .\report\templates\report\detail_report.html:173
 #: .\report\templates\report\quantitative.html:67
 #: .\report\templates\report\quantitative.html:153
@@ -575,7 +575,7 @@ msgstr "Wikidata"
 
 #: .\metrics\templates\metrics\list_metrics.html:16
 #: .\metrics\templates\metrics\list_metrics.html:68
-#: .\metrics\templates\metrics\list_metrics.html:217
+#: .\metrics\templates\metrics\list_metrics.html:267
 #: .\report\templates\report\detail_report.html:180
 #: .\report\templates\report\quantitative.html:73
 #: .\report\templates\report\quantitative.html:164
@@ -584,7 +584,7 @@ msgstr "Wikiversidade"
 
 #: .\metrics\templates\metrics\list_metrics.html:17
 #: .\metrics\templates\metrics\list_metrics.html:75
-#: .\metrics\templates\metrics\list_metrics.html:218
+#: .\metrics\templates\metrics\list_metrics.html:268
 #: .\report\templates\report\detail_report.html:187
 #: .\report\templates\report\quantitative.html:85
 #: .\report\templates\report\quantitative.html:186
@@ -593,7 +593,7 @@ msgstr "Wikilivros"
 
 #: .\metrics\templates\metrics\list_metrics.html:18
 #: .\metrics\templates\metrics\list_metrics.html:82
-#: .\metrics\templates\metrics\list_metrics.html:219
+#: .\metrics\templates\metrics\list_metrics.html:269
 #: .\report\templates\report\detail_report.html:194
 #: .\report\templates\report\quantitative.html:79
 #: .\report\templates\report\quantitative.html:175
@@ -602,7 +602,7 @@ msgstr "Wikisource"
 
 #: .\metrics\templates\metrics\list_metrics.html:19
 #: .\metrics\templates\metrics\list_metrics.html:89
-#: .\metrics\templates\metrics\list_metrics.html:220
+#: .\metrics\templates\metrics\list_metrics.html:270
 #: .\report\templates\report\detail_report.html:201
 #: .\report\templates\report\quantitative.html:91
 #: .\report\templates\report\quantitative.html:197
@@ -611,7 +611,7 @@ msgstr "Wikinotícias"
 
 #: .\metrics\templates\metrics\list_metrics.html:20
 #: .\metrics\templates\metrics\list_metrics.html:96
-#: .\metrics\templates\metrics\list_metrics.html:221
+#: .\metrics\templates\metrics\list_metrics.html:271
 #: .\report\templates\report\detail_report.html:208
 #: .\report\templates\report\quantitative.html:97
 #: .\report\templates\report\quantitative.html:208
@@ -620,7 +620,7 @@ msgstr "Wikiquote"
 
 #: .\metrics\templates\metrics\list_metrics.html:21
 #: .\metrics\templates\metrics\list_metrics.html:103
-#: .\metrics\templates\metrics\list_metrics.html:222
+#: .\metrics\templates\metrics\list_metrics.html:272
 #: .\report\templates\report\detail_report.html:215
 #: .\report\templates\report\quantitative.html:103
 #: .\report\templates\report\quantitative.html:219
@@ -629,7 +629,7 @@ msgstr "Wikcionário"
 
 #: .\metrics\templates\metrics\list_metrics.html:22
 #: .\metrics\templates\metrics\list_metrics.html:110
-#: .\metrics\templates\metrics\list_metrics.html:223
+#: .\metrics\templates\metrics\list_metrics.html:273
 #: .\report\templates\report\detail_report.html:222
 #: .\report\templates\report\quantitative.html:109
 #: .\report\templates\report\quantitative.html:230
@@ -638,7 +638,7 @@ msgstr "Wikivoyage"
 
 #: .\metrics\templates\metrics\list_metrics.html:23
 #: .\metrics\templates\metrics\list_metrics.html:117
-#: .\metrics\templates\metrics\list_metrics.html:224
+#: .\metrics\templates\metrics\list_metrics.html:274
 #: .\report\templates\report\detail_report.html:229
 #: .\report\templates\report\quantitative.html:115
 #: .\report\templates\report\quantitative.html:241
@@ -647,14 +647,14 @@ msgstr "Wikispecies"
 
 #: .\metrics\templates\metrics\list_metrics.html:24
 #: .\metrics\templates\metrics\list_metrics.html:124
-#: .\metrics\templates\metrics\list_metrics.html:225
+#: .\metrics\templates\metrics\list_metrics.html:275
 #: .\report\templates\report\detail_report.html:236
 msgid "Metawiki"
 msgstr "Metawiki"
 
 #: .\metrics\templates\metrics\list_metrics.html:25
 #: .\metrics\templates\metrics\list_metrics.html:131
-#: .\metrics\templates\metrics\list_metrics.html:226
+#: .\metrics\templates\metrics\list_metrics.html:276
 #: .\report\templates\report\detail_report.html:243
 #: .\report\templates\report\quantitative.html:127
 #: .\report\templates\report\quantitative.html:263
@@ -668,13 +668,13 @@ msgstr "Métricas "
 
 #: .\metrics\templates\metrics\list_metrics.html:30
 #: .\metrics\templates\metrics\list_metrics.html:140
-#: .\metrics\templates\metrics\list_metrics.html:228
+#: .\metrics\templates\metrics\list_metrics.html:277
 msgid "Participants"
 msgstr "Número de participantes"
 
 #: .\metrics\templates\metrics\list_metrics.html:31
 #: .\metrics\templates\metrics\list_metrics.html:147
-#: .\metrics\templates\metrics\list_metrics.html:231 .\report\models.py:31
+#: .\metrics\templates\metrics\list_metrics.html:280 .\report\models.py:31
 #: .\report\templates\report\detail_report.html:126
 #: .\report\templates\report\quantitative.html:19 .\report\tests_views.py:463
 #: .\report\tests_views.py:547 .\report\tests_views.py:617
@@ -683,8 +683,8 @@ msgid "Editors"
 msgstr "Editores"
 
 #: .\metrics\templates\metrics\list_metrics.html:32
-#: .\metrics\templates\metrics\list_metrics.html:154
-#: .\metrics\templates\metrics\list_metrics.html:232 .\report\models.py:55
+#: .\metrics\templates\metrics\list_metrics.html:155
+#: .\metrics\templates\metrics\list_metrics.html:281 .\report\models.py:55
 #: .\report\templates\report\detail_report.html:132
 #: .\report\templates\report\quantitative.html:23 .\report\tests_views.py:463
 #: .\report\tests_views.py:547 .\report\tests_views.py:617
@@ -697,27 +697,27 @@ msgid "Main metrics"
 msgstr "Métricas principais"
 
 #: .\metrics\templates\metrics\list_metrics.html:37
-#: .\metrics\templates\metrics\list_metrics.html:163
-#: .\metrics\templates\metrics\list_metrics.html:229
+#: .\metrics\templates\metrics\list_metrics.html:165
+#: .\metrics\templates\metrics\list_metrics.html:278
 msgid "Resources"
 msgstr "Recursos"
 
 #: .\metrics\templates\metrics\list_metrics.html:38
-#: .\metrics\templates\metrics\list_metrics.html:170
-#: .\metrics\templates\metrics\list_metrics.html:230
+#: .\metrics\templates\metrics\list_metrics.html:172
+#: .\metrics\templates\metrics\list_metrics.html:279
 msgid "Feedbacks"
 msgstr "Respostas"
 
 #: .\metrics\templates\metrics\list_metrics.html:39
-#: .\metrics\templates\metrics\list_metrics.html:233
+#: .\metrics\templates\metrics\list_metrics.html:282
 msgid "Partnerships"
 msgstr "Parcerias"
 
-#: .\metrics\templates\metrics\list_metrics.html:160
+#: .\metrics\templates\metrics\list_metrics.html:162
 msgid "Main and additional metrics"
 msgstr "Métricas principais e adicionais"
 
-#: .\metrics\templates\metrics\list_metrics.html:177
+#: .\metrics\templates\metrics\list_metrics.html:179
 #: .\report\templates\report\detail_report.html:138
 #: .\report\templates\report\quantitative.html:29 .\report\tests_views.py:464
 #: .\report\tests_views.py:548 .\report\tests_views.py:618
@@ -725,76 +725,79 @@ msgstr "Métricas principais e adicionais"
 msgid "Partnerships activated"
 msgstr "Parcerias ativadas"
 
-#: .\metrics\templates\metrics\list_metrics.html:191
+#: .\metrics\templates\metrics\list_metrics.html:195
 msgid "Not done"
 msgstr "Pendente"
 
-#: .\metrics\templates\metrics\list_metrics.html:192
+#: .\metrics\templates\metrics\list_metrics.html:196
 msgid "Date"
 msgstr "Data"
 
-#: .\metrics\templates\metrics\list_metrics.html:193
-#: .\metrics\templates\metrics\list_metrics.html:214
+#: .\metrics\templates\metrics\list_metrics.html:221
+#: .\metrics\templates\metrics\list_metrics.html:264
 msgid "Number of articles created or edited"
 msgstr "Número de artigos criados ou editados"
 
-#: .\metrics\templates\metrics\list_metrics.html:193
-#: .\metrics\templates\metrics\list_metrics.html:194
-#: .\metrics\templates\metrics\list_metrics.html:195
-#: .\metrics\templates\metrics\list_metrics.html:196
-#: .\metrics\templates\metrics\list_metrics.html:197
-#: .\metrics\templates\metrics\list_metrics.html:198
-#: .\metrics\templates\metrics\list_metrics.html:199
-#: .\metrics\templates\metrics\list_metrics.html:200
-#: .\metrics\templates\metrics\list_metrics.html:201
-#: .\metrics\templates\metrics\list_metrics.html:202
-#: .\metrics\templates\metrics\list_metrics.html:203
-#: .\metrics\templates\metrics\list_metrics.html:204
-#: .\metrics\templates\metrics\list_metrics.html:205
-#: .\metrics\templates\metrics\list_metrics.html:207
-#: .\metrics\templates\metrics\list_metrics.html:208
-#: .\metrics\templates\metrics\list_metrics.html:209
-#: .\metrics\templates\metrics\list_metrics.html:210
-#: .\metrics\templates\metrics\list_metrics.html:211
-#: .\metrics\templates\metrics\list_metrics.html:212 .\templates\navbar.html:49
-msgid "Activities plan"
-msgstr "Plano de atividades"
-
-#: .\metrics\templates\metrics\list_metrics.html:194
-#: .\metrics\templates\metrics\list_metrics.html:215
-msgid "Number of media files created or edited"
-msgstr "Número de arquivos de mídia criados ou editados"
-
-#: .\metrics\templates\metrics\list_metrics.html:195
-#: .\metrics\templates\metrics\list_metrics.html:216
-msgid "Number of items created or edited"
-msgstr "Número de itens criados ou editados"
-
-#: .\metrics\templates\metrics\list_metrics.html:196
-#: .\metrics\templates\metrics\list_metrics.html:197
-#: .\metrics\templates\metrics\list_metrics.html:198
-#: .\metrics\templates\metrics\list_metrics.html:199
-#: .\metrics\templates\metrics\list_metrics.html:200
-#: .\metrics\templates\metrics\list_metrics.html:201
-#: .\metrics\templates\metrics\list_metrics.html:202
-#: .\metrics\templates\metrics\list_metrics.html:203
-#: .\metrics\templates\metrics\list_metrics.html:204
-#: .\metrics\templates\metrics\list_metrics.html:205
-#: .\metrics\templates\metrics\list_metrics.html:217
-#: .\metrics\templates\metrics\list_metrics.html:218
-#: .\metrics\templates\metrics\list_metrics.html:219
-#: .\metrics\templates\metrics\list_metrics.html:220
 #: .\metrics\templates\metrics\list_metrics.html:221
 #: .\metrics\templates\metrics\list_metrics.html:222
 #: .\metrics\templates\metrics\list_metrics.html:223
 #: .\metrics\templates\metrics\list_metrics.html:224
 #: .\metrics\templates\metrics\list_metrics.html:225
 #: .\metrics\templates\metrics\list_metrics.html:226
+#: .\metrics\templates\metrics\list_metrics.html:227
+#: .\metrics\templates\metrics\list_metrics.html:228
+#: .\metrics\templates\metrics\list_metrics.html:229
+#: .\metrics\templates\metrics\list_metrics.html:230
+#: .\metrics\templates\metrics\list_metrics.html:231
+#: .\metrics\templates\metrics\list_metrics.html:232
+#: .\metrics\templates\metrics\list_metrics.html:233
+#: .\metrics\templates\metrics\list_metrics.html:234
+#: .\metrics\templates\metrics\list_metrics.html:235
+#: .\metrics\templates\metrics\list_metrics.html:236
+#: .\metrics\templates\metrics\list_metrics.html:237
+#: .\metrics\templates\metrics\list_metrics.html:238
+#: .\metrics\templates\metrics\list_metrics.html:239
+#: .\metrics\templates\metrics\list_metrics.html:240
+#: .\metrics\templates\metrics\list_metrics.html:241
+#: .\metrics\templates\metrics\list_metrics.html:242 .\templates\navbar.html:49
+msgid "Activities plan"
+msgstr "Plano de atividades"
+
+#: .\metrics\templates\metrics\list_metrics.html:222
+#: .\metrics\templates\metrics\list_metrics.html:265
+msgid "Number of media files created or edited"
+msgstr "Número de arquivos de mídia criados ou editados"
+
+#: .\metrics\templates\metrics\list_metrics.html:223
+#: .\metrics\templates\metrics\list_metrics.html:266
+msgid "Number of items created or edited"
+msgstr "Número de itens criados ou editados"
+
+#: .\metrics\templates\metrics\list_metrics.html:224
+#: .\metrics\templates\metrics\list_metrics.html:225
+#: .\metrics\templates\metrics\list_metrics.html:226
+#: .\metrics\templates\metrics\list_metrics.html:227
+#: .\metrics\templates\metrics\list_metrics.html:228
+#: .\metrics\templates\metrics\list_metrics.html:229
+#: .\metrics\templates\metrics\list_metrics.html:230
+#: .\metrics\templates\metrics\list_metrics.html:231
+#: .\metrics\templates\metrics\list_metrics.html:232
+#: .\metrics\templates\metrics\list_metrics.html:233
+#: .\metrics\templates\metrics\list_metrics.html:267
+#: .\metrics\templates\metrics\list_metrics.html:268
+#: .\metrics\templates\metrics\list_metrics.html:269
+#: .\metrics\templates\metrics\list_metrics.html:270
+#: .\metrics\templates\metrics\list_metrics.html:271
+#: .\metrics\templates\metrics\list_metrics.html:272
+#: .\metrics\templates\metrics\list_metrics.html:273
+#: .\metrics\templates\metrics\list_metrics.html:274
+#: .\metrics\templates\metrics\list_metrics.html:275
+#: .\metrics\templates\metrics\list_metrics.html:276
 msgid "Number of pages created or edited"
 msgstr "Número de páginas criadas ou editadas"
 
-#: .\metrics\templates\metrics\list_metrics.html:207
-#: .\metrics\templates\metrics\list_metrics.html:228
+#: .\metrics\templates\metrics\list_metrics.html:234
+#: .\metrics\templates\metrics\list_metrics.html:277
 #: .\report\templates\report\detail_report.html:108
 #: .\report\templates\report\quantitative.html:5 .\report\tests_views.py:462
 #: .\report\tests_views.py:546 .\report\tests_views.py:616
@@ -803,8 +806,8 @@ msgstr "Número de páginas criadas ou editadas"
 msgid "Number of participants"
 msgstr "Número de participantes"
 
-#: .\metrics\templates\metrics\list_metrics.html:208
-#: .\metrics\templates\metrics\list_metrics.html:229
+#: .\metrics\templates\metrics\list_metrics.html:235
+#: .\metrics\templates\metrics\list_metrics.html:278
 #: .\report\templates\report\detail_report.html:114
 #: .\report\templates\report\quantitative.html:9 .\report\tests_views.py:463
 #: .\report\tests_views.py:547 .\report\tests_views.py:617
@@ -813,8 +816,8 @@ msgstr "Número de participantes"
 msgid "Number of resources"
 msgstr "Número de recursos"
 
-#: .\metrics\templates\metrics\list_metrics.html:209
-#: .\metrics\templates\metrics\list_metrics.html:230
+#: .\metrics\templates\metrics\list_metrics.html:236
+#: .\metrics\templates\metrics\list_metrics.html:279
 #: .\report\templates\report\detail_report.html:120
 #: .\report\templates\report\quantitative.html:13 .\report\tests_views.py:463
 #: .\report\tests_views.py:547 .\report\tests_views.py:617
@@ -823,47 +826,59 @@ msgstr "Número de recursos"
 msgid "Number of feedbacks"
 msgstr "Número de <i>feedbacks</i>"
 
-#: .\metrics\templates\metrics\list_metrics.html:210
-#: .\metrics\templates\metrics\list_metrics.html:231
+#: .\metrics\templates\metrics\list_metrics.html:237
+#: .\metrics\templates\metrics\list_metrics.html:280
 #: .\report\tests_views.py:688 .\report\tests_views.py:747
 #: .\report\views.py:321
 msgid "Number of editors"
 msgstr "Número de editores"
 
-#: .\metrics\templates\metrics\list_metrics.html:211
-#: .\metrics\templates\metrics\list_metrics.html:232
+#: .\metrics\templates\metrics\list_metrics.html:238
+#: .\metrics\templates\metrics\list_metrics.html:281
 msgid "Number of organizers"
 msgstr "Número de organizadores"
 
-#: .\metrics\templates\metrics\list_metrics.html:212
-#: .\metrics\templates\metrics\list_metrics.html:233
+#: .\metrics\templates\metrics\list_metrics.html:239
+#: .\metrics\templates\metrics\list_metrics.html:282
 #: .\report\tests_views.py:688 .\report\tests_views.py:747
 #: .\report\views.py:322
 msgid "Number of partnerships"
 msgstr "Número de parcerias"
 
-#: .\metrics\templates\metrics\list_metrics.html:214
+#: .\metrics\templates\metrics\list_metrics.html:240
+msgid "Number of retained editors"
+msgstr "Número de editores retidos"
+
+#: .\metrics\templates\metrics\list_metrics.html:241
+msgid "Number of retained organizers"
+msgstr "Número de organizadores retidos"
+
+#: .\metrics\templates\metrics\list_metrics.html:242
+msgid "Number of retained partnerships"
+msgstr "Número de parcerias retidas"
+
+#: .\metrics\templates\metrics\list_metrics.html:264
 msgid "Number of articles"
 msgstr "Número de artigos"
 
-#: .\metrics\templates\metrics\list_metrics.html:215
+#: .\metrics\templates\metrics\list_metrics.html:265
 msgid "Number of media files"
 msgstr "Número de arquivos de mídia"
 
-#: .\metrics\templates\metrics\list_metrics.html:216
+#: .\metrics\templates\metrics\list_metrics.html:266
 msgid "Number of items"
 msgstr "Número de itens"
 
-#: .\metrics\templates\metrics\list_metrics.html:217
-#: .\metrics\templates\metrics\list_metrics.html:218
-#: .\metrics\templates\metrics\list_metrics.html:219
-#: .\metrics\templates\metrics\list_metrics.html:220
-#: .\metrics\templates\metrics\list_metrics.html:221
-#: .\metrics\templates\metrics\list_metrics.html:222
-#: .\metrics\templates\metrics\list_metrics.html:223
-#: .\metrics\templates\metrics\list_metrics.html:224
-#: .\metrics\templates\metrics\list_metrics.html:225
-#: .\metrics\templates\metrics\list_metrics.html:226
+#: .\metrics\templates\metrics\list_metrics.html:267
+#: .\metrics\templates\metrics\list_metrics.html:268
+#: .\metrics\templates\metrics\list_metrics.html:269
+#: .\metrics\templates\metrics\list_metrics.html:270
+#: .\metrics\templates\metrics\list_metrics.html:271
+#: .\metrics\templates\metrics\list_metrics.html:272
+#: .\metrics\templates\metrics\list_metrics.html:273
+#: .\metrics\templates\metrics\list_metrics.html:274
+#: .\metrics\templates\metrics\list_metrics.html:275
+#: .\metrics\templates\metrics\list_metrics.html:276
 msgid "Number of pages"
 msgstr "Número de páginas"
 
