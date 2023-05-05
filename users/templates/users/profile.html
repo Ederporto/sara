@@ -33,10 +33,10 @@
                                 <label class="w3-third formfieldtitle" for="id_{{ field.name }}">
                                     {{ field.label }}{% if field.field.required %}*{% endif %}
                                 </label>
-                                <div class="w3-twothird formfield">
-                                    {{ field }}
-                                </div>
+                                <div class="w3-twothird formfield">{{ field }}</div>
                             {% endfor %}
+                            <label class="w3-third formfieldtitle" for="id_position">{% trans "Position" %}*</label>
+                            <div class="w3-twothird formfield"><input type="text" name="position" value="{{ position.text }}" id="id_position"></div>
                         </fieldset>
                     </div>
                 </div>

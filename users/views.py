@@ -11,19 +11,16 @@ from .models import User
 @transaction.atomic
 def update_profile(request, user_id):
     user = get_object_or_404(User, pk=user_id)
-
+    user_form = UserForm(instance=user)
+    user_profile_form = UserProfileForm(request.POST or None, instance=user.userprofile)
+    position = user.userprofile.position
     if request.method == "POST":
-        user_form = UserForm(instance=user)
-        user_profile_form = UserProfileForm(request.POST, instance=user.userprofile)
         if user_profile_form.is_valid():
             user_profile_form.save()
             messages.success(request, _("Changes done successfully!"))
         else:
             messages.error(request, _("Something went wrong!"))
-    else:
-        user_form = UserForm(instance=user)
-        user_profile_form = UserProfileForm(instance=user.userprofile)
-    return render(request, "users/profile.html", {"userform": user_form, "userprofileform": user_profile_form})
+    return render(request, "users/profile.html", {"userform": user_form, "userprofileform": user_profile_form, "position": position})
 
 
 @permission_required('auth.add_user')
