@@ -133,7 +133,9 @@ class MetricViewsTests(TestCase):
         self.assertTemplateUsed(response, "metrics/about.html")
 
     def test_show_activities_plan_view(self):
+        project = Project.objects.create(text="Plano de atividades")
         area = Area.objects.create(text="Area")
+        area.project.add(project)
         Activity.objects.create(text="Activity", area=area)
         url = reverse("metrics:show_activities")
         response = self.client.get(url)

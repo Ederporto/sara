@@ -6,9 +6,26 @@ from users.models import UserProfile
 from strategy.models import StrategicAxis
 
 
+class Project(models.Model):
+    text = models.CharField(max_length=420)
+    status = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = _("Project")
+        verbose_name_plural = _("Projects")
+
+    def __str__(self):
+        return self.text
+
+    def clean(self):
+        if not self.text:
+            raise ValidationError(_("You need to fill the text field"))
+
+
 class Area(models.Model):
     text = models.CharField(max_length=420)
     related_axis = models.ManyToManyField(StrategicAxis, related_name='areas')
+    project = models.ManyToManyField(Project, related_name="project_activity", blank=True)
 
     class Meta:
         verbose_name = _("Area")
@@ -46,22 +63,6 @@ class Activity(models.Model):
     class Meta:
         verbose_name = _("Activity")
         verbose_name_plural = _("Activities")
-
-    def __str__(self):
-        return self.text
-
-    def clean(self):
-        if not self.text:
-            raise ValidationError(_("You need to fill the text field"))
-
-
-class Project(models.Model):
-    text = models.CharField(max_length=420)
-    status = models.BooleanField(default=True)
-
-    class Meta:
-        verbose_name = _("Project")
-        verbose_name_plural = _("Projects")
 
     def __str__(self):
         return self.text
