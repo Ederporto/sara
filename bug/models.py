@@ -10,6 +10,7 @@ class Bug(models.Model):
         PROG = "2", _("In progress")
         TEST = "3", _("Testing")
         DONE = "4", _("Done")
+        CANC = "5", _("Canceled")
 
     class BugType(models.TextChoices):
         ERROR = "1", _("Error")
