@@ -71,7 +71,7 @@
             selectedContainer.innerHTML = '';
 
             selectedChoices.forEach((choice, index) => {
-                const label = document.querySelector(`input[value="${choice}"]`).parentNode.textContent;
+                const label = document.querySelector(`#strategic_questions_fieldset input[value="${choice}"]`).parentNode.textContent;
                 selectedContainer.innerHTML += `<p>${index + 1}. ${label}</p>`;
             });
         }
