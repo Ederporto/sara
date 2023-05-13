@@ -2,15 +2,15 @@
 <div class="w3-container">
     <div class="w3-row">
         <div class="w3-third formfield form-left">
-            <label class="formfieldtitle" for="participants">{% translate "Number of participants" %}</label>
+            <label class="formfieldtitle" for="number_of_participants">{% translate "Number of participants" %}</label>
             <input type="number" min="0" value="{{ report_form.instance.participants }}" id="number_of_participants" name="participants"/>
         </div>
         <div class="w3-third formfield form-left form-right">
-            <label class="formfieldtitle" for="resources">{% translate "Number of resources" %}</label>
+            <label class="formfieldtitle" for="number_of_resources">{% translate "Number of resources" %}</label>
             <input type="number" min="0" value="{{ report_form.instance.resources }}" id="number_of_resources" name="resources"/>
         </div>
         <div class="w3-third formfield form-right">
-            <label class="formfieldtitle" for="feedbacks">{% translate "Number of feedbacks" %}</label>
+            <label class="formfieldtitle" for="number_of_feedbacks">{% translate "Number of feedbacks" %}</label>
             <input type="number" min="0" value="{{ report_form.instance.feedbacks }}" id="number_of_feedbacks" name="feedbacks"/>
         </div>
     </div>
@@ -290,7 +290,7 @@
 
             $(window).on('message', function(event){
                 if(event.originalEvent.source === popup && event.originalEvent.data.action === "add_partnerships") {
-                    let partners = $('#partners');
+                    let partners = $('#partners_activated');
                     let existingOption = partners.find('option[value="' + event.originalEvent.data.id + '"]');
                     if (existingOption.length === 0) {
                         partners.append($('<option>', {
