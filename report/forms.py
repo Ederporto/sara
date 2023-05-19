@@ -18,7 +18,6 @@ class NewReportForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
-        instance = kwargs.pop("instance", None)
         super(NewReportForm, self).__init__(*args, **kwargs)
         self.fields["activity_associated"].choices = activities_associated_as_choices()
         self.fields["directions_related"].choices = directions_associated_as_choices()
@@ -27,11 +26,12 @@ class NewReportForm(forms.ModelForm):
         self.fields["funding_associated"].queryset = Funding.objects.order_by(Lower("name"))
         self.fields["area_activated"].queryset = AreaActivated.objects.order_by(Lower("text"))
         self.fields["partners_activated"].queryset = Partner.objects.order_by(Lower("name"))
-        self.fields["technologies_used"].queryset = Technology.objects.order_by(Lower("name"))
-        if instance:
-            self.fields["area_responsible"].initial = instance.area_responsible.id
-        elif user:
+        if self.instance:
+            self.fields["area_responsible"].initial = self.instance.area_responsible_id
+        else:
             self.fields["area_responsible"].initial = area_responsible_of_user(user)
+        self.fields["technologies_used"].queryset = Technology.objects.order_by(Lower("name"))
+
 
     def clean_editors(self):
         editors_string = self.data.get("editors_string", "")
