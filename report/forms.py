@@ -26,7 +26,7 @@ class NewReportForm(forms.ModelForm):
         self.fields["funding_associated"].queryset = Funding.objects.order_by(Lower("name"))
         self.fields["area_activated"].queryset = AreaActivated.objects.order_by(Lower("text"))
         self.fields["partners_activated"].queryset = Partner.objects.order_by(Lower("name"))
-        if self.instance:
+        if self.instance.id:
             self.fields["area_responsible"].initial = self.instance.area_responsible_id
         else:
             self.fields["area_responsible"].initial = area_responsible_of_user(user)
