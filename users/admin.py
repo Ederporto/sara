@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 
-from users.models import UserProfile, TeamArea
+from users.models import UserProfile, TeamArea, Position
 
 
 class UserProfileInline(admin.StackedInline):
@@ -23,3 +23,4 @@ class AccountUserAdmin(AuthUserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, AccountUserAdmin)
 admin.site.register(TeamArea)
+admin.site.register(Position)
