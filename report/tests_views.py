@@ -70,7 +70,7 @@ class ReportAddViewTest(TestCase):
             "area_responsible": area_reponsible.id,
             "links": "Links"
         }
-        form = NewReportForm(data)
+        form = NewReportForm(data, user=self.user)
         self.assertTrue(form.is_valid())
 
         response = self.client.post(url, data=data)
@@ -101,7 +101,7 @@ class ReportAddViewTest(TestCase):
             "area_responsible": area_reponsible.id,
             "links": "Links"
         }
-        form = NewReportForm(data)
+        form = NewReportForm(data, user=self.user)
         self.assertFalse(form.is_valid())
         self.client.post(url, data=data)
         self.assertFalse(Report.objects.filter(description=data["description"]).exists())
@@ -1179,15 +1179,21 @@ class OtherViewsTest(TestCase):
 
 
 class ReportFormTest(TestCase):
+    def setUp(self):
+        self.username = "testuser"
+        self.password = "testpass"
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.user_profile = UserProfile.objects.filter(user=self.user).first()
+
     def test_clean_organizers_empty_string(self):
         form_data = {"organizers_string": ""}
-        form = NewReportForm(data=form_data)
+        form = NewReportForm(data=form_data, user=self.user)
         cleaned_data = form.clean_organizers()
         self.assertFalse(cleaned_data)
 
     def test_clean_organizers_single_organizer(self):
         form_data = {"organizers_string": "Organizer 1;"}
-        form = NewReportForm(data=form_data)
+        form = NewReportForm(data=form_data, user=self.user)
         cleaned_data = form.clean_organizers()
         self.assertEqual(len(cleaned_data), 1)
         self.assertEqual(cleaned_data[0].name, "Organizer 1")
@@ -1195,7 +1201,7 @@ class ReportFormTest(TestCase):
 
     def test_clean_organizers_multiple_organizers(self):
         form_data = {"organizers_string": "Organizer 1;\r\nOrganizer 2;"}
-        form = NewReportForm(data=form_data)
+        form = NewReportForm(data=form_data, user=self.user)
         cleaned_data = form.clean_organizers()
         self.assertEqual(len(cleaned_data), 2)
         self.assertEqual(cleaned_data[0].name, "Organizer 1")
@@ -1205,7 +1211,7 @@ class ReportFormTest(TestCase):
 
     def test_clean_organizers_single_institution(self):
         form_data = {"organizers_string": "Organizer 1;Institution 1;"}
-        form = NewReportForm(data=form_data)
+        form = NewReportForm(data=form_data, user=self.user)
         cleaned_data = form.clean_organizers()
         self.assertEqual(len(cleaned_data), 1)
         self.assertEqual(cleaned_data[0].name, "Organizer 1")
@@ -1214,7 +1220,7 @@ class ReportFormTest(TestCase):
 
     def test_clean_organizers_multiple_institutions(self):
         form_data = {"organizers_string": "Organizer 1;Institution 1;Institution 2;Institution 3;"}
-        form = NewReportForm(data=form_data)
+        form = NewReportForm(data=form_data, user=self.user)
         cleaned_data = form.clean_organizers()
         self.assertEqual(len(cleaned_data), 1)
         self.assertEqual(cleaned_data[0].name, "Organizer 1")
@@ -1225,7 +1231,7 @@ class ReportFormTest(TestCase):
 
     def test_clean_organizers_multiple_institutions_empty_partner_names(self):
         form_data = {"organizers_string": "Organizer 1;Institution 1;Institution 2;;Institution 3;;"}
-        form = NewReportForm(data=form_data)
+        form = NewReportForm(data=form_data, user=self.user)
         cleaned_data = form.clean_organizers()
         self.assertEqual(len(cleaned_data), 1)
         self.assertEqual(cleaned_data[0].name, "Organizer 1")
