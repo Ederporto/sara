@@ -3,7 +3,7 @@
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="activity_associated">{% translate "Activity associated" %}*</label>
         <div class="w3-twothird formfield">
-            <select id="activity_associated" name="activity_associated">
+            <select id="activity_associated" name="activity_associated" onchange="show_metrics_options();">
                 <option value="" selected>----------</option>
                 <option value="1">{% translate "Other (not listed)" %}</option>
                 {% for area in report_form.fields.activity_associated.choices %}
@@ -53,13 +53,17 @@
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="funding_associated">{% translate "Funding associated" %}</label>
         <div class="w3-twothird formfield">
-            <select id="funding_associated" name="funding_associated" multiple>
+            <select id="funding_associated" name="funding_associated" multiple onchange="show_metrics_options();">
                 {% for funding_associated in report_form.fields.funding_associated.queryset %}
                     <option value="{{ funding_associated.id }}" {% if funding_associated in report_form.instance.funding_associated.all %}selected{% endif %}>{{ funding_associated.name }}</option>
                 {% endfor %}
             </select>
             <button type="button" id="add_funding" class="add_button"><i class="fa-solid fa-plus"></i> {% translate "Add" %}</button>
         </div>
+    </div>
+    <div class="w3-row invisible_field" id="metrics">
+        <label class="w3-third formfieldtitle" for="metrics_formfield">{% translate "Metrics" %}</label>
+        <div class="w3-twothird formfield" id="metrics_to_select"></div>
     </div>
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="links">{% translate "Links" %}*</label>

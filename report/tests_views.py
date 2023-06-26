@@ -223,6 +223,47 @@ class ReportAddViewTest(TestCase):
             expected_queryset = Partner.objects.filter(name__in=expected_partners)
             self.assertQuerysetEqual(organizer.institution.all(), expected_queryset, ordered=False)
 
+    def test_get_metrics_with_activity(self):
+        activity = Activity.objects.create(text="Activity")
+        project = Project.objects.create(text="Project")
+        metric = Metric.objects.create(activity=activity, text="Metric")
+
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("report:get_metrics")
+        response = self.client.get(url, {"activity": activity.id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["objects"][0]["text"], "Metric")
+        self.assertEqual(response.json()["objects"][0]["activity_id"], activity.id)
+
+    def test_get_metrics_without_activities(self):
+        activity = Activity.objects.create(text="Activity")
+        project = Project.objects.create(text="Project")
+        metric = Metric.objects.create(activity=activity, text="Metric")
+        metric.project.add(project)
+        metric.save()
+
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("report:get_metrics")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["objects"], None)
+
+    def test_get_metrics_of_projects(self):
+        activity = Activity.objects.create(text="Activity")
+        project = Project.objects.create(text="Project")
+        metric = Metric.objects.create(activity=activity, text="Metric")
+        metric.project.add(project)
+        metric.save()
+
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("report:get_metrics")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["objects"], None)
+
 
 class ReportViewViewTest(TestCase):
     def setUp(self):

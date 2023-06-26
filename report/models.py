@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.core.validators import MinLengthValidator
 
-from metrics.models import Activity, Project
+from metrics.models import Activity, Project, Metric
 from users.models import TeamArea, UserProfile
 from strategy.models import StrategicAxis, Direction
 
@@ -202,6 +202,9 @@ class Report(models.Model):
 
     # Theory of Change
     learning_questions_related = models.ManyToManyField(StrategicLearningQuestion, related_name="strategic_learning_question_related", blank=False)
+
+    # Metrics associated
+    metrics_related = models.ManyToManyField(Metric, related_name="metrics_related", blank=True)
 
     class Meta:
         verbose_name = _("Report")

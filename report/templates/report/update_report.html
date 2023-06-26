@@ -51,6 +51,7 @@
                     toggle_field(this.id);
                 }
             })
+            show_metrics_options();
         });
 
         function toggle_field(selectObject) {
@@ -79,6 +80,48 @@
                 $(".activity_others").addClass("invisible_field");
             } else {
                 $(".activity_others").removeClass("invisible_field");
+            }
+        }
+
+        function show_metrics_options(){
+            let activity_associated = $("#activity_associated").val();
+            let funding_associated = $("#funding_associated").val();
+            let metrics_label = "{% translate 'Metrics associated' %}";
+            let metrics_tip_label = "{% translate 'Metrics this activity contributes to:' %}";
+            let metrics_related = {{ metrics_set }};
+
+            if (activity_associated || funding_associated){
+                $.ajax({
+                    url: '{% url "report:get_metrics" %}',
+                    method: 'GET',
+                    dataType: 'json',
+                    data: {activity: activity_associated, fundings: funding_associated},
+                    success: function (response) {
+                        if (response["objects"]) {
+                            let inner_html = "<fieldset id='metrics_fieldset' class='subcontainer'>";
+                            response["objects"].forEach(function (metric) {
+                                let checked = "";
+                                if (jQuery.inArray(metric.id,metrics_related) >= 0) {
+                                    checked = "checked";
+                                }
+                                let metric_element = "<label class='select-container'>" + metric.text +
+                                    "<input type='checkbox' name='metrics_related' value='" + metric.id + "' " + checked + ">" +
+                                    "<span class='checkmark'></span></label>"
+                                inner_html += metric_element
+                            })
+                            inner_html += "</fieldset>";
+                            $("#metrics").html("<label class='w3-third formfieldtitle' for='metrics_formfield'>" +
+                                metrics_label + "</label><div class='w3-twothird formfield'>" +
+                                inner_html + "</div>");
+                            $("#metrics").removeClass("invisible_field");
+                        } else {
+                            $("#metrics").addClass("invisible_field");
+                        }
+                    },
+                    error: function (response) {
+                        console.log(response)
+                    }
+                });
             }
         }
     </script>

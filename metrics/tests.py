@@ -161,6 +161,15 @@ class MetricViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "metrics/list_metrics.html")
 
+    def test_show_metrics_per_project(self):
+        self.client.login(username=self.username, password=self.password)
+        project = Project.objects.create(text="Project")
+        url = reverse("metrics:per_project")
+
+        response = self.client.get(url)
+        self.assertIn("projects", str(response.context))
+        self.assertEqual(project.id, response.context["projects"][0]["id"])
+
     def test_show_metrics_shows_metrics_charts(self):
         self.client.login(username=self.username, password=self.password)
 

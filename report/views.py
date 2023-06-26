@@ -8,10 +8,12 @@ from django.shortcuts import render, get_object_or_404, redirect, reverse, HttpR
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.translation import gettext as _
 from django.contrib import messages
+from django.db.models import Q
 
-from metrics.models import Metric
+
+from metrics.models import Metric, Project
 from report.models import LearningArea, EvaluationObjective, Editor, Organizer, Partner, \
-    Funding, Technology, Report, AreaActivated
+    Funding, Technology, Report, AreaActivated, Activity
 from users.models import TeamArea, UserProfile
 from report.forms import NewReportForm, activities_associated_as_choices,\
     AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm
@@ -24,6 +26,7 @@ def add_report(request):
     report_form = NewReportForm(request.POST or None, user=request.user)
     directions_related_set = list(map(int, report_form.data.get('directions_related', [])))
     learning_questions_related_set = list(map(int, report_form.data.get('learning_questions_related', [])))
+    metrics_set = list(map(int, report_form.data.get('metric_associated', [])))
     if request.method == "POST":
         if report_form.is_valid():
             report = report_form.save(user=request.user)
@@ -38,12 +41,14 @@ def add_report(request):
             context = {
                 "directions_related_set": directions_related_set,
                 "learning_questions_related_set": learning_questions_related_set,
+                "metrics_set": metrics_set,
                 "report_form": report_form
             }
             return render(request, "report/add_report.html", context)
     else:
         context = {"directions_related_set": directions_related_set,
                    "learning_questions_related_set": learning_questions_related_set,
+                   "metrics_set": metrics_set,
                    "report_form": report_form}
 
         return render(request, "report/add_report.html", context)
@@ -556,13 +561,18 @@ def update_report(request, report_id):
             learning_questions_related = report_form.cleaned_data["learning_questions_related"]
             report_instance.learning_questions_related.set(learning_questions_related)
 
+            # Metrics
+            metrics_related = report_form.cleaned_data["metrics_related"]
+            report_instance.metrics_related.set(metrics_related)
+
             report_instance.save()
             return redirect(reverse("report:detail_report", kwargs={"report_id": report_id}))
     else:
         report_form = NewReportForm(instance=obj, user=request.user)
         context = {"report_form": report_form,
                    "directions_related_set": list(obj.directions_related.values_list("id", flat=True)),
-                   "learning_questions_related_set": list(obj.learning_questions_related.values_list("id", flat=True))}
+                   "learning_questions_related_set": list(obj.learning_questions_related.values_list("id", flat=True)),
+                   "metrics_set": list(obj.metrics_related.values_list("id", flat=True))}
         return render(request, "report/update_report.html", context)
 
 
@@ -609,3 +619,21 @@ def get_or_create_organizers(organizers_string):
             organizers.append(new_organizer)
     return organizers
 
+
+def get_metrics(request):
+    activity = request.GET.get("activity")
+    fundings_ids = request.GET.getlist("fundings[]")
+    projects_ids = Project.objects.filter(Q(project_related__in=fundings_ids) | Q(project_related=1))
+    metrics_1 = []
+    metrics_2 = Metric.objects.filter(project__in=projects_ids).values().order_by('text')
+
+    if activity:
+        metrics_1 = Metric.objects.filter(activity_id=activity).values()
+        metrics_2 = metrics_2.exclude(activity_id=activity)
+
+    metrics = list(metrics_1) + list(metrics_2)
+
+    if metrics:
+        return JsonResponse({"objects": metrics})
+    else:
+        return JsonResponse({"objects": None})

@@ -46,6 +46,18 @@ def show_metrics(request):
     return render(request, "metrics/list_metrics.html", context=context)
 
 
+@login_required
+@permission_required("metrics.view_metric")
+def show_metrics_per_project(request):
+    projects = []
+    for project in Project.objects.all():
+        project_item = {"id": project.id, "text": project.text, "status": project.status, "metrics": project.project_associated.all()}
+        projects.append(project_item)
+
+    context = {"projects": projects}
+    return render(request, "metrics/list_metrics_per_project.html", context=context)
+
+
 def get_aggregated_metrics_data(project=None):
     total_sum = {}
 

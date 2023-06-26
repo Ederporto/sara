@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">{% endblock %}
+{% block banner %}{% endblock %}
+{% block content %}
+    <div class="w3-row">
+        <div class="w3-quarter index index-box">
+            <ul>
+                {% for project in projects %}
+                    <li><a href="#{{ project.id }}" aria-label="{{ project.text }}">{{ project.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="w3-threequarter" style="background-color: var(--light-color);">
+            {% for project in projects %}
+                <h2 id="{{ project.id }}">{{ project.text }}</h2>
+                {% for metric in project.metrics %}
+                    <div class="w3-row formfield" style="color:black;">{{ metric }}</div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

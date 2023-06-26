@@ -15,4 +15,5 @@ urlpatterns = [
     path("add/funding", views.add_funding, name="add_funding"),
     path("add/partner", views.add_partner, name="add_partner"),
     path("add/technology", views.add_technology, name="add_technology"),
+    path("get/metrics", views.get_metrics, name="get_metrics"),
 ]
