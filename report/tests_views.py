@@ -316,6 +316,40 @@ class ReportAddViewTest(TestCase):
         self.assertNotEqual(response.json()["objects"][0]["project"], "Project 2")
         self.assertNotEqual(response.json()["objects"][0]["metrics"][0]["activity_id"], activity_2.id)
 
+    def test_get_metrics_of_report_instance(self):
+        activities_plan = Project.objects.create(text="Activities plan")
+        project_1 = Project.objects.create(text="Project 1")
+        other_activity = Activity.objects.create(text="Other Activity")
+        activity = Activity.objects.create(text="Activity")
+
+        area_reponsible = TeamArea.objects.create(text="Area")
+        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
+        directions_related = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
+        learning_area = LearningArea.objects.create(text="Learning area")
+        learning_questions_related = StrategicLearningQuestion.objects.create(text="Strategic Learning Question",
+                                                                                   learning_area=learning_area)
+        metric_1 = Metric.objects.create(text="Metric 1", activity=activity)
+
+        report_1 = Report.objects.create(description="Report 1",
+                                         created_by=self.user_profile,
+                                         modified_by=self.user_profile,
+                                         initial_date=datetime.now().date().strftime("%Y-%m-%d"),
+                                         learning="Learnings!" * 51,
+                                         activity_associated=activity,
+                                         area_responsible=area_reponsible,
+                                         links="Links")
+
+        report_1.metrics_related.add(metric_1)
+        report_1.save()
+
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("report:get_metrics")
+        response = self.client.get(url, {"instance": [report_1.id]})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["objects"][0]["project"], "Other metrics")
+        self.assertEqual(response.json()["objects"][0]["metrics"][0]["activity_id"], activity.id)
+
     def test_get_metrics_without_activities(self):
         activity = Activity.objects.create(text="Activity")
         project = Project.objects.create(text="Project")
