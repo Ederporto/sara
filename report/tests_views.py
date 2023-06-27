@@ -59,6 +59,7 @@ class ReportAddViewTest(TestCase):
         slq = StrategicLearningQuestion.objects.create(text="SLQ", learning_area=learning_area)
         activity_associated = Activity.objects.create(text="Activity")
         area_reponsible = TeamArea.objects.create(text="Area")
+        metric = Metric.objects.create(text="Metric", activity=activity_associated)
 
         data = {
             "description": "Report",
@@ -68,7 +69,8 @@ class ReportAddViewTest(TestCase):
             "learning_questions_related": [slq.id],
             "activity_associated": activity_associated.id,
             "area_responsible": area_reponsible.id,
-            "links": "Links"
+            "links": "Links",
+            "metrics_related": [metric.id]
         }
         form = NewReportForm(data, user=self.user)
         self.assertTrue(form.is_valid())
@@ -223,18 +225,96 @@ class ReportAddViewTest(TestCase):
             expected_queryset = Partner.objects.filter(name__in=expected_partners)
             self.assertQuerysetEqual(organizer.institution.all(), expected_queryset, ordered=False)
 
-    def test_get_metrics_with_activity(self):
-        activity = Activity.objects.create(text="Activity")
-        project = Project.objects.create(text="Project")
-        metric = Metric.objects.create(activity=activity, text="Metric")
+    def test_get_metrics_with_activities_plan_activity(self):
+        project = Project.objects.create(text="Activities plan")
+        area = Area.objects.create(text="Area")
+        area.project.add(project)
+        area.save()
+        Activity.objects.create(text="Other")
+        activity = Activity.objects.create(text="Activity 2", area=area)
+        Metric.objects.create(activity=activity, text="Metric 1")
 
         self.client.login(username=self.username, password=self.password)
         url = reverse("report:get_metrics")
         response = self.client.get(url, {"activity": activity.id})
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["objects"][0]["text"], "Metric")
-        self.assertEqual(response.json()["objects"][0]["activity_id"], activity.id)
+        self.assertEqual(response.json()["objects"][0]["project"], "Activities plan")
+        self.assertEqual(response.json()["objects"][0]["metrics"][0]["activity_id"], activity.id)
+
+    def test_get_metrics_with_activity_not_from_the_activities_plan_and_metric_associated_to_project(self):
+        activities_plan = Project.objects.create(text="Activities plan")
+        project = Project.objects.create(text="Project")
+        other_area = Area.objects.create(text="Other area")
+        other_area.project.add(project)
+        other_area.save()
+        other_activity = Activity.objects.create(text="Other")
+        metric=Metric.objects.create(activity=other_activity, text="Metric 1")
+        metric.project.add(project)
+        metric.save()
+
+        area = Area.objects.create(text="Area")
+        area.project.add(activities_plan)
+        area.save()
+        activity = Activity.objects.create(text="Activity", area=area)
+        Metric.objects.create(activity=activity, text="Metric 2")
+
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("report:get_metrics")
+        response = self.client.get(url, {"activity": other_activity.id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["objects"][0]["project"], "Project")
+        self.assertEqual(response.json()["objects"][0]["metrics"][0]["activity_id"], other_activity.id)
+        self.assertNotEqual(response.json()["objects"][0]["project"], "Activities plan")
+        self.assertNotEqual(response.json()["objects"][0]["metrics"][0]["activity_id"], activity.id)
+
+    def test_get_metrics_with_activity_not_from_the_activities_plan_and_metric_not_associated_to_project(self):
+        activities_plan = Project.objects.create(text="Activities plan")
+        project = Project.objects.create(text="Project")
+        other_area = Area.objects.create(text="Other area")
+        other_area.project.add(project)
+        other_area.save()
+        other_activity = Activity.objects.create(text="Other")
+        Metric.objects.create(activity=other_activity, text="Metric 1")
+
+        area = Area.objects.create(text="Area")
+        area.project.add(activities_plan)
+        area.save()
+        activity = Activity.objects.create(text="Activity", area=area)
+        Metric.objects.create(activity=activity, text="Metric 2")
+
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("report:get_metrics")
+        response = self.client.get(url, {"activity": other_activity.id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.json()["objects"])
+
+    def test_get_metrics_based_on_fundings_associated(self):
+        activities_plan = Project.objects.create(text="Activities plan")
+        project_1 = Project.objects.create(text="Project 1")
+        project_2 = Project.objects.create(text="Project 2")
+        funding_1 = Funding.objects.create(name="Funding 1", project=project_1)
+        funding_2 = Funding.objects.create(name="Funding 2", project=project_2)
+        activity_1 = Activity.objects.create(text="Activity 1")
+        activity_2 = Activity.objects.create(text="Activity 2")
+        metric_1 = Metric.objects.create(activity=activity_1, text="Metric 1")
+        metric_1.project.add(project_1)
+        metric_1.save()
+        metric_2 = Metric.objects.create(activity=activity_2, text="Metric 2")
+        metric_2.project.add(project_2)
+        metric_2.save()
+
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("report:get_metrics")
+        response = self.client.get(url, {"fundings[]": [funding_1.id]})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["objects"][0]["project"], "Project 1")
+        self.assertEqual(response.json()["objects"][0]["metrics"][0]["activity_id"], activity_1.id)
+        self.assertNotEqual(response.json()["objects"][0]["project"], "Project 2")
+        self.assertNotEqual(response.json()["objects"][0]["metrics"][0]["activity_id"], activity_2.id)
 
     def test_get_metrics_without_activities(self):
         activity = Activity.objects.create(text="Activity")
@@ -282,6 +362,7 @@ class ReportViewViewTest(TestCase):
         self.directions_related = Direction.objects.create(text="Direction", strategic_axis=self.strategic_axis)
         self.learning_area = LearningArea.objects.create(text="Learning area")
         self.learning_questions_related = StrategicLearningQuestion.objects.create(text="Strategic Learning Question", learning_area=self.learning_area)
+        self.metrics_related = Metric.objects.create(text="Metric", activity=self.activity_associated)
 
         self.report_1 = Report.objects.create(description="Report 1",
                                               created_by=self.user_profile,
@@ -365,6 +446,7 @@ class ReportViewViewTest(TestCase):
             "organizers_string": "new organizer 1\r\nnew organizer 2",
             "directions_related": [self.directions_related.id],
             "learning_questions_related": [self.learning_questions_related.id],
+            "metrics_related": [self.metrics_related.id]
         }
 
         response = self.client.post(url, data=data)

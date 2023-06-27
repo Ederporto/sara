@@ -61,10 +61,6 @@
             <button type="button" id="add_funding" class="add_button"><i class="fa-solid fa-plus"></i> {% translate "Add" %}</button>
         </div>
     </div>
-    <div class="w3-row invisible_field" id="metrics">
-        <label class="w3-third formfieldtitle" for="metrics_formfield">{% translate "Metrics" %}</label>
-        <div class="w3-twothird formfield" id="metrics_to_select"></div>
-    </div>
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="links">{% translate "Links" %}*</label>
         <div class="w3-twothird formfield"><textarea id="links" name="links" rows="3" required>{{ report_form.instance.links }}</textarea></div>

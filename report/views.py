@@ -621,19 +621,26 @@ def get_or_create_organizers(organizers_string):
 
 
 def get_metrics(request):
+    projects = []
+
     activity = request.GET.get("activity")
+    if activity and activity != "1":
+        activity_project = Project.objects.get(project_activity__activities=int(activity))
+        metrics = Metric.objects.filter(activity_id=activity).values()
+        projects.append({"project": activity_project.text, "metrics": list(metrics)})
+    elif activity == "1":
+        for project in Project.objects.all().exclude(pk=1):
+            metrics = Metric.objects.filter(project=project).values()
+            if metrics:
+                projects.append({"project": project.text, "metrics": list(metrics)})
+
     fundings_ids = request.GET.getlist("fundings[]")
-    projects_ids = Project.objects.filter(Q(project_related__in=fundings_ids) | Q(project_related=1))
-    metrics_1 = []
-    metrics_2 = Metric.objects.filter(project__in=projects_ids).values().order_by('text')
+    projects_ids = Project.objects.filter(Q(project_related__in=fundings_ids))
+    for project in projects_ids:
+        metrics = Metric.objects.filter(project=project).values().order_by('text')
+        projects.append({"project": project.text, "metrics": list(metrics)})
 
-    if activity:
-        metrics_1 = Metric.objects.filter(activity_id=activity).values()
-        metrics_2 = metrics_2.exclude(activity_id=activity)
-
-    metrics = list(metrics_1) + list(metrics_2)
-
-    if metrics:
-        return JsonResponse({"objects": metrics})
+    if projects:
+        return JsonResponse({"objects": projects})
     else:
         return JsonResponse({"objects": None})

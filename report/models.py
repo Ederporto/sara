@@ -204,7 +204,7 @@ class Report(models.Model):
     learning_questions_related = models.ManyToManyField(StrategicLearningQuestion, related_name="strategic_learning_question_related", blank=False)
 
     # Metrics associated
-    metrics_related = models.ManyToManyField(Metric, related_name="metrics_related", blank=True)
+    metrics_related = models.ManyToManyField(Metric, related_name="metrics_related", blank=False)
 
     class Meta:
         verbose_name = _("Report")
