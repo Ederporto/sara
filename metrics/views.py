@@ -22,7 +22,7 @@ def about(request):
 
 def show_activities_plan(request):
     activities = Activity.objects.all()
-    project = Project.objects.get(text="Plano de atividades")
+    project = Project.objects.get(pk=1)
     areas = Area.objects.filter(project=project)
 
     return render(request, "metrics/activities_plan.html", {"areas": areas, "activities": activities})
