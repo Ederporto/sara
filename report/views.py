@@ -570,6 +570,7 @@ def update_report(request, report_id):
     else:
         report_form = NewReportForm(instance=obj, user=request.user)
         context = {"report_form": report_form,
+                   "report_id": report_id,
                    "directions_related_set": list(obj.directions_related.values_list("id", flat=True)),
                    "learning_questions_related_set": list(obj.learning_questions_related.values_list("id", flat=True)),
                    "metrics_set": list(obj.metrics_related.values_list("id", flat=True))}
@@ -622,7 +623,7 @@ def get_or_create_organizers(organizers_string):
 
 def get_metrics(request):
     projects = []
-
+    # ACTIVITY
     activity = request.GET.get("activity")
     if activity and activity != "1":
         activity_project = Project.objects.get(project_activity__activities=int(activity))
@@ -633,12 +634,17 @@ def get_metrics(request):
             metrics = Metric.objects.filter(project=project).values()
             if metrics:
                 projects.append({"project": project.text, "metrics": list(metrics)})
-
+    # FUNDINGS
     fundings_ids = request.GET.getlist("fundings[]")
     projects_ids = Project.objects.filter(Q(project_related__in=fundings_ids))
     for project in projects_ids:
         metrics = Metric.objects.filter(project=project).values().order_by('text')
         projects.append({"project": project.text, "metrics": list(metrics)})
+    # INSTANCE
+    instance = request.GET.get("instance")
+    if instance:
+        metrics = Report.objects.get(pk=instance).metrics_related.all().values()
+        projects.append({"project": _("Other metrics"), "metrics": list(metrics)})
 
     if projects:
         return JsonResponse({"objects": projects})

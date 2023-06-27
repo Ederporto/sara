@@ -20,7 +20,7 @@
                 <button id="nav_Learning" class="tablinks" onclick="openTab(this, 'Learning')">{% translate "Learning" %}</button>
             </div>
             <div class="w3-row userform">
-                <form id="report" method="post" onsubmit="validateForm()">
+                <form id="report" method="post">
                     {% csrf_token %}
                     <div class="w3-container">
                         <div class="w3-container tabcontent active" id="Administrative">
@@ -147,6 +147,7 @@
         function show_metrics_options(){
             let activity_associated = $("#activity_associated").val();
             let funding_associated = $("#funding_associated").val();
+            let report_id = {{ report_id }};
             let metrics_related = {{ metrics_set }};
 
             if (activity_associated || funding_associated){
@@ -154,7 +155,7 @@
                     url: '{% url "report:get_metrics" %}',
                     method: 'GET',
                     dataType: 'json',
-                    data: {activity: activity_associated, fundings: funding_associated},
+                    data: {activity: activity_associated, fundings: funding_associated, instance: report_id},
                     success: function (response) {
                         let inner_html = "<fieldset id='metrics_fieldset' class='subcontainer'><div style='overflow-y:scroll; max-height:200px'>";
                         if (response["objects"]) {
