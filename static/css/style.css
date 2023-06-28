@@ -51,6 +51,7 @@ body {
     margin: 0;
     overflow: hidden;
     color: var(--light-grey-color);
+    font-family: "Gotham", sans-serif;
 }
 main {
     overflow-y: auto;
@@ -61,7 +62,7 @@ main {
 a { text-decoration: none; color:inherit; }
 p, footer, .block-section { margin:1em 0; }
 svg { vertical-align:unset !important; }
-button { font-family: var(--main-font); }
+button { font-family: var(--main-font) !important; }
 
 /* SCROLLBAR ELEMENTS */
 ::-webkit-scrollbar { width: 1em; }
@@ -70,7 +71,7 @@ button { font-family: var(--main-font); }
 
 /* HEADER ELEMENTS */
 h1, h2, h3, h4, h5 {
-    font-family: var(--main-font);
+    font-family: var(--main-font) !important;
     font-size: 1.25em;
     font-weight: bold;
     width: fit-content;
@@ -318,3 +319,9 @@ canvas {
     text-align: center;
     transition: all 300ms ease-in-out;
 }
+
+.btn-1 { background-color: #FF4242; color: var(--dark-color); }
+.btn-2 { background-color: #FF9B43; color: var(--dark-color); }
+.btn-3 { background-color: #FFDD4A; color: var(--dark-color); }
+.btn-4 { background-color: #44DB5E; color: var(--dark-color); }
+.btn-5 { background-color: #3FACFF; color: var(--dark-color); }

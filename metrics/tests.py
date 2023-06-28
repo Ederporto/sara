@@ -5,10 +5,11 @@ from .models import Objective, Area, Metric, Activity, Project
 from report.models import Report, Editor
 from users.models import User, UserProfile, TeamArea
 from strategy.models import StrategicAxis
-from .views import get_aggregated_metrics_data, get_aggregated_metrics_data_done, get_activities, get_chart_data, get_chart_data_many_to_many
+from .views import get_metrics_and_aggregate_per_project, get_aggregated_metrics_data, get_aggregated_metrics_data_done, get_activities, get_chart_data, get_chart_data_many_to_many
 from django.urls import reverse
 from django.contrib.auth.models import Permission
 from datetime import datetime, timedelta
+from metrics.templatetags.metricstags import categorize, perc
 
 
 class AreaModelTests(TestCase):
@@ -167,8 +168,7 @@ class MetricViewsTests(TestCase):
         url = reverse("metrics:per_project")
 
         response = self.client.get(url)
-        self.assertIn("projects", str(response.context))
-        self.assertEqual(project.id, response.context["projects"][0]["id"])
+        self.assertIn("dataset", str(response.context))
 
     def test_show_metrics_shows_metrics_charts(self):
         self.client.login(username=self.username, password=self.password)
@@ -292,6 +292,55 @@ class MetricFunctionsTests(TestCase):
         self.assertEqual(aggregated_metrics_done["wikipedia_created"], 0)
         self.assertEqual(aggregated_metrics_done["wikipedia_edited"], 0)
 
+    def test_get_metrics_and_aggregate_per_project_with_data_and_metric_unclear(self):
+        project = Project.objects.create(text="Project")
+        self.metric_2.project.add(project)
+        self.metric_2.save()
+        aggregated_metrics = get_metrics_and_aggregate_per_project()
+        self.assertEqual(list(aggregated_metrics.keys())[0], project.id)
+        self.assertEqual(aggregated_metrics[1]["project"], project.text)
+        self.assertEqual(list(aggregated_metrics[1]["project_metrics"].keys())[0], self.metric_2.id)
+        self.assertEqual(aggregated_metrics[1]["project_metrics"][2]["title"], self.metric_2.text)
+        self.assertEqual(list(aggregated_metrics[1]["project_metrics"][2]["metrics"].keys())[0], "Other metric")
+        self.assertEqual(aggregated_metrics[1]["project_metrics"][2]["metrics"]["Other metric"]["goal"], "-")
+        self.assertEqual(aggregated_metrics[1]["project_metrics"][2]["metrics"]["Other metric"]["done"], "-")
+
+    def test_get_metrics_and_aggregate_per_project_with_goal_but_none_done(self):
+        project = Project.objects.create(text="Project")
+        self.metric_2.project.add(project)
+        self.metric_2.wikipedia_created = 500
+        self.metric_2.save()
+        aggregated_metrics = get_metrics_and_aggregate_per_project()
+        self.assertEqual(list(aggregated_metrics.keys())[0], project.id)
+        self.assertEqual(aggregated_metrics[1]["project"], project.text)
+        self.assertEqual(list(aggregated_metrics[1]["project_metrics"].keys())[0], self.metric_2.id)
+        self.assertEqual(aggregated_metrics[1]["project_metrics"][2]["title"], self.metric_2.text)
+        self.assertEqual(list(aggregated_metrics[1]["project_metrics"][2]["metrics"].keys())[0], "Wikipedia")
+        self.assertEqual(aggregated_metrics[1]["project_metrics"][2]["metrics"]["Wikipedia"]["goal"], 500)
+        self.assertEqual(aggregated_metrics[1]["project_metrics"][2]["metrics"]["Wikipedia"]["done"], 0)
+
+    def test_get_metrics_and_aggregate_per_project_with_goal_and_some_done(self):
+        project = Project.objects.create(text="Project")
+        self.metric_2.project.add(project)
+        self.metric_2.wikipedia_created = 500
+        self.metric_2.save()
+
+        self.report_3.metrics_related.add(self.metric_2.id)
+        self.report_3.wikipedia_edited = 200
+        self.report_3.save()
+        aggregated_metrics = get_metrics_and_aggregate_per_project()
+        self.assertEqual(list(aggregated_metrics.keys())[0], project.id)
+        self.assertEqual(aggregated_metrics[1]["project"], project.text)
+        self.assertEqual(list(aggregated_metrics[1]["project_metrics"].keys())[0], self.metric_2.id)
+        self.assertEqual(aggregated_metrics[1]["project_metrics"][2]["title"], self.metric_2.text)
+        self.assertEqual(list(aggregated_metrics[1]["project_metrics"][2]["metrics"].keys())[0], "Wikipedia")
+        self.assertEqual(aggregated_metrics[1]["project_metrics"][2]["metrics"]["Wikipedia"]["goal"], 500)
+        self.assertEqual(aggregated_metrics[1]["project_metrics"][2]["metrics"]["Wikipedia"]["done"], 200)
+
+    def test_get_metrics_and_aggregate_per_project_without_data(self):
+        aggregated_metrics = get_metrics_and_aggregate_per_project()
+        self.assertEqual(aggregated_metrics, {})
+
     def test_get_activities_with_data(self):
         self.report_1.wikipedia_created = 1
         self.report_2.editors.add(self.editor_1)
@@ -373,3 +422,77 @@ class MetricFunctionsTests(TestCase):
         activities = Report.objects.all().order_by("end_date")
         chart_data = get_chart_data_many_to_many(activities, "editors")
         self.assertEqual(chart_data, [])
+
+
+class TagsTests(TestCase):
+    def test_categorize_for_0(self):
+        result = categorize(0, 100)
+        self.assertEqual(result, 1)
+
+    def test_categorize_for_1(self):
+        result = categorize(1, 100)
+        self.assertEqual(result, 1)
+
+    def test_categorize_for_26(self):
+        result = categorize(26, 100)
+        self.assertEqual(result, 2)
+
+    def test_categorize_for_51(self):
+        result = categorize(51, 100)
+        self.assertEqual(result, 3)
+
+    def test_categorize_for_76(self):
+        result = categorize(76, 100)
+        self.assertEqual(result, 4)
+
+    def test_categorize_for_99(self):
+        result = categorize(99, 100)
+        self.assertEqual(result, 4)
+
+    def test_categorize_for_100(self):
+        result = categorize(100, 100)
+        self.assertEqual(result, 5)
+
+    def test_categorize_for_more_than_100(self):
+        result = categorize(150, 100)
+        self.assertEqual(result, 5)
+
+    def test_categorize_for_text(self):
+        result = categorize("invalid", 100)
+        self.assertEqual(result, "-")
+
+    def test_perc_for_0(self):
+        result = perc(0, 100)
+        self.assertEqual(result, "0%")
+
+    def test_perc_for_1(self):
+        result = perc(1, 100)
+        self.assertEqual(result, "1%")
+
+    def test_perc_for_26(self):
+        result = perc(26, 100)
+        self.assertEqual(result, "26%")
+
+    def test_perc_for_51(self):
+        result = perc(51, 100)
+        self.assertEqual(result, "51%")
+
+    def test_perc_for_76(self):
+        result = perc(76, 100)
+        self.assertEqual(result, "76%")
+
+    def test_perc_for_99(self):
+        result = perc(99, 100)
+        self.assertEqual(result, "99%")
+
+    def test_perc_for_100(self):
+        result = perc(100, 100)
+        self.assertEqual(result, "100%")
+
+    def test_perc_for_more_than_100(self):
+        result = perc(150, 100)
+        self.assertEqual(result, "100%")
+
+    def test_perc_for_text(self):
+        result = perc("invalid", 100)
+        self.assertEqual(result, "-")
