@@ -32,27 +32,30 @@
                        data-filter-control="true">
                     <thead>
                     <tr>
-                        <th data-field="id" data-sortable="true">{% trans "ID" %}</th>
-                        <th data-field="metric" data-sortable="true">{% trans "Metric" %}</th>
-                        <th data-field="done" data-sortable="true">{% trans "Done" %}</th>
-                        <th data-field="goal" data-sortable="true">{% trans "Goal" %}</th>
-                        <th data-field="status" data-sortable="true">{% trans "Status" %}</th>
+                        <th data-field="id">{% trans "ID" %}</th>
+                        <th data-field="metric">{% trans "Metric" %}</th>
+                        <th data-field="done">{% trans "Done" %}</th>
+                        <th data-field="goal">{% trans "Goal" %}</th>
+                        <th data-field="status">{% trans "Status" %}</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for metric_key, metric_value in project_value.project_metrics.items %}
-                        {% for numeric_key, numeric_value in metric_value.metrics.items %}
-                            <tr>
-                                <th scope="row">{{ metric_key }}</th>
-                                <td>{{ metric_value.title }}</td>
-                                <td>{{ numeric_value.done }}</td>
-                                <td>{{ numeric_value.goal }}</td>
-                                <td>
-                                    <button type="button" class="btn-round btn-{{ numeric_value.done|categorize:numeric_value.goal }}">
-                                        {{ numeric_value.done|perc:numeric_value.goal }}
-                                    </button>
-                                </td>
-                            </tr>
+                    {% for activity_key, activity_value in project_value.project_metrics.items %}
+                        <tr style="background-color: var(--dark-grey-color);"><td colspan="5" style="color: var(--light-color);">{{ activity_value.activity }}</td></tr>
+                        {% for metric_key, metric_value in activity_value.activity_metrics.items %}
+                            {% for numeric_key, numeric_value in metric_value.metrics.items %}
+                                <tr>
+                                    <th scope="row">{{ metric_key }}</th>
+                                    <td>{{ metric_value.title }}</td>
+                                    <td>{{ numeric_value.done }}</td>
+                                    <td>{{ numeric_value.goal }}</td>
+                                    <td>
+                                        <button type="button" class="btn-round btn-{{ numeric_value.done|categorize:numeric_value.goal }}">
+                                            {{ numeric_value.done|perc:numeric_value.goal }}
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                         {% endfor %}
                     {% endfor %}
                     </tbody>
