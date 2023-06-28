@@ -643,8 +643,13 @@ def get_metrics(request):
     # INSTANCE
     instance = request.GET.get("instance")
     if instance:
-        metrics = Report.objects.get(pk=instance).metrics_related.all().values()
-        projects.append({"project": _("Other metrics"), "metrics": list(metrics)})
+        metrics_aux = Report.objects.get(pk=instance).metrics_related.all().values()
+        if projects:
+            metrics = [metric for project in projects for metric in metrics_aux if metric not in project["metrics"]]
+        else:
+            metrics = metrics_aux
+        if metrics:
+            projects.append({"project": _("Other metrics"), "metrics": list(metrics)})
 
     if projects:
         return JsonResponse({"objects": projects})
