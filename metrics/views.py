@@ -57,7 +57,7 @@ def get_metrics_and_aggregate_per_project():
     aggregated_metrics_and_results = {}
 
     for project in Project.objects.all():
-        project_metrics = {}
+        project_metrics = []
         for activity in Activity.objects.filter(area__project=project):
             activity_metrics = {}
             for metric in Metric.objects.filter(project=project, activity=activity):
@@ -115,10 +115,11 @@ def get_metrics_and_aggregate_per_project():
                 }
 
             if activity_metrics:
-                project_metrics[activity.id] = {
+                project_metrics.append({
                     "activity": activity.text,
+                    "activity_id": activity.id,
                     "activity_metrics": activity_metrics
-                }
+                })
 
         if project_metrics:
             aggregated_metrics_and_results[project.id] = {

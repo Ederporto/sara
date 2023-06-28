@@ -40,9 +40,9 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for activity_key, activity_value in project_value.project_metrics.items %}
-                        <tr style="background-color: var(--dark-grey-color);"><td colspan="5" style="color: var(--light-color);">{{ activity_value.activity }}</td></tr>
-                        {% for metric_key, metric_value in activity_value.activity_metrics.items %}
+                    {% for activity in project_value.project_metrics %}
+                        <tr style="background-color: var(--dark-grey-color);"><td colspan="5" style="color: var(--light-color);">{{ activity.activity }}</td></tr>
+                        {% for metric_key, metric_value in activity.activity_metrics.items %}
                             {% for numeric_key, numeric_value in metric_value.metrics.items %}
                                 <tr>
                                     <th scope="row">{{ metric_key }}</th>
