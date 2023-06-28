@@ -40,7 +40,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for activity in project_value.project_metrics %}
+                    {% for activity in project_value.project_metrics|dictsort:"activity_id" %}
                         <tr style="background-color: var(--dark-grey-color);"><td colspan="5" style="color: var(--light-color);">{{ activity.activity }}</td></tr>
                         {% for metric_key, metric_value in activity.activity_metrics.items %}
                             {% for numeric_key, numeric_value in metric_value.metrics.items %}
