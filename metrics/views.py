@@ -60,7 +60,11 @@ def get_metrics_and_aggregate_per_project():
         project_metrics = []
         for activity in Activity.objects.filter(area__project=project):
             activity_metrics = {}
-            for metric in Metric.objects.filter(project=project, activity=activity):
+            if activity.id != 1:
+                q_filter = Q(project=project, activity=activity)
+            else:
+                q_filter = Q(project=project)
+            for metric in Metric.objects.filter(q_filter):
                 reports = Report.objects.filter(metrics_related__in=[metric])
 
                 goal = {
