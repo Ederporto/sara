@@ -35,7 +35,7 @@ def show_metrics(request):
     total_done = get_aggregated_metrics_data_done()
     timeline_activites = get_activities()
 
-    projects = Project.objects.filter(pk__in=list(Metric.objects.filter(project__isnull=False).values_list("project__pk",flat=True)))
+    projects = Project.objects.filter(pk__in=list(Metric.objects.filter(project__isnull=False).values_list("project__pk", flat=True))).exclude(pk=1)
     projects_metrics_sum = []
 
     if projects.count():
