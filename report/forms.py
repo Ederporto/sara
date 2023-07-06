@@ -87,6 +87,7 @@ class NewReportForm(forms.ModelForm):
             report.area_activated.set(self.cleaned_data['area_activated'])
             report.directions_related.set(self.cleaned_data['directions_related'])
             report.learning_questions_related.set(self.cleaned_data['learning_questions_related'])
+            report.metrics_related.set(self.cleaned_data['metrics_related'])
             report.end_date = report.initial_date
         return report
 
