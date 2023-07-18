@@ -553,7 +553,7 @@ class TagsTests(TestCase):
 
     def test_perc_for_more_than_100(self):
         result = perc(150, 100)
-        self.assertEqual(result, "100%")
+        self.assertEqual(result, "150%")
 
     def test_perc_for_text(self):
         result = perc("invalid", 100)
