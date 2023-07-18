@@ -20,7 +20,9 @@ def update_profile(request, user_id):
             messages.success(request, _("Changes done successfully!"))
         else:
             messages.error(request, _("Something went wrong!"))
-    return render(request, "users/profile.html", {"userform": user_form, "userprofileform": user_profile_form, "position": position})
+
+    context = {"userform": user_form, "userprofileform": user_profile_form, "position": position, "title": _("Profile %(user)s") % {"user": user_id}}
+    return render(request, "users/profile.html", context)
 
 
 @permission_required('auth.add_user')
@@ -36,4 +38,5 @@ def register(request):
             return redirect(reverse("user:profile", kwargs={"user_id": user.pk}))
         messages.error(request, _("Unsuccessful registration. Invalid information."))
     form = NewUserForm()
-    return render(request, "users/register.html", {"register_form": form})
+    context = {"register_form": form, "title": _("Add new user")}
+    return render(request, "users/register.html", context)

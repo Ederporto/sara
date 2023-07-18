@@ -26,7 +26,7 @@ def show_specific_calendar(request, year, month):
     days_month = days_of_the_month(int(year), int(month))
     month_name = _(calendar.month_name[int(month)])
 
-    context = {"username": username, "calendar": days_month, "month": month, "month_name": month_name, "year": year}
+    context = {"username": username, "calendar": days_month, "month": month, "month_name": month_name, "year": year, "title": _("Calendar %(month_name)s/%(year)s") % {"month_name": month_name, "year": year}}
     return render(request, "agenda/calendar.html", context)
 
 
@@ -47,7 +47,7 @@ def show_specific_calendar_day(request, year, month, day):
     year_aux = year
     month_name = _(calendar.month_name[int(month)])
 
-    context = {"month_name": month_name, "year": year_aux, "month": month_aux, "day": day_aux}
+    context = {"month_name": month_name, "year": year_aux, "month": month_aux, "day": day_aux, "title": _("Calendar %(day)s/%(month_name)s/%(year)s") % {"day": day_aux, "month_name": month_name, "year": year}}
     return render(request, "agenda/calendar_day.html", context)
 
 
@@ -75,14 +75,15 @@ def add_event(request):
     else:
         event_form = EventForm()
 
-    return render(request, "agenda/add_event.html", {"eventform": event_form})
+    context = {"eventform": event_form, "title": _("Add event")}
+    return render(request, "agenda/add_event.html", context)
 
 
 @login_required
 @transaction.atomic
 def list_events(request):
     events = Event.objects.all()
-    context = {"dataset": events}
+    context = {"dataset": events, "title": _("List events")}
     return render(request, "agenda/list_events.html", context)
 
 
@@ -90,7 +91,7 @@ def list_events(request):
 @transaction.atomic
 def delete_event(request, event_id):
     event = Event.objects.get(pk=event_id)
-    context = {"event": event}
+    context = {"event": event, "title": _("Delete event %(event_id)s") % {"event_id": event_id}}
 
     if request.method == "POST":
         event.delete()
@@ -122,4 +123,6 @@ def update_event(request, event_id):
         return redirect("agenda:show_specific_calendar", year=year, month=month)
     else:
         event_form = EventForm(instance=event)
-    return render(request, "agenda/update_event.html", {"eventform": event_form, "event_id": event.id})
+
+    context = {"eventform": event_form, "event_id": event_id, "title": _("Update event %(event_id)s") % {"event_id": event_id}}
+    return render(request, "agenda/update_event.html", context)

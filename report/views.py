@@ -42,14 +42,16 @@ def add_report(request):
                 "directions_related_set": directions_related_set,
                 "learning_questions_related_set": learning_questions_related_set,
                 "metrics_set": metrics_set,
-                "report_form": report_form
+                "report_form": report_form,
+                "title": _("Add report")
             }
             return render(request, "report/add_report.html", context)
     else:
         context = {"directions_related_set": directions_related_set,
                    "learning_questions_related_set": learning_questions_related_set,
                    "metrics_set": metrics_set,
-                   "report_form": report_form}
+                   "report_form": report_form,
+                   "title": _("Add report")}
 
         return render(request, "report/add_report.html", context)
 
@@ -65,7 +67,7 @@ def add_area_activated(request):
         else:
             return JsonResponse({"id": None})
     else:
-        context = {"area_form": area_form}
+        context = {"area_form": area_form, "title": _("Add area")}
         return render(request, "area_activated/add_area.html", context)
 
 
@@ -80,7 +82,7 @@ def add_funding(request):
         else:
             return JsonResponse({"id": None, "text": None})
     else:
-        context = {"funding_form": funding_associated_form}
+        context = {"funding_form": funding_associated_form, "title": _("Add funding")}
         return render(request, "funding/add_funding.html", context)
 
 
@@ -95,7 +97,7 @@ def add_partner(request):
         else:
             return JsonResponse({"id": None, "text": None})
     else:
-        context = {"partner_form": partner_form}
+        context = {"partner_form": partner_form, "title": _("Add partnership")}
         return render(request, "partners/add_partner.html", context)
 
 
@@ -110,7 +112,7 @@ def add_technology(request):
         else:
             return JsonResponse({"id": None, "text": None})
     else:
-        context = {"technology_form": technology_form}
+        context = {"technology_form": technology_form, "title": _("Add technology")}
         return render(request, "technologies/add_technology.html", context)
 
 
@@ -118,7 +120,7 @@ def add_technology(request):
 @login_required
 @permission_required("report.view_report")
 def list_reports(request):
-    context = {"dataset": Report.objects.order_by('-created_at'), "mine": False}
+    context = {"dataset": Report.objects.order_by('-created_at'), "mine": False, "title": _("List reports")}
 
     return render(request, "report/list_reports.html", context)
 
@@ -126,7 +128,8 @@ def list_reports(request):
 @login_required
 @permission_required("report.view_report")
 def detail_report(request, report_id):
-    context = {"data": Report.objects.get(id=report_id)}
+    context = {"data": Report.objects.get(id=report_id),
+               "title": _("View report %(report_id)s") % {"report_id": report_id}}
 
     return render(request, "report/detail_report.html", context)
 
@@ -573,7 +576,8 @@ def update_report(request, report_id):
                    "report_id": report_id,
                    "directions_related_set": list(obj.directions_related.values_list("id", flat=True)),
                    "learning_questions_related_set": list(obj.learning_questions_related.values_list("id", flat=True)),
-                   "metrics_set": list(obj.metrics_related.values_list("id", flat=True))}
+                   "metrics_set": list(obj.metrics_related.values_list("id", flat=True)),
+                   "title": _("Edit report %(report_id)s") % {"report_id": report_id}}
         return render(request, "report/update_report.html", context)
 
 
@@ -582,7 +586,8 @@ def update_report(request, report_id):
 @permission_required("report.delete_report")
 def delete_report(request, report_id):
     report = Report.objects.get(id=report_id)
-    context = {"report": report}
+    context = {"report": report,
+               "title": _("Delete report %(report_id)s") % {"report_id": report_id}}
 
     if request.method == "POST":
         report.delete()

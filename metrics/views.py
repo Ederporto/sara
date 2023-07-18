@@ -1,5 +1,6 @@
 import calendar
 from django.shortcuts import render, HttpResponse
+from django.utils.translation import gettext as _
 from django.db.models import Q, Count, Sum, F
 from .models import Activity, Area, Metric
 from report.models import Report, Editor, Organizer, Partner, Project, Funding
@@ -13,19 +14,23 @@ calendar.setfirstweekday(calendar.SUNDAY)
 
 
 def index(request):
-    return render(request, "metrics/home.html")
+    context = {"title": _("Home")}
+    return render(request, "metrics/home.html", context)
 
 
 def about(request):
-    return render(request, "metrics/about.html")
+    context = {"title": _("About")}
+    return render(request, "metrics/about.html", context)
 
 
 def show_activities_plan(request):
     activities = Activity.objects.all()
     project = Project.objects.get(pk=1)
-    areas = Area.objects.filter(project=project)
+    areas = Area.objects.filter(project=project).order_by("id")
 
-    return render(request, "metrics/activities_plan.html", {"areas": areas, "activities": activities})
+    context = {"areas": areas, "activities": activities, "title": _("Activities plan")}
+
+    return render(request, "metrics/activities_plan.html", context)
 
 
 @login_required
@@ -42,15 +47,15 @@ def show_metrics(request):
         for project in projects:
             projects_metrics_sum.append({"funding": project.text, "total_sum": get_aggregated_metrics_data(project=project)})
 
-    context = {"total_sum": total_sum, "total_done": total_done, "timeline": timeline_activites, "projects_metrics": projects_metrics_sum}
-    return render(request, "metrics/list_metrics.html", context=context)
+    context = {"total_sum": total_sum, "total_done": total_done, "timeline": timeline_activites, "projects_metrics": projects_metrics_sum, "title": _("Show general metrics")}
+    return render(request, "metrics/list_metrics.html", context)
 
 
 @login_required
 @permission_required("metrics.view_metric")
 def show_metrics_per_project(request):
-    context = {"dataset": get_metrics_and_aggregate_per_project()}
-    return render(request, "metrics/list_metrics_per_project.html", context=context)
+    context = {"dataset": get_metrics_and_aggregate_per_project(), "title": _("Show metrics per project")}
+    return render(request, "metrics/list_metrics_per_project.html", context)
 
 
 def get_metrics_and_aggregate_per_project():

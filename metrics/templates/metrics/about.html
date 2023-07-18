@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load i18n %}
+{% block title %}{{ title }}{% endblock %}
+
 {% block styles %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/calendar.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
