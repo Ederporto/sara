@@ -26,6 +26,7 @@ class Funding(models.Model):
 class Editor(models.Model):
     username = models.CharField(max_length=420)
     retained = models.BooleanField(default=False)
+    account_creation_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = _("Editor")

@@ -4,3 +4,4 @@ whitenoise
 xlsxwriter
 django-admin-logs
 django_select2
+requests

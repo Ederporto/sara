@@ -185,20 +185,37 @@ class MetricViewsTests(TestCase):
         self.assertIn("<canvas id=\"wikipedia_timeline_chart\">", str(response.content))
         self.assertNotIn("<canvas id=\"commons_pie_chart\">", str(response.content))
 
+    def test_show_metrics_shows_metrics_charts_with_more_than_one_activity(self):
+        self.client.login(username=self.username, password=self.password)
+
+        area = Area.objects.create(text="Area")
+        activity_1 = Activity.objects.create(text="Activity 1", area=area)
+        activity_2 = Activity.objects.create(text="Activity 2", area=area)
+        metric = Metric.objects.create(text="Metric 1", activity=activity_2, wikipedia_created=4)
+
+        url = reverse("metrics:metrics")
+        response = self.client.get(url)
+
+        self.assertIn("wikipedia_created", str(response.context["total_sum"]))
+        self.assertIn("<canvas id=\"wikipedia_pie_chart\">", str(response.content))
+        self.assertIn("<canvas id=\"wikipedia_timeline_chart\">", str(response.content))
+        self.assertNotIn("<canvas id=\"commons_pie_chart\">", str(response.content))
+
     def test_show_metrics_shows_projects_metrics_as_charts(self):
         self.client.login(username=self.username, password=self.password)
 
         area = Area.objects.create(text="Area")
         activity = Activity.objects.create(text="Activity", area=area)
-        project = Project.objects.create(text="Project")
+        project_1 = Project.objects.create(text="Project 1")
+        project_2 = Project.objects.create(text="Project 2")
         metric = Metric.objects.create(text="Metric 1", activity=activity, wikipedia_created=4)
-        metric.project.add(project)
+        metric.project.add(project_2)
         metric.save()
 
         url = reverse("metrics:metrics")
         response = self.client.get(url)
 
-        self.assertIn(project.text, str(response.context["projects_metrics"]))
+        self.assertIn(project_2.text, str(response.context["projects_metrics"]))
 
 
 class MetricFunctionsTests(TestCase):
@@ -292,6 +309,29 @@ class MetricFunctionsTests(TestCase):
         self.assertEqual(aggregated_metrics_done["editors"], 0)
         self.assertEqual(aggregated_metrics_done["wikipedia_created"], 0)
         self.assertEqual(aggregated_metrics_done["wikipedia_edited"], 0)
+
+    def test_get_metrics_and_aggregate_per_project_with_data_and_metric_unclear_when_id_ge_1(self):
+        project = Project.objects.create(text="Project")
+        self.metric_3.project.add(project)
+        self.metric_3.save()
+        area = Area.objects.create(text="Area")
+        area.project.add(project)
+        area.save()
+        self.activity_2.area = area
+        self.activity_2.save()
+
+        self.report_2.activity_associated = self.activity_2
+        self.report_2.save()
+        aggregated_metrics = get_metrics_and_aggregate_per_project()
+        self.assertEqual(list(aggregated_metrics.keys())[0], project.id)
+        self.assertEqual(aggregated_metrics[1]["project"], project.text)
+        self.assertEqual(aggregated_metrics[1]["project_metrics"][0]["activity_id"], self.activity_2.id)
+        self.assertEqual(aggregated_metrics[1]["project_metrics"][0]["activity"], self.activity_2.text)
+        self.assertEqual(list(aggregated_metrics[1]["project_metrics"][0]["activity_metrics"].keys())[0], self.metric_3.id)
+        self.assertEqual(aggregated_metrics[1]["project_metrics"][0]["activity_metrics"][3]["title"], self.metric_3.text)
+        self.assertEqual(list(aggregated_metrics[1]["project_metrics"][0]["activity_metrics"][3]["metrics"].keys())[0], "Other metric")
+        self.assertEqual(aggregated_metrics[1]["project_metrics"][0]["activity_metrics"][3]["metrics"]["Other metric"]["goal"], "-")
+        self.assertEqual(aggregated_metrics[1]["project_metrics"][0]["activity_metrics"][3]["metrics"]["Other metric"]["done"], "-")
 
     def test_get_metrics_and_aggregate_per_project_with_data_and_metric_unclear(self):
         project = Project.objects.create(text="Project")

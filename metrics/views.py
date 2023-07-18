@@ -66,7 +66,6 @@ def get_metrics_and_aggregate_per_project():
                 q_filter = Q(project=project)
             for metric in Metric.objects.filter(q_filter):
                 reports = Report.objects.filter(metrics_related__in=[metric])
-
                 goal = {
                     "Wikipedia": metric.wikipedia_created + metric.wikipedia_edited,
                     "Wikimedia Commons": metric.commons_created + metric.commons_edited,
@@ -86,6 +85,8 @@ def get_metrics_and_aggregate_per_project():
                     "Number of feedbacks": metric.number_of_feedbacks,
                     "Number of events": metric.number_of_events,
                     "Number of editors": metric.number_of_editors,
+                    "Number of editors retained": metric.number_of_editors_retained,
+                    "Number of new editors": metric.number_of_new_editors,
                     "Number of partnerships": metric.number_of_partnerships,
                     "Number of organizers": metric.number_of_organizers,
                 }
@@ -108,6 +109,8 @@ def get_metrics_and_aggregate_per_project():
                     "Number of feedbacks": reports.aggregate(total=Sum("feedbacks"))["total"] or 0,
                     "Number of events": reports.count() or 0,
                     "Number of editors": reports.annotate(num_aux=Count("editors")).aggregate(total=Sum("num_aux"))["total"] or 0,
+                    "Number of editors retained": reports.filter(editors__retained=True).values("editors").count() or 0,
+                    "Number of new editors": Editor.objects.filter(editors__in=reports, account_creation_date__gte=F('editors__initial_date')).count() or 0,
                     "Number of partnerships": reports.annotate(num_aux=Count("partners_activated")).aggregate(total=Sum("num_aux"))["total"] or 0,
                     "Number of organizers": reports.annotate(num_aux=Count("organizers")).aggregate(total=Sum("num_aux"))["total"] or 0,
                 }

@@ -53,6 +53,7 @@ class ReportAddViewTest(TestCase):
         self.client.login(username=self.username, password=self.password)
         url = reverse("report:add_report")
 
+        Project.objects.create(text="Wikimedia Community Fund")
         strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
         direction = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
         learning_area = LearningArea.objects.create(text="Learning area")
@@ -502,6 +503,7 @@ class ReportViewViewTest(TestCase):
         self.assertTemplateUsed(response, 'report/update_report.html')
 
     def test_update_report_post_with_valid_parameters(self):
+        Project.objects.create(text="Wikimedia Community Fund")
         self.client.login(username=self.username, password=self.password)
         url = reverse("report:update_report", kwargs={"report_id": self.report_1.id})
         data = {
@@ -1433,6 +1435,20 @@ class ReportFormTest(TestCase):
         self.assertEqual(cleaned_data[0].name, "Organizer 1")
         self.assertEqual(len(cleaned_data[0].institution.all()), 3)
         self.assertEqual(cleaned_data[0].institution.all()[0].name, "Institution 1")
+
+    def test_clean_editors_with_empty_string(self):
+        form_data = {"editors_string": ""}
+        form = NewReportForm(data=form_data, user=self.user)
+        cleaned_data = form.clean_editors()
+        self.assertFalse(cleaned_data)
+
+    def test_clean_editors_with_retained_editor(self):
+        editor = Editor.objects.create(username="Editor", retained=0)
+        form_data = {"editors_string": "Editor"}
+        form = NewReportForm(data=form_data, user=self.user)
+        cleaned_data = form.clean_editors()
+        self.assertTrue(cleaned_data[0].username, editor.username)
+        self.assertTrue(cleaned_data[0].retained, 1)
 
     def test_get_or_create_editors_empty_string(self):
         editors_string = ""

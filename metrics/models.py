@@ -105,6 +105,8 @@ class Metric(models.Model):
 
     # General
     number_of_editors = models.IntegerField(null=True, default=0)
+    number_of_editors_retained = models.IntegerField(null=True, default=0)
+    number_of_new_editors = models.IntegerField(null=True, default=0)
     number_of_participants = models.IntegerField(null=True, default=0)
     number_of_partnerships = models.IntegerField(null=True, default=0)
     number_of_organizers = models.IntegerField(null=True, default=0)

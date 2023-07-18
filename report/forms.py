@@ -2,12 +2,17 @@ from django.utils import timezone
 from django import forms
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
+from django.db.models import fields, Q
 from django.db.models.functions import Lower
 from .models import Report, StrategicLearningQuestion, LearningArea, AreaActivated, Funding, Partner, Technology,\
     Editor, Organizer
-from metrics.models import Area
+from metrics.models import Area, Metric, Project
 from strategy.models import StrategicAxis
 from users.models import TeamArea, UserProfile
+
+from urllib.parse import quote
+import requests
+from datetime import datetime
 
 
 class NewReportForm(forms.ModelForm):
@@ -32,13 +37,23 @@ class NewReportForm(forms.ModelForm):
             self.fields["area_responsible"].initial = area_responsible_of_user(user)
         self.fields["technologies_used"].queryset = Technology.objects.order_by(Lower("name"))
 
-
     def clean_editors(self):
         editors_string = self.data.get("editors_string", "")
         editors_list = editors_string.split("\r\n") if editors_string else []
         editors = []
         for editor in editors_list:
             editor_object, created = Editor.objects.get_or_create(username=editor)
+
+            # Store the editor account date of registration
+            if created:
+                user_creation_date = get_user_date_of_registration(editor)
+                if user_creation_date:
+                    editor_object.account_creation_date = user_creation_date
+            # Which means that the user is already on the database and is returning = retained
+            else:
+                editor_object.retained = 1
+                editor_object.save()
+
             editors.append(editor_object)
         return editors
 
@@ -61,6 +76,37 @@ class NewReportForm(forms.ModelForm):
     def clean_initial_date(self):
         initial_date = self.cleaned_data.get('initial_date')
         return initial_date
+
+    def clean_metrics_related(self):
+        metrics_related = self.cleaned_data.get('metrics_related')
+        main_funding = Project.objects.get(text="Wikimedia Community Fund")
+        metrics_main_funding = Metric.objects.filter(project=main_funding)
+        for metric in metrics_related:
+            field_names = [metric_field.name for metric_field in metric._meta.fields if isinstance(metric_field, fields.IntegerField) and metric_field.name != "id" and getattr(metric, metric_field.name) > 0]
+
+            # Check if the metrics of the main funding have values
+            query = Q()
+            for field_name in field_names:
+                query |= Q(**{f"{field_name}__gt": 0})
+
+            metrics_related = metrics_related.union(metrics_main_funding.filter(query))
+        return metrics_related
+
+
+    # Número de páginas ou materiais criados ou editados na Wikiversidade
+    # Número de páginas criadas ou melhoradas no Wikisource
+    # Número de itens criados ou melhorados no Wikidata
+    # Número de arquivos de mídia carregados no Wikimedia Commons
+    # Número de páginas melhoradas ou criadas na Wikipédia
+    # Número de organizadores
+    # Número de editores
+    # Número de participantes
+    # Número de respostas de participantes em estratégias eficazes para atrair e reter colaboradores
+    # Número de parcerias estratégicas que contribuem para o crescimento, a diversidade e sustentabilidade de longo prazo
+    # Número de organizadores que continuam a participar/retidos depois das atividades
+    # Número de editores que continuam a participar/retidos depois das atividades
+    # Número de pessoas alcançadas através das publicações em redes sociais
+    # Número de recursos
 
     def clean_end_date(self):
         initial_date = self.cleaned_data.get('initial_date')
@@ -143,6 +189,18 @@ def learning_areas_as_choices():
         areas.append(new_category)
 
     return areas
+
+
+def get_user_date_of_registration(user):
+    url = "https://www.mediawiki.org/w/api.php?action=query&meta=globaluserinfo&format=json&guiuser=" + quote(user, safe="")
+    result = requests.get(url)
+    data = result.json()
+    try:
+        date_obj = datetime.strptime(data["query"]["globaluserinfo"]["registration"], "%Y-%m-%dT%H:%M:%SZ")
+        date_str = date_obj.strftime("%d/%m/%Y %H:%M:%S")
+        return date_str
+    except:
+        return None
 
 
 class AreaActivatedForm(forms.ModelForm):
