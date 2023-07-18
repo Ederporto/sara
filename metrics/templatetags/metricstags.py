@@ -13,6 +13,6 @@ def categorize(a, b):
 @register.filter
 def perc(a, b):
     try:
-        return "{:.0f}%".format(100*min(a/b, 1))
+        return "{:.0f}%".format(100*a/b, 1)
     except:
         return "-"
