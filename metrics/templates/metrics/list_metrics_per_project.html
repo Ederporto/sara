@@ -47,7 +47,7 @@
                             {% for numeric_key, numeric_value in metric_value.metrics.items %}
                                 <tr>
                                     <th scope="row">{{ metric_key }}</th>
-                                    <td>{{ metric_value.title }}<br><small>({% blocktrans %}{{ numeric_key }}{% endblocktrans %})</small></td>
+                                    <td>{{ metric_value.title }}<br><small>({% translate numeric_key %})</small></td>
                                     <td>{{ numeric_value.done }}</td>
                                     <td>{{ numeric_value.goal }}</td>
                                     <td>
