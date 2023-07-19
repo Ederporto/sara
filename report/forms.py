@@ -49,6 +49,7 @@ class NewReportForm(forms.ModelForm):
                 user_creation_date = get_user_date_of_registration(editor)
                 if user_creation_date:
                     editor_object.account_creation_date = user_creation_date
+                    editor_object.save()
             # Which means that the user is already on the database and is returning = retained
             else:
                 editor_object.retained = 1
@@ -91,22 +92,6 @@ class NewReportForm(forms.ModelForm):
 
             metrics_related = metrics_related.union(metrics_main_funding.filter(query))
         return metrics_related
-
-
-    # Número de páginas ou materiais criados ou editados na Wikiversidade
-    # Número de páginas criadas ou melhoradas no Wikisource
-    # Número de itens criados ou melhorados no Wikidata
-    # Número de arquivos de mídia carregados no Wikimedia Commons
-    # Número de páginas melhoradas ou criadas na Wikipédia
-    # Número de organizadores
-    # Número de editores
-    # Número de participantes
-    # Número de respostas de participantes em estratégias eficazes para atrair e reter colaboradores
-    # Número de parcerias estratégicas que contribuem para o crescimento, a diversidade e sustentabilidade de longo prazo
-    # Número de organizadores que continuam a participar/retidos depois das atividades
-    # Número de editores que continuam a participar/retidos depois das atividades
-    # Número de pessoas alcançadas através das publicações em redes sociais
-    # Número de recursos
 
     def clean_end_date(self):
         initial_date = self.cleaned_data.get('initial_date')
@@ -197,7 +182,7 @@ def get_user_date_of_registration(user):
     data = result.json()
     try:
         date_obj = datetime.strptime(data["query"]["globaluserinfo"]["registration"], "%Y-%m-%dT%H:%M:%SZ")
-        date_str = date_obj.strftime("%d/%m/%Y %H:%M:%S")
+        date_str = date_obj.strftime("%Y-%m-%d %H:%M:%S")
         return date_str
     except:
         return None
