@@ -90,7 +90,8 @@ class NewReportForm(forms.ModelForm):
             for field_name in field_names:
                 query |= Q(**{f"{field_name}__gt": 0})
 
-            metrics_related = metrics_related.union(metrics_main_funding.filter(query))
+            if len(query):
+                metrics_related = metrics_related.union(metrics_main_funding.filter(query))
         return metrics_related
 
     def clean_end_date(self):
