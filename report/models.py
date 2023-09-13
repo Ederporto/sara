@@ -50,6 +50,7 @@ class Partner(models.Model):
 
 class Organizer(models.Model):
     name = models.CharField(max_length=420)
+    retained = models.BooleanField(default=False)
     institution = models.ManyToManyField(Partner, related_name="organizer_institution")
 
     class Meta:

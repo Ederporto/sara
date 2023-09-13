@@ -65,6 +65,9 @@ class NewReportForm(forms.ModelForm):
         for organizer in organizers_list:
             organizer_name, institution_name = (organizer + ";").split(";", maxsplit=1)
             organizer_object, created = Organizer.objects.get_or_create(name=organizer_name)
+            if not created:
+                organizer_object.retained = True
+                organizer_object.save()
             if institution_name:
                 for partner_name in institution_name.split(";"):
                     if partner_name:
