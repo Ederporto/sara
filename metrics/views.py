@@ -114,7 +114,7 @@ def get_metrics_and_aggregate_per_project():
                     "Number of feedbacks": reports.aggregate(total=Sum("feedbacks"))["total"] or 0,
                     "Number of events": reports.count() or 0,
                     "Number of editors": Editor.objects.filter(editors__in=reports).distinct().count() or 0,
-                    "Number of editors retained": Editor.objects.filter(retained=True, editors__in=reports).count() or 0,
+                    "Number of editors retained": Editor.objects.filter(retained=True, editors__in=reports).distinct().count() or 0,
                     "Number of new editors": Editor.objects.filter(editors__in=reports, account_creation_date__gte=F('editors__initial_date')).count() or 0,
                     "Number of partnerships": Partner.objects.filter(partners__in=reports).distinct().count() or 0,
                     "Number of organizers": Organizer.objects.filter(organizers__in=reports).distinct().count() or 0,
