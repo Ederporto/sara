@@ -7,17 +7,21 @@
         </div>
     </div>
     <div class="w3-row">
-        <div class="w3-third formfield form-left">
+        <div class="w3-quarter formfield form-left">
             <label class="formfieldtitle" for="number_of_participants">{% translate "Number of participants" %}</label>
             <input type="number" min="0" value="{{ report_form.instance.participants }}" id="number_of_participants" name="participants"/>
         </div>
-        <div class="w3-third formfield form-left form-right">
+        <div class="w3-quarter formfield form-left form-right">
             <label class="formfieldtitle" for="number_of_resources">{% translate "Number of resources" %}</label>
             <input type="number" min="0" value="{{ report_form.instance.resources }}" id="number_of_resources" name="resources"/>
         </div>
-        <div class="w3-third formfield form-right">
+        <div class="w3-quarter formfield form-left form-right">
             <label class="formfieldtitle" for="number_of_feedbacks">{% translate "Number of feedbacks" %}</label>
             <input type="number" min="0" value="{{ report_form.instance.feedbacks }}" id="number_of_feedbacks" name="feedbacks"/>
+        </div>
+        <div class="w3-quarter formfield form-right">
+            <label class="formfieldtitle" for="number_of_people_reached_through_social_media">{% translate "Number of people reached through social media" %}</label>
+            <input type="number" min="0" value="{{ report_form.instance.number_of_people_reached_through_social_media }}" id="number_of_people_reached_through_social_media" name="social media"/>
         </div>
     </div>
     <div class="w3-row">

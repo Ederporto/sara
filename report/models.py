@@ -169,6 +169,7 @@ class Report(models.Model):
     organizers = models.ManyToManyField(Organizer, related_name="organizers", blank=True)
     partners_activated = models.ManyToManyField(Partner, related_name="partners", blank=True)
     technologies_used = models.ManyToManyField(Technology, related_name="tecnologies", blank=True)
+    number_of_people_reached_through_social_media = models.IntegerField(blank=True, default=0)
 
     # Wikimedia projects
     wikipedia_created = models.IntegerField(blank=True, default=0)

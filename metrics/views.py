@@ -94,6 +94,7 @@ def get_metrics_and_aggregate_per_project():
                     "Number of new editors": metric.number_of_new_editors,
                     "Number of partnerships": metric.number_of_partnerships,
                     "Number of organizers": metric.number_of_organizers,
+                    "Number of people reached through social media": metric.number_of_people_reached_through_social_media,
                 }
                 done = {
                     "Wikipedia": reports.aggregate(total=Sum(F("wikipedia_created") + F("wikipedia_edited")))["total"] or 0,
@@ -118,6 +119,7 @@ def get_metrics_and_aggregate_per_project():
                     "Number of new editors": Editor.objects.filter(editors__in=reports, account_creation_date__gte=F('editors__initial_date')).count() or 0,
                     "Number of partnerships": Partner.objects.filter(partners__in=reports).distinct().count() or 0,
                     "Number of organizers": Organizer.objects.filter(organizers__in=reports).distinct().count() or 0,
+                    "Number of people reached through social media": reports.aggregate(total=Sum(F("number_of_people_reached_through_social_media")))["total"] or 0,
                 }
 
                 result_metrics = {key: {"goal": value, "done": done[key]} for key, value in goal.items() if value != 0}
