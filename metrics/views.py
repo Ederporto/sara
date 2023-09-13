@@ -1,5 +1,5 @@
 import calendar
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, redirect, reverse, HttpResponse
 from django.utils.translation import gettext as _
 from django.db.models import Q, Count, Sum, F
 from .models import Activity, Area, Metric
@@ -113,11 +113,11 @@ def get_metrics_and_aggregate_per_project():
                     "Number of resources": reports.aggregate(total=Sum("resources"))["total"] or 0,
                     "Number of feedbacks": reports.aggregate(total=Sum("feedbacks"))["total"] or 0,
                     "Number of events": reports.count() or 0,
-                    "Number of editors": reports.annotate(num_aux=Count("editors")).aggregate(total=Sum("num_aux"))["total"] or 0,
-                    "Number of editors retained": reports.filter(editors__retained=True).values("editors").count() or 0,
+                    "Number of editors": Editor.objects.filter(editors__in=reports).distinct().count() or 0,
+                    "Number of editors retained": Editor.objects.filter(retained=True, editors__in=reports).count() or 0,
                     "Number of new editors": Editor.objects.filter(editors__in=reports, account_creation_date__gte=F('editors__initial_date')).count() or 0,
-                    "Number of partnerships": reports.annotate(num_aux=Count("partners_activated")).aggregate(total=Sum("num_aux"))["total"] or 0,
-                    "Number of organizers": reports.annotate(num_aux=Count("organizers")).aggregate(total=Sum("num_aux"))["total"] or 0,
+                    "Number of partnerships": Partner.objects.filter(partners__in=reports).distinct().count() or 0,
+                    "Number of organizers": Organizer.objects.filter(organizers__in=reports).distinct().count() or 0,
                 }
 
                 result_metrics = {key: {"goal": value, "done": done[key]} for key, value in goal.items() if value != 0}
@@ -360,3 +360,14 @@ def get_chart_data_many_to_many(activities, field):
         total_ += getattr(activity, field).count()
         chart_data.append({"x": activity.end_date.isoformat(), "y": total_, "label": activity.description})
     return chart_data
+
+
+def update_metrics_relations(request):
+    main_funding = Project.objects.get(text="Wikimedia Community Fund")
+    editors_metrics = Metric.objects.filter(project=main_funding).filter(Q(number_of_editors__gt=0) | Q(number_of_editors_retained__gt=0) | Q(number_of_new_editors__gt=0))
+    reports = Report.objects.filter(Q(metrics_related__number_of_editors__gt=0))
+    for report in reports:
+        report.metrics_related.add(*editors_metrics)
+        report.save()
+
+    return redirect(reverse("metrics:per_project"))

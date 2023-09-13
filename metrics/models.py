@@ -110,9 +110,11 @@ class Metric(models.Model):
     number_of_participants = models.IntegerField(null=True, default=0)
     number_of_partnerships = models.IntegerField(null=True, default=0)
     number_of_organizers = models.IntegerField(null=True, default=0)
+    number_of_organizers_retained = models.IntegerField(null=True, default=0)
     number_of_resources = models.IntegerField(null=True, default=0)
     number_of_feedbacks = models.IntegerField(null=True, default=0)
     number_of_events = models.IntegerField(null=True, default=0)
+    number_of_people_reached_through_social_media = models.IntegerField(null=True, default=0)
 
     other_type = models.CharField(null=True, blank=True, max_length=420)
     observation = models.CharField(null=True, blank=True, max_length=420)

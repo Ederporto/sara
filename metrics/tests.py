@@ -116,8 +116,11 @@ class MetricViewsTests(TestCase):
         self.username = "testuser"
         self.password = "testpass"
         self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.user_profile = UserProfile.objects.get(user=self.user)
         self.view_metrics_permission = Permission.objects.get(codename="view_metric")
+        self.change_metrics_permission = Permission.objects.get(codename="change_metric")
         self.user.user_permissions.add(self.view_metrics_permission)
+        self.user.user_permissions.add(self.change_metrics_permission)
 
     def test_index_view(self):
         self.index_url = reverse("metrics:index")
@@ -216,6 +219,38 @@ class MetricViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertIn(project_2.text, str(response.context["projects_metrics"]))
+
+    def test_update_metrics(self):
+        self.client.login(username=self.username, password=self.password)
+        area = Area.objects.create(text="Area")
+        activity = Activity.objects.create(text="Activity", area=area)
+        project_1 = Project.objects.create(text="Wikimedia Community Fund")
+
+        metric = Metric.objects.create(text="Metric 1", activity=activity, number_of_editors=10)
+        metric.project.add(project_1)
+
+        team_area = TeamArea.objects.create(text="Area")
+        activity_1 = Activity.objects.create(text="Activity 1")
+        metric_2 = Metric.objects.create(text="Metric 2", activity=activity_1, number_of_editors=9)
+
+        report_1 = Report.objects.create(
+            created_by=self.user_profile,
+            modified_by=self.user_profile,
+            activity_associated=activity_1,
+            area_responsible=team_area,
+            initial_date=datetime.now().date(),
+            end_date=datetime.now().date() + timedelta(days=1),
+            description="Report 1",
+            links="https://testlink.com",
+            learning="Learning" * 60,
+        )
+        report_1.metrics_related.add(metric_2)
+        report_1.save()
+
+        url = reverse("metrics:update_metrics")
+        response = self.client.get(url, follow=True)
+
+        self.assertRedirects(response, reverse('metrics:per_project'))
 
 
 class MetricFunctionsTests(TestCase):

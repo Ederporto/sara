@@ -60,7 +60,7 @@ class ReportAddViewTest(TestCase):
         slq = StrategicLearningQuestion.objects.create(text="SLQ", learning_area=learning_area)
         activity_associated = Activity.objects.create(text="Activity")
         area_reponsible = TeamArea.objects.create(text="Area")
-        metric = Metric.objects.create(text="Metric", activity=activity_associated)
+        metric = Metric.objects.create(text="Metric", activity=activity_associated, number_of_editors=10)
 
         data = {
             "description": "Report",
