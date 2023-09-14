@@ -128,6 +128,12 @@
                             <div class="w3-twothird formfield view-field">{{ data.feedbacks }}</div>
                         </div>
                     {% endif %}
+                    {% if data.number_of_people_reached_through_social_media %}
+                        <div class="w3-row">
+                            <div class="w3-third formfieldtitle">{% trans "Number of people reached through social media" %}</div>
+                            <div class="w3-twothird formfield view-field">{{ data.number_of_people_reached_through_social_media }}</div>
+                        </div>
+                    {% endif %}
                     {% if data.editors.count %}
                         <div class="w3-row">
                             <div class="w3-third formfieldtitle">{% trans "Editors" %}</div>

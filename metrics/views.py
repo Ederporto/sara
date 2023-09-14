@@ -61,7 +61,7 @@ def show_metrics_per_project(request):
 def get_metrics_and_aggregate_per_project():
     aggregated_metrics_and_results = {}
 
-    for project in Project.objects.all():
+    for project in Project.objects.filter(pk=7):#all():
         project_metrics = []
         for activity in Activity.objects.filter(area__project=project):
             activity_metrics = {}
