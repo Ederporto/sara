@@ -1,4 +1,6 @@
 from django import template
+from django.utils.translation import gettext_lazy as _
+
 register = template.Library()
 
 
@@ -16,3 +18,11 @@ def perc(a, b):
         return "{:.0f}%".format(100*a/b, 1)
     except:
         return "-"
+
+
+@register.filter
+def bool_yesno(a):
+    if type(a) == bool:
+        return _("Yes") if a else _("No")
+    else:
+        return a
