@@ -116,6 +116,7 @@ class Metric(models.Model):
     number_of_events = models.IntegerField(null=True, default=0)
     number_of_people_reached_through_social_media = models.IntegerField(null=True, default=0)
 
+    boolean_type = models.BooleanField(default=False)
     other_type = models.CharField(null=True, blank=True, max_length=420)
     observation = models.CharField(null=True, blank=True, max_length=420)
 
