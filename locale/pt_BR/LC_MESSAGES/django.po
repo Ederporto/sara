@@ -1774,7 +1774,7 @@ msgid ""
 "            "
 msgstr ""
 "\n"
-"                 Esta aplicação foi desenvolvida pelo <i>grupo de usuário "
+"                 Esta aplicação foi desenvolvida pelo <i>grupo de usuários "
 "Wiki Movimento Brasil</i>.\n"
 "            "
 
