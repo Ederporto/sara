@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-10 00:59-0300\n"
+"POT-Creation-Date: 2023-11-10 15:53-0300\n"
 "PO-Revision-Date: 2023-03-16 03:28-0300\n"
 "Last-Translator: Éder Porto <eder.porto@wmnobrasil.org>\n"
 "Language-Team: PT_BR <LL@li.org>\n"
@@ -188,7 +188,8 @@ msgstr "Buscar"
 
 #: .\agenda\templates\agenda\list_events.html:35
 #: .\bug\templates\bug\list_bugs.html:40 .\bug\views.py:50 .\bug\views.py:65
-#: .\metrics\templates\metrics\list_metrics_per_project.html:36
+#: .\metrics\templates\metrics\list_metrics_per_project.html:37
+#: .\metrics\templates\metrics\list_metrics_reports.html:34
 #: .\report\templates\area_activated\list_areas.html:33
 #: .\report\templates\funding\list_fundings.html:32
 #: .\report\templates\partners\list_partners.html:32
@@ -285,7 +286,9 @@ msgid "Testing"
 msgstr "Em teste"
 
 #: .\bug\models.py:12 .\metrics\templates\metrics\list_metrics.html:195
-#: .\metrics\templates\metrics\list_metrics_per_project.html:38
+#: .\metrics\templates\metrics\list_metrics_per_project.html:39
+#: .\metrics\templates\metrics\list_metrics_reports.html:26
+#: .\metrics\templates\metrics\list_metrics_reports.html:36
 msgid "Done"
 msgstr "Feito"
 
@@ -330,7 +333,7 @@ msgstr "Tipo"
 
 #: .\bug\models.py:24 .\bug\templates\bug\detail_bug.html:38
 #: .\bug\templates\bug\list_bugs.html:45 .\bug\views.py:50 .\bug\views.py:65
-#: .\metrics\templates\metrics\list_metrics_per_project.html:40
+#: .\metrics\templates\metrics\list_metrics_per_project.html:41
 msgid "Status"
 msgstr "Status"
 
@@ -449,7 +452,7 @@ msgid "Activity"
 msgstr "Atividade"
 
 #: .\metrics\models.py:127
-#: .\metrics\templates\metrics\list_metrics_per_project.html:37
+#: .\metrics\templates\metrics\list_metrics_per_project.html:38
 #: .\report\tests_views.py:952 .\report\tests_views.py:1011
 #: .\report\views.py:329
 msgid "Metric"
@@ -800,7 +803,7 @@ msgstr "Número de artigos criados ou editados"
 #: .\metrics\templates\metrics\list_metrics.html:240
 #: .\metrics\templates\metrics\list_metrics.html:241
 #: .\metrics\templates\metrics\list_metrics.html:242
-#: .\metrics\templates\metrics\list_metrics.html:243 .\metrics\views.py:31
+#: .\metrics\templates\metrics\list_metrics.html:243 .\metrics\views.py:32
 #: .\templates\navbar.html:49
 msgid "Activities plan"
 msgstr "Plano de atividades"
@@ -927,9 +930,27 @@ msgstr "Número de itens"
 msgid "Number of pages"
 msgstr "Número de páginas"
 
-#: .\metrics\templates\metrics\list_metrics_per_project.html:39
+#: .\metrics\templates\metrics\list_metrics_per_project.html:36
+#: .\report\templates\report\list_reports.html:39
+msgid "Actions"
+msgstr "Ações"
+
+#: .\metrics\templates\metrics\list_metrics_per_project.html:40
+#: .\metrics\templates\metrics\list_metrics_reports.html:25
+#: .\metrics\templates\metrics\list_metrics_reports.html:37
 msgid "Goal"
 msgstr "Meta"
+
+#: .\metrics\templates\metrics\list_metrics_per_project.html:50
+#: .\metrics\templates\metrics\list_metrics_reports.html:44
+#: .\report\templates\report\list_reports.html:51
+msgid "View"
+msgstr "Visualizar"
+
+#: .\metrics\templates\metrics\list_metrics_reports.html:35
+#: .\report\models.py:213 .\report\views.py:171
+msgid "Report"
+msgstr "Relatório"
 
 #: .\metrics\templates\metrics\strategy.html:23
 msgid "Strategic Axes:"
@@ -955,7 +976,6 @@ msgid "Number of new editors"
 msgstr "Número de novos editores"
 
 #: .\metrics\templates\metrics\translations.html:24
-#| msgid "Number of organizers"
 msgid "Number of organizers retained"
 msgstr "Número de organizadores retidos"
 
@@ -967,31 +987,31 @@ msgstr "Outra métrica"
 msgid "Occurence"
 msgstr "Ocorrência"
 
-#: .\metrics\templatetags\metricstags.py:26 .\metrics\tests.py:600
+#: .\metrics\templatetags\metricstags.py:26 .\metrics\tests.py:668
 msgid "Yes"
 msgstr "Sim"
 
-#: .\metrics\templatetags\metricstags.py:26 .\metrics\tests.py:604
+#: .\metrics\templatetags\metricstags.py:26 .\metrics\tests.py:672
 msgid "No"
 msgstr "Não"
 
-#: .\metrics\tests.py:608
+#: .\metrics\tests.py:676
 msgid "Test"
 msgstr "Teste"
 
-#: .\metrics\views.py:17
+#: .\metrics\views.py:18
 msgid "Home"
 msgstr "Página inicial"
 
-#: .\metrics\views.py:22
+#: .\metrics\views.py:23
 msgid "About"
 msgstr "Sobre"
 
-#: .\metrics\views.py:50
+#: .\metrics\views.py:51
 msgid "Show general metrics"
 msgstr "Acompanhar métricas gerais"
 
-#: .\metrics\views.py:57
+#: .\metrics\views.py:58
 msgid "Show metrics per project"
 msgstr "Acompanhar métricas por projeto"
 
@@ -1072,10 +1092,6 @@ msgstr "Objetivo de avaliação"
 #: .\report\models.py:136 .\report\templates\report\detail_report.html:292
 msgid "Evaluation objectives"
 msgstr "Objetivos de avaliação"
-
-#: .\report\models.py:213 .\report\views.py:171
-msgid "Report"
-msgstr "Relatório"
 
 #: .\report\models.py:214 .\templates\navbar.html:34
 msgid "Reports"
@@ -1337,14 +1353,6 @@ msgstr "Acompanhar métricas por projeto"
 #: .\report\templates\report\list_reports.html:24
 msgid "Export all reports"
 msgstr "Exportar todos os relatórios"
-
-#: .\report\templates\report\list_reports.html:39
-msgid "Actions"
-msgstr "Ações"
-
-#: .\report\templates\report\list_reports.html:51
-msgid "View"
-msgstr "Visualizar"
 
 #: .\report\templates\report\quantitative.html:59
 msgid "Which projects are you reporting?"
