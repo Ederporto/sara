@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-20 15:32-0300\n"
+"POT-Creation-Date: 2023-11-10 00:59-0300\n"
 "PO-Revision-Date: 2023-03-16 03:28-0300\n"
 "Last-Translator: Éder Porto <eder.porto@wmnobrasil.org>\n"
 "Language-Team: PT_BR <LL@li.org>\n"
@@ -194,17 +194,17 @@ msgstr "Buscar"
 #: .\report\templates\partners\list_partners.html:32
 #: .\report\templates\report\list_reports.html:37
 #: .\report\templates\technologies\list_technologies.html:32
-#: .\report\tests_views.py:657 .\report\tests_views.py:741
-#: .\report\tests_views.py:811 .\report\tests_views.py:885
-#: .\report\tests_views.py:944 .\report\tests_views.py:968
-#: .\report\tests_views.py:995 .\report\tests_views.py:1016
-#: .\report\tests_views.py:1027 .\report\tests_views.py:1044
-#: .\report\tests_views.py:1060 .\report\tests_views.py:1077
-#: .\report\tests_views.py:1089 .\report\tests_views.py:1104
-#: .\report\tests_views.py:1119 .\report\tests_views.py:1136
-#: .\report\tests_views.py:1152 .\report\tests_views.py:1170
-#: .\report\tests_views.py:1181 .\report\tests_views.py:1196
-#: .\report\tests_views.py:1207 .\report\views.py:203 .\report\views.py:329
+#: .\report\tests_views.py:724 .\report\tests_views.py:808
+#: .\report\tests_views.py:878 .\report\tests_views.py:952
+#: .\report\tests_views.py:1011 .\report\tests_views.py:1035
+#: .\report\tests_views.py:1062 .\report\tests_views.py:1083
+#: .\report\tests_views.py:1094 .\report\tests_views.py:1111
+#: .\report\tests_views.py:1127 .\report\tests_views.py:1144
+#: .\report\tests_views.py:1156 .\report\tests_views.py:1171
+#: .\report\tests_views.py:1186 .\report\tests_views.py:1203
+#: .\report\tests_views.py:1219 .\report\tests_views.py:1237
+#: .\report\tests_views.py:1248 .\report\tests_views.py:1263
+#: .\report\tests_views.py:1274 .\report\views.py:203 .\report\views.py:329
 #: .\report\views.py:368 .\report\views.py:402 .\report\views.py:419
 #: .\report\views.py:436 .\report\views.py:453 .\report\views.py:470
 #: .\report\views.py:487 .\report\views.py:504
@@ -222,8 +222,8 @@ msgstr "Nome"
 #: .\agenda\templates\agenda\list_events.html:37
 #: .\report\templates\report\administrative.html:42
 #: .\report\templates\report\detail_report.html:76
-#: .\report\templates\report\list_reports.html:40 .\report\tests_views.py:659
-#: .\report\tests_views.py:743 .\report\tests_views.py:813
+#: .\report\templates\report\list_reports.html:40 .\report\tests_views.py:726
+#: .\report\tests_views.py:810 .\report\tests_views.py:880
 #: .\report\views.py:204
 msgid "Initial date"
 msgstr "Data inicial"
@@ -231,8 +231,8 @@ msgstr "Data inicial"
 #: .\agenda\templates\agenda\list_events.html:38
 #: .\report\templates\report\administrative.html:46
 #: .\report\templates\report\detail_report.html:81
-#: .\report\templates\report\list_reports.html:41 .\report\tests_views.py:659
-#: .\report\tests_views.py:743 .\report\tests_views.py:813
+#: .\report\templates\report\list_reports.html:41 .\report\tests_views.py:726
+#: .\report\tests_views.py:810 .\report\tests_views.py:880
 #: .\report\views.py:204
 msgid "End date"
 msgstr "Data final"
@@ -317,8 +317,8 @@ msgstr "Título"
 #: .\bug\models.py:22 .\bug\templates\bug\detail_bug.html:20 .\bug\views.py:50
 #: .\bug\views.py:65 .\report\templates\report\administrative.html:50
 #: .\report\templates\report\detail_report.html:56
-#: .\report\templates\report\list_reports.html:38 .\report\tests_views.py:659
-#: .\report\tests_views.py:743 .\report\tests_views.py:813
+#: .\report\templates\report\list_reports.html:38 .\report\tests_views.py:726
+#: .\report\tests_views.py:810 .\report\tests_views.py:880
 #: .\report\views.py:205
 msgid "Description"
 msgstr "Descrição"
@@ -346,7 +346,7 @@ msgid "Update date"
 msgstr "Data de atualização"
 
 #: .\bug\models.py:35 .\bug\templates\bug\detail_bug.html:47 .\bug\views.py:50
-#: .\bug\views.py:65 .\report\tests_views.py:888 .\report\tests_views.py:947
+#: .\bug\views.py:65 .\report\tests_views.py:955 .\report\tests_views.py:1014
 #: .\report\views.py:331
 msgid "Observation"
 msgstr "Observação"
@@ -443,14 +443,14 @@ msgstr "Objetivo"
 msgid "Objectives"
 msgstr "Objetivos"
 
-#: .\metrics\models.py:64 .\report\tests_views.py:885
-#: .\report\tests_views.py:944 .\report\views.py:329
+#: .\metrics\models.py:64 .\report\tests_views.py:952
+#: .\report\tests_views.py:1011 .\report\views.py:329
 msgid "Activity"
 msgstr "Atividade"
 
 #: .\metrics\models.py:127
 #: .\metrics\templates\metrics\list_metrics_per_project.html:37
-#: .\report\tests_views.py:885 .\report\tests_views.py:944
+#: .\report\tests_views.py:952 .\report\tests_views.py:1011
 #: .\report\views.py:329
 msgid "Metric"
 msgstr "Métrica"
@@ -717,8 +717,8 @@ msgstr "Número de participantes"
 #: .\metrics\templates\metrics\list_metrics.html:148
 #: .\metrics\templates\metrics\list_metrics.html:281 .\report\models.py:33
 #: .\report\templates\report\detail_report.html:139
-#: .\report\templates\report\quantitative.html:29 .\report\tests_views.py:661
-#: .\report\tests_views.py:745 .\report\tests_views.py:815
+#: .\report\templates\report\quantitative.html:29 .\report\tests_views.py:728
+#: .\report\tests_views.py:812 .\report\tests_views.py:882
 #: .\report\views.py:206
 msgid "Editors"
 msgstr "Editores"
@@ -727,8 +727,8 @@ msgstr "Editores"
 #: .\metrics\templates\metrics\list_metrics.html:156
 #: .\metrics\templates\metrics\list_metrics.html:282 .\report\models.py:58
 #: .\report\templates\report\detail_report.html:145
-#: .\report\templates\report\quantitative.html:33 .\report\tests_views.py:661
-#: .\report\tests_views.py:745 .\report\tests_views.py:815
+#: .\report\templates\report\quantitative.html:33 .\report\tests_views.py:728
+#: .\report\tests_views.py:812 .\report\tests_views.py:882
 #: .\report\views.py:207
 msgid "Organizers"
 msgstr "Organizadores(as)"
@@ -760,8 +760,8 @@ msgstr "Métricas principais e adicionais"
 
 #: .\metrics\templates\metrics\list_metrics.html:180
 #: .\report\templates\report\detail_report.html:151
-#: .\report\templates\report\quantitative.html:39 .\report\tests_views.py:662
-#: .\report\tests_views.py:746 .\report\tests_views.py:816
+#: .\report\templates\report\quantitative.html:39 .\report\tests_views.py:729
+#: .\report\tests_views.py:813 .\report\tests_views.py:883
 #: .\report\views.py:207
 msgid "Partnerships activated"
 msgstr "Parcerias ativadas"
@@ -841,9 +841,9 @@ msgstr "Número de páginas criadas ou editadas"
 #: .\metrics\templates\metrics\list_metrics.html:235
 #: .\metrics\templates\metrics\list_metrics.html:278
 #: .\report\templates\report\detail_report.html:115
-#: .\report\templates\report\quantitative.html:11 .\report\tests_views.py:660
-#: .\report\tests_views.py:744 .\report\tests_views.py:814
-#: .\report\tests_views.py:886 .\report\tests_views.py:945
+#: .\report\templates\report\quantitative.html:11 .\report\tests_views.py:727
+#: .\report\tests_views.py:811 .\report\tests_views.py:881
+#: .\report\tests_views.py:953 .\report\tests_views.py:1012
 #: .\report\views.py:206 .\report\views.py:330
 msgid "Number of participants"
 msgstr "Número de participantes"
@@ -852,9 +852,9 @@ msgstr "Número de participantes"
 #: .\metrics\templates\metrics\list_metrics.html:279
 #: .\metrics\templates\metrics\translations.html:16
 #: .\report\templates\report\detail_report.html:121
-#: .\report\templates\report\quantitative.html:15 .\report\tests_views.py:661
-#: .\report\tests_views.py:745 .\report\tests_views.py:815
-#: .\report\tests_views.py:887 .\report\tests_views.py:946
+#: .\report\templates\report\quantitative.html:15 .\report\tests_views.py:728
+#: .\report\tests_views.py:812 .\report\tests_views.py:882
+#: .\report\tests_views.py:954 .\report\tests_views.py:1013
 #: .\report\views.py:206 .\report\views.py:330
 msgid "Number of resources"
 msgstr "Número de recursos"
@@ -863,17 +863,17 @@ msgstr "Número de recursos"
 #: .\metrics\templates\metrics\list_metrics.html:280
 #: .\metrics\templates\metrics\translations.html:17
 #: .\report\templates\report\detail_report.html:127
-#: .\report\templates\report\quantitative.html:19 .\report\tests_views.py:661
-#: .\report\tests_views.py:745 .\report\tests_views.py:815
-#: .\report\tests_views.py:887 .\report\tests_views.py:946
+#: .\report\templates\report\quantitative.html:19 .\report\tests_views.py:728
+#: .\report\tests_views.py:812 .\report\tests_views.py:882
+#: .\report\tests_views.py:954 .\report\tests_views.py:1013
 #: .\report\views.py:206 .\report\views.py:331
 msgid "Number of feedbacks"
 msgstr "Número de respostas"
 
 #: .\metrics\templates\metrics\list_metrics.html:238
 #: .\metrics\templates\metrics\list_metrics.html:281
-#: .\metrics\templates\metrics\translations.html:19 .\report\tests_views.py:886
-#: .\report\tests_views.py:945 .\report\views.py:329
+#: .\metrics\templates\metrics\translations.html:19 .\report\tests_views.py:953
+#: .\report\tests_views.py:1012 .\report\views.py:329
 msgid "Number of editors"
 msgstr "Número de editores"
 
@@ -885,8 +885,8 @@ msgstr "Número de organizadores"
 
 #: .\metrics\templates\metrics\list_metrics.html:240
 #: .\metrics\templates\metrics\list_metrics.html:283
-#: .\metrics\templates\metrics\translations.html:22 .\report\tests_views.py:886
-#: .\report\tests_views.py:945 .\report\views.py:330
+#: .\metrics\templates\metrics\translations.html:22 .\report\tests_views.py:953
+#: .\report\tests_views.py:1012 .\report\views.py:330
 msgid "Number of partnerships"
 msgstr "Número de parcerias"
 
@@ -941,8 +941,8 @@ msgstr "Eixos Estratégicos:"
 msgid "MetaWiki"
 msgstr "Metawiki"
 
-#: .\metrics\templates\metrics\translations.html:18 .\report\tests_views.py:887
-#: .\report\tests_views.py:946 .\report\views.py:331
+#: .\metrics\templates\metrics\translations.html:18 .\report\tests_views.py:954
+#: .\report\tests_views.py:1013 .\report\views.py:331
 msgid "Number of events"
 msgstr "Número de eventos"
 
@@ -955,20 +955,29 @@ msgid "Number of new editors"
 msgstr "Número de novos editores"
 
 #: .\metrics\templates\metrics\translations.html:24
+#| msgid "Number of organizers"
+msgid "Number of organizers retained"
+msgstr "Número de organizadores retidos"
+
+#: .\metrics\templates\metrics\translations.html:25
 msgid "Other metric"
 msgstr "Outra métrica"
 
-#: .\metrics\templates\metrics\translations.html:25
+#: .\metrics\templates\metrics\translations.html:26
 msgid "Occurence"
 msgstr "Ocorrência"
 
-#: .\metrics\templatetags\metricstags.py:26
+#: .\metrics\templatetags\metricstags.py:26 .\metrics\tests.py:600
 msgid "Yes"
 msgstr "Sim"
 
-#: .\metrics\templatetags\metricstags.py:26
+#: .\metrics\templatetags\metricstags.py:26 .\metrics\tests.py:604
 msgid "No"
 msgstr "Não"
+
+#: .\metrics\tests.py:608
+msgid "Test"
+msgstr "Teste"
 
 #: .\metrics\views.py:17
 msgid "Home"
@@ -1004,7 +1013,7 @@ msgid "Partner"
 msgstr "Parceiro"
 
 #: .\report\models.py:45 .\report\templates\partners\list_partners.html:21
-#: .\report\tests_views.py:1170 .\report\tests_views.py:1181
+#: .\report\tests_views.py:1237 .\report\tests_views.py:1248
 #: .\report\views.py:487
 msgid "Partners"
 msgstr "Parceiros"
@@ -1013,8 +1022,8 @@ msgstr "Parceiros"
 msgid "Organizer"
 msgstr "Organizador(a)"
 
-#: .\report\models.py:68 .\report\tests_views.py:1196
-#: .\report\tests_views.py:1207 .\report\views.py:504
+#: .\report\models.py:68 .\report\tests_views.py:1263
+#: .\report\tests_views.py:1274 .\report\views.py:504
 msgid "Technology"
 msgstr "Tecnologia"
 
@@ -1026,9 +1035,9 @@ msgstr "Tecnologias"
 msgid "Name of the area activated"
 msgstr "Nome da área ativada"
 
-#: .\report\models.py:80 .\report\tests_views.py:659
-#: .\report\tests_views.py:743 .\report\tests_views.py:813
-#: .\report\tests_views.py:1016 .\report\tests_views.py:1027
+#: .\report\models.py:80 .\report\tests_views.py:726
+#: .\report\tests_views.py:810 .\report\tests_views.py:880
+#: .\report\tests_views.py:1083 .\report\tests_views.py:1094
 #: .\report\views.py:204 .\report\views.py:402
 msgid "Area activated"
 msgstr "Área ativada"
@@ -1039,8 +1048,8 @@ msgstr "Área ativada"
 msgid "Areas activated"
 msgstr "Áreas ativadas"
 
-#: .\report\models.py:102 .\report\tests_views.py:1104
-#: .\report\tests_views.py:1119 .\report\views.py:453
+#: .\report\models.py:102 .\report\tests_views.py:1171
+#: .\report\tests_views.py:1186 .\report\views.py:453
 msgid "Learning area"
 msgstr "Área de aprendizagem"
 
@@ -1077,7 +1086,7 @@ msgid "Add area activated"
 msgstr "Adicionar área ativada"
 
 #: .\report\templates\area_activated\list_areas.html:35
-#: .\report\tests_views.py:1016 .\report\tests_views.py:1027
+#: .\report\tests_views.py:1083 .\report\tests_views.py:1094
 #: .\report\views.py:402
 msgid "Contact"
 msgstr "Contato"
@@ -1131,15 +1140,15 @@ msgstr "Estratégia"
 #: .\report\templates\report\detail_report.html:265
 #: .\report\templates\report\learning.html:29
 #: .\report\templates\report\update_report.html:21
-#: .\report\templates\report\update_report.html:40 .\report\tests_views.py:671
-#: .\report\tests_views.py:755 .\report\tests_views.py:825
+#: .\report\templates\report\update_report.html:40 .\report\tests_views.py:738
+#: .\report\tests_views.py:822 .\report\tests_views.py:892
 #: .\report\views.py:214
 msgid "Learning"
 msgstr "Aprendizagem"
 
 #: .\report\templates\report\administrative.html:4
-#: .\report\templates\report\detail_report.html:61 .\report\tests_views.py:658
-#: .\report\tests_views.py:742 .\report\tests_views.py:812
+#: .\report\templates\report\detail_report.html:61 .\report\tests_views.py:725
+#: .\report\tests_views.py:809 .\report\tests_views.py:879
 #: .\report\views.py:203
 msgid "Activity associated"
 msgstr "Atividade associada"
@@ -1150,8 +1159,8 @@ msgstr "Outro (não listado)"
 
 #: .\report\templates\report\administrative.html:20
 #: .\report\templates\report\detail_report.html:66
-#: .\report\templates\report\list_reports.html:42 .\report\tests_views.py:658
-#: .\report\tests_views.py:742 .\report\tests_views.py:812
+#: .\report\templates\report\list_reports.html:42 .\report\tests_views.py:725
+#: .\report\tests_views.py:809 .\report\tests_views.py:879
 #: .\report\views.py:204
 msgid "Area responsible"
 msgstr "Área responsável"
@@ -1164,22 +1173,22 @@ msgid "Add"
 msgstr "Adicionar"
 
 #: .\report\templates\report\administrative.html:54
-#: .\report\templates\report\detail_report.html:87 .\report\tests_views.py:660
-#: .\report\tests_views.py:744 .\report\tests_views.py:814
+#: .\report\templates\report\detail_report.html:87 .\report\tests_views.py:727
+#: .\report\tests_views.py:811 .\report\tests_views.py:881
 #: .\report\views.py:205
 msgid "Funding associated"
 msgstr "Financiamento associado"
 
 #: .\report\templates\report\administrative.html:65
-#: .\report\templates\report\detail_report.html:94 .\report\tests_views.py:660
-#: .\report\tests_views.py:744 .\report\tests_views.py:814
+#: .\report\templates\report\detail_report.html:94 .\report\tests_views.py:727
+#: .\report\tests_views.py:811 .\report\tests_views.py:881
 #: .\report\views.py:205
 msgid "Links"
 msgstr "<i>Links</i>"
 
 #: .\report\templates\report\administrative.html:69
-#: .\report\templates\report\detail_report.html:99 .\report\tests_views.py:660
-#: .\report\tests_views.py:744 .\report\tests_views.py:814
+#: .\report\templates\report\detail_report.html:99 .\report\tests_views.py:727
+#: .\report\tests_views.py:811 .\report\tests_views.py:881
 #: .\report\views.py:205
 msgid "Public communication"
 msgstr "Comunicação pública"
@@ -1238,8 +1247,8 @@ msgid "Number of people reached through social media"
 msgstr "Número de pessoas alcançadas pela redes sociais"
 
 #: .\report\templates\report\detail_report.html:157
-#: .\report\templates\report\quantitative.html:48 .\report\tests_views.py:662
-#: .\report\tests_views.py:746 .\report\tests_views.py:816
+#: .\report\templates\report\quantitative.html:48 .\report\tests_views.py:729
+#: .\report\tests_views.py:813 .\report\tests_views.py:883
 #: .\report\views.py:207
 msgid "Technologies used"
 msgstr "Tecnologias usadas"
@@ -1370,335 +1379,335 @@ msgstr "Preencher relatório de aprendizagem"
 msgid "Add technology"
 msgstr "Adicionar tecnologia"
 
-#: .\report\tests_views.py:657 .\report\tests_views.py:741
-#: .\report\tests_views.py:811 .\report\views.py:203
+#: .\report\tests_views.py:724 .\report\tests_views.py:808
+#: .\report\tests_views.py:878 .\report\views.py:203
 msgid "Created by"
 msgstr "Criado por"
 
-#: .\report\tests_views.py:657 .\report\tests_views.py:741
-#: .\report\tests_views.py:811 .\report\views.py:203 .\report\views.py:323
+#: .\report\tests_views.py:724 .\report\tests_views.py:808
+#: .\report\tests_views.py:878 .\report\views.py:203 .\report\views.py:323
 msgid "Created at"
 msgstr "Criado em"
 
-#: .\report\tests_views.py:657 .\report\tests_views.py:741
-#: .\report\tests_views.py:811 .\report\views.py:203
+#: .\report\tests_views.py:724 .\report\tests_views.py:808
+#: .\report\tests_views.py:878 .\report\views.py:203
 msgid "Modified by"
 msgstr "Modificado por"
 
-#: .\report\tests_views.py:657 .\report\tests_views.py:741
-#: .\report\tests_views.py:811 .\report\views.py:203 .\report\views.py:324
+#: .\report\tests_views.py:724 .\report\tests_views.py:808
+#: .\report\tests_views.py:878 .\report\views.py:203 .\report\views.py:324
 msgid "Modified at"
 msgstr "Modificado em"
 
-#: .\report\tests_views.py:658 .\report\tests_views.py:742
-#: .\report\tests_views.py:812 .\report\views.py:204
+#: .\report\tests_views.py:725 .\report\tests_views.py:809
+#: .\report\tests_views.py:879 .\report\views.py:204
 msgid "Name of the activity"
 msgstr "Nome da atividade"
 
-#: .\report\tests_views.py:662 .\report\tests_views.py:746
-#: .\report\tests_views.py:816 .\report\tests_views.py:888
-#: .\report\tests_views.py:947 .\report\views.py:207 .\report\views.py:332
+#: .\report\tests_views.py:729 .\report\tests_views.py:813
+#: .\report\tests_views.py:883 .\report\tests_views.py:955
+#: .\report\tests_views.py:1014 .\report\views.py:207 .\report\views.py:332
 msgid "# Wikipedia created"
 msgstr "# criados(as) na Wikipédia"
 
-#: .\report\tests_views.py:663 .\report\tests_views.py:747
-#: .\report\tests_views.py:817 .\report\tests_views.py:888
-#: .\report\tests_views.py:947 .\report\views.py:208 .\report\views.py:332
+#: .\report\tests_views.py:730 .\report\tests_views.py:814
+#: .\report\tests_views.py:884 .\report\tests_views.py:955
+#: .\report\tests_views.py:1014 .\report\views.py:208 .\report\views.py:332
 msgid "# Wikipedia edited"
 msgstr "# editados(as) na Wikipédia"
 
-#: .\report\tests_views.py:663 .\report\tests_views.py:747
-#: .\report\tests_views.py:817 .\report\tests_views.py:889
-#: .\report\tests_views.py:948 .\report\views.py:208 .\report\views.py:332
+#: .\report\tests_views.py:730 .\report\tests_views.py:814
+#: .\report\tests_views.py:884 .\report\tests_views.py:956
+#: .\report\tests_views.py:1015 .\report\views.py:208 .\report\views.py:332
 msgid "# Commons created"
 msgstr "# criados(as) no Commons"
 
-#: .\report\tests_views.py:663 .\report\tests_views.py:747
-#: .\report\tests_views.py:817 .\report\tests_views.py:889
-#: .\report\tests_views.py:948 .\report\views.py:208 .\report\views.py:332
+#: .\report\tests_views.py:730 .\report\tests_views.py:814
+#: .\report\tests_views.py:884 .\report\tests_views.py:956
+#: .\report\tests_views.py:1015 .\report\views.py:208 .\report\views.py:332
 msgid "# Commons edited"
 msgstr "# editados(as) no Commons"
 
-#: .\report\tests_views.py:664 .\report\tests_views.py:748
-#: .\report\tests_views.py:818 .\report\tests_views.py:889
-#: .\report\tests_views.py:948 .\report\views.py:208 .\report\views.py:333
+#: .\report\tests_views.py:731 .\report\tests_views.py:815
+#: .\report\tests_views.py:885 .\report\tests_views.py:956
+#: .\report\tests_views.py:1015 .\report\views.py:208 .\report\views.py:333
 msgid "# Wikidata created"
 msgstr "# criados(as) no Wikidata"
 
-#: .\report\tests_views.py:664 .\report\tests_views.py:748
-#: .\report\tests_views.py:818 .\report\tests_views.py:890
-#: .\report\tests_views.py:949 .\report\views.py:209 .\report\views.py:333
+#: .\report\tests_views.py:731 .\report\tests_views.py:815
+#: .\report\tests_views.py:885 .\report\tests_views.py:957
+#: .\report\tests_views.py:1016 .\report\views.py:209 .\report\views.py:333
 msgid "# Wikidata edited"
 msgstr "# editados(as) no Wikidata"
 
-#: .\report\tests_views.py:664 .\report\tests_views.py:748
-#: .\report\tests_views.py:818 .\report\tests_views.py:890
-#: .\report\tests_views.py:949 .\report\views.py:209 .\report\views.py:333
+#: .\report\tests_views.py:731 .\report\tests_views.py:815
+#: .\report\tests_views.py:885 .\report\tests_views.py:957
+#: .\report\tests_views.py:1016 .\report\views.py:209 .\report\views.py:333
 msgid "# Wikiversity created"
 msgstr "# criados(as) na Wikiversidade"
 
-#: .\report\tests_views.py:665 .\report\tests_views.py:749
-#: .\report\tests_views.py:819 .\report\tests_views.py:890
-#: .\report\tests_views.py:949 .\report\views.py:209 .\report\views.py:333
+#: .\report\tests_views.py:732 .\report\tests_views.py:816
+#: .\report\tests_views.py:886 .\report\tests_views.py:957
+#: .\report\tests_views.py:1016 .\report\views.py:209 .\report\views.py:333
 msgid "# Wikiversity edited"
 msgstr "# editados(as) na Wikiversidade"
 
-#: .\report\tests_views.py:665 .\report\tests_views.py:749
-#: .\report\tests_views.py:819 .\report\tests_views.py:891
-#: .\report\tests_views.py:950 .\report\views.py:209 .\report\views.py:334
+#: .\report\tests_views.py:732 .\report\tests_views.py:816
+#: .\report\tests_views.py:886 .\report\tests_views.py:958
+#: .\report\tests_views.py:1017 .\report\views.py:209 .\report\views.py:334
 msgid "# Wikibooks created"
 msgstr "# criados(as) no Wikilivross"
 
-#: .\report\tests_views.py:665 .\report\tests_views.py:749
-#: .\report\tests_views.py:819 .\report\tests_views.py:891
-#: .\report\tests_views.py:950 .\report\views.py:210 .\report\views.py:334
+#: .\report\tests_views.py:732 .\report\tests_views.py:816
+#: .\report\tests_views.py:886 .\report\tests_views.py:958
+#: .\report\tests_views.py:1017 .\report\views.py:210 .\report\views.py:334
 msgid "# Wikibooks edited"
 msgstr "# editados(as) no Wikilivross"
 
-#: .\report\tests_views.py:666 .\report\tests_views.py:750
-#: .\report\tests_views.py:820 .\report\tests_views.py:891
-#: .\report\tests_views.py:950 .\report\views.py:210 .\report\views.py:334
+#: .\report\tests_views.py:733 .\report\tests_views.py:817
+#: .\report\tests_views.py:887 .\report\tests_views.py:958
+#: .\report\tests_views.py:1017 .\report\views.py:210 .\report\views.py:334
 msgid "# Wikisource created"
 msgstr "# criados(as) no Wikisource"
 
-#: .\report\tests_views.py:666 .\report\tests_views.py:750
-#: .\report\tests_views.py:820 .\report\tests_views.py:892
-#: .\report\tests_views.py:951 .\report\views.py:210 .\report\views.py:334
+#: .\report\tests_views.py:733 .\report\tests_views.py:817
+#: .\report\tests_views.py:887 .\report\tests_views.py:959
+#: .\report\tests_views.py:1018 .\report\views.py:210 .\report\views.py:334
 msgid "# Wikisource edited"
 msgstr "# editados(as) no Wikisource"
 
-#: .\report\tests_views.py:666 .\report\tests_views.py:750
-#: .\report\tests_views.py:820 .\report\tests_views.py:892
-#: .\report\tests_views.py:951 .\report\views.py:210 .\report\views.py:335
+#: .\report\tests_views.py:733 .\report\tests_views.py:817
+#: .\report\tests_views.py:887 .\report\tests_views.py:959
+#: .\report\tests_views.py:1018 .\report\views.py:210 .\report\views.py:335
 msgid "# Wikinews created"
 msgstr "# criados(as) no Wikinotícias"
 
-#: .\report\tests_views.py:667 .\report\tests_views.py:751
-#: .\report\tests_views.py:821 .\report\tests_views.py:892
-#: .\report\tests_views.py:951 .\report\views.py:211 .\report\views.py:335
+#: .\report\tests_views.py:734 .\report\tests_views.py:818
+#: .\report\tests_views.py:888 .\report\tests_views.py:959
+#: .\report\tests_views.py:1018 .\report\views.py:211 .\report\views.py:335
 msgid "# Wikinews edited"
 msgstr "# editados(as) no Wikinotícias"
 
-#: .\report\tests_views.py:667 .\report\tests_views.py:751
-#: .\report\tests_views.py:821 .\report\tests_views.py:893
-#: .\report\tests_views.py:952 .\report\views.py:211 .\report\views.py:335
+#: .\report\tests_views.py:734 .\report\tests_views.py:818
+#: .\report\tests_views.py:888 .\report\tests_views.py:960
+#: .\report\tests_views.py:1019 .\report\views.py:211 .\report\views.py:335
 msgid "# Wikiquote created"
 msgstr "# criados(as) no Wikiquote"
 
-#: .\report\tests_views.py:667 .\report\tests_views.py:751
-#: .\report\tests_views.py:821 .\report\tests_views.py:893
-#: .\report\tests_views.py:952 .\report\views.py:211 .\report\views.py:335
+#: .\report\tests_views.py:734 .\report\tests_views.py:818
+#: .\report\tests_views.py:888 .\report\tests_views.py:960
+#: .\report\tests_views.py:1019 .\report\views.py:211 .\report\views.py:335
 msgid "# Wikiquote edited"
 msgstr "# editados(as) no Wikiquote"
 
-#: .\report\tests_views.py:668 .\report\tests_views.py:752
-#: .\report\tests_views.py:822 .\report\tests_views.py:893
-#: .\report\tests_views.py:952 .\report\views.py:211 .\report\views.py:336
+#: .\report\tests_views.py:735 .\report\tests_views.py:819
+#: .\report\tests_views.py:889 .\report\tests_views.py:960
+#: .\report\tests_views.py:1019 .\report\views.py:211 .\report\views.py:336
 msgid "# Wiktionary created"
 msgstr "# criados(as) no Wikcionário"
 
-#: .\report\tests_views.py:668 .\report\tests_views.py:752
-#: .\report\tests_views.py:822 .\report\tests_views.py:894
-#: .\report\tests_views.py:953 .\report\views.py:212 .\report\views.py:336
+#: .\report\tests_views.py:735 .\report\tests_views.py:819
+#: .\report\tests_views.py:889 .\report\tests_views.py:961
+#: .\report\tests_views.py:1020 .\report\views.py:212 .\report\views.py:336
 msgid "# Wiktionary edited"
 msgstr "# editados(as) no Wikcionário"
 
-#: .\report\tests_views.py:668 .\report\tests_views.py:752
-#: .\report\tests_views.py:822 .\report\tests_views.py:894
-#: .\report\tests_views.py:953 .\report\views.py:212 .\report\views.py:336
+#: .\report\tests_views.py:735 .\report\tests_views.py:819
+#: .\report\tests_views.py:889 .\report\tests_views.py:961
+#: .\report\tests_views.py:1020 .\report\views.py:212 .\report\views.py:336
 msgid "# Wikivoyage created"
 msgstr "# criados(as) no Wikivoyage"
 
-#: .\report\tests_views.py:669 .\report\tests_views.py:753
-#: .\report\tests_views.py:823 .\report\tests_views.py:894
-#: .\report\tests_views.py:953 .\report\views.py:212 .\report\views.py:336
+#: .\report\tests_views.py:736 .\report\tests_views.py:820
+#: .\report\tests_views.py:890 .\report\tests_views.py:961
+#: .\report\tests_views.py:1020 .\report\views.py:212 .\report\views.py:336
 msgid "# Wikivoyage edited"
 msgstr "# editados(as) no Wikivoyage"
 
-#: .\report\tests_views.py:669 .\report\tests_views.py:753
-#: .\report\tests_views.py:823 .\report\tests_views.py:895
-#: .\report\tests_views.py:954 .\report\views.py:212 .\report\views.py:337
+#: .\report\tests_views.py:736 .\report\tests_views.py:820
+#: .\report\tests_views.py:890 .\report\tests_views.py:962
+#: .\report\tests_views.py:1021 .\report\views.py:212 .\report\views.py:337
 msgid "# Wikispecies created"
 msgstr "# criados(as) no Wikispecies"
 
-#: .\report\tests_views.py:669 .\report\tests_views.py:753
-#: .\report\tests_views.py:823 .\report\tests_views.py:895
-#: .\report\tests_views.py:954 .\report\views.py:213 .\report\views.py:337
+#: .\report\tests_views.py:736 .\report\tests_views.py:820
+#: .\report\tests_views.py:890 .\report\tests_views.py:962
+#: .\report\tests_views.py:1021 .\report\views.py:213 .\report\views.py:337
 msgid "# Wikispecies edited"
 msgstr "# editados(as) no Wikispecies"
 
-#: .\report\tests_views.py:670 .\report\tests_views.py:754
-#: .\report\tests_views.py:824 .\report\tests_views.py:895
-#: .\report\tests_views.py:954 .\report\views.py:213 .\report\views.py:337
+#: .\report\tests_views.py:737 .\report\tests_views.py:821
+#: .\report\tests_views.py:891 .\report\tests_views.py:962
+#: .\report\tests_views.py:1021 .\report\views.py:213 .\report\views.py:337
 msgid "# Metawiki created"
 msgstr "# criados(as) no Metawiki"
 
-#: .\report\tests_views.py:670 .\report\tests_views.py:754
-#: .\report\tests_views.py:824 .\report\tests_views.py:896
-#: .\report\tests_views.py:955 .\report\views.py:213 .\report\views.py:337
+#: .\report\tests_views.py:737 .\report\tests_views.py:821
+#: .\report\tests_views.py:891 .\report\tests_views.py:963
+#: .\report\tests_views.py:1022 .\report\views.py:213 .\report\views.py:337
 msgid "# Metawiki edited"
 msgstr "# editados(as) no Metawiki"
 
-#: .\report\tests_views.py:670 .\report\tests_views.py:754
-#: .\report\tests_views.py:824 .\report\tests_views.py:896
-#: .\report\tests_views.py:955 .\report\views.py:213 .\report\views.py:338
+#: .\report\tests_views.py:737 .\report\tests_views.py:821
+#: .\report\tests_views.py:891 .\report\tests_views.py:963
+#: .\report\tests_views.py:1022 .\report\views.py:213 .\report\views.py:338
 msgid "# MediaWiki created"
 msgstr "# criados(as) no Mediawiki"
 
-#: .\report\tests_views.py:671 .\report\tests_views.py:755
-#: .\report\tests_views.py:825 .\report\tests_views.py:896
-#: .\report\tests_views.py:955 .\report\views.py:214 .\report\views.py:338
+#: .\report\tests_views.py:738 .\report\tests_views.py:822
+#: .\report\tests_views.py:892 .\report\tests_views.py:963
+#: .\report\tests_views.py:1022 .\report\views.py:214 .\report\views.py:338
 msgid "# MediaWiki edited"
 msgstr "# editados(as) no Mediawiki"
 
-#: .\report\tests_views.py:671 .\report\tests_views.py:755
-#: .\report\tests_views.py:825 .\report\views.py:214
+#: .\report\tests_views.py:738 .\report\tests_views.py:822
+#: .\report\tests_views.py:892 .\report\views.py:214
 msgid "Directions related"
 msgstr "Direções relacionadas"
 
-#: .\report\tests_views.py:672 .\report\tests_views.py:756
-#: .\report\tests_views.py:826 .\report\views.py:214
+#: .\report\tests_views.py:739 .\report\tests_views.py:823
+#: .\report\tests_views.py:893 .\report\views.py:214
 msgid "Learning questions related"
 msgstr "Questões de aprendizagem relacionadas"
 
-#: .\report\tests_views.py:885 .\report\tests_views.py:944
+#: .\report\tests_views.py:952 .\report\tests_views.py:1011
 #: .\report\views.py:329
 msgid "Activity ID"
 msgstr "ID da atividade"
 
-#: .\report\tests_views.py:885 .\report\tests_views.py:944
+#: .\report\tests_views.py:952 .\report\tests_views.py:1011
 #: .\report\views.py:329
 msgid "Activity code"
 msgstr "Código da atividade"
 
-#: .\report\tests_views.py:888 .\report\tests_views.py:947
+#: .\report\tests_views.py:955 .\report\tests_views.py:1014
 #: .\report\views.py:331
 msgid "Other type? Which?"
 msgstr "Outro tipo? Qual?"
 
-#: .\report\tests_views.py:968 .\report\tests_views.py:995
+#: .\report\tests_views.py:1035 .\report\tests_views.py:1062
 #: .\report\views.py:368 .\users\templates\users\register.html:30
 msgid "First name"
 msgstr "Primeiro nome"
 
-#: .\report\tests_views.py:968 .\report\tests_views.py:995
+#: .\report\tests_views.py:1035 .\report\tests_views.py:1062
 #: .\report\views.py:368
 msgid "Last Name"
 msgstr "Último nome"
 
-#: .\report\tests_views.py:968 .\report\tests_views.py:995
+#: .\report\tests_views.py:1035 .\report\tests_views.py:1062
 #: .\report\views.py:368
 msgid "Username on Wiki (WMB)"
 msgstr "Nome de usuário Wiki (WMB)"
 
-#: .\report\tests_views.py:968 .\report\tests_views.py:995
+#: .\report\tests_views.py:1035 .\report\tests_views.py:1062
 #: .\report\views.py:368
 msgid "Username on Wiki"
 msgstr "Nome de usuário na Wiki"
 
-#: .\report\tests_views.py:969 .\report\tests_views.py:996
+#: .\report\tests_views.py:1036 .\report\tests_views.py:1063
 #: .\report\views.py:369 .\users\models.py:53
 msgid "Photograph"
 msgstr "Foto no Commons"
 
-#: .\report\tests_views.py:969 .\report\tests_views.py:996
+#: .\report\tests_views.py:1036 .\report\tests_views.py:1063
 #: .\report\views.py:369 .\users\models.py:34
 #: .\users\templates\users\profile.html:40
 msgid "Position"
 msgstr "Posição"
 
-#: .\report\tests_views.py:969 .\report\tests_views.py:996
+#: .\report\tests_views.py:1036 .\report\tests_views.py:1063
 #: .\report\views.py:369
 msgid "Twitter"
 msgstr "Twitter"
 
-#: .\report\tests_views.py:969 .\report\tests_views.py:996
+#: .\report\tests_views.py:1036 .\report\tests_views.py:1063
 #: .\report\views.py:369
 msgid "Facebook"
 msgstr "Facebook"
 
-#: .\report\tests_views.py:969 .\report\tests_views.py:996
+#: .\report\tests_views.py:1036 .\report\tests_views.py:1063
 #: .\report\views.py:369
 msgid "Instagram"
 msgstr "Instagram"
 
-#: .\report\tests_views.py:969 .\report\tests_views.py:996
+#: .\report\tests_views.py:1036 .\report\tests_views.py:1063
 #: .\report\views.py:369 .\users\templates\users\register.html:24
 msgid "Email"
 msgstr "E-mail"
 
-#: .\report\tests_views.py:970 .\report\tests_views.py:997
+#: .\report\tests_views.py:1037 .\report\tests_views.py:1064
 #: .\report\views.py:370
 msgid "Wikidata item"
 msgstr "Item Wikidata"
 
-#: .\report\tests_views.py:970 .\report\tests_views.py:997
+#: .\report\tests_views.py:1037 .\report\tests_views.py:1064
 #: .\report\views.py:370
 msgid "LinkedIn"
 msgstr "LinkedIn"
 
-#: .\report\tests_views.py:970 .\report\tests_views.py:997
+#: .\report\tests_views.py:1037 .\report\tests_views.py:1064
 #: .\report\views.py:370
 msgid "Lattes"
 msgstr "Lattes"
 
-#: .\report\tests_views.py:970 .\report\tests_views.py:997
+#: .\report\tests_views.py:1037 .\report\tests_views.py:1064
 #: .\report\views.py:370
 msgid "Orcid"
 msgstr "Orcid"
 
-#: .\report\tests_views.py:970 .\report\tests_views.py:997
+#: .\report\tests_views.py:1037 .\report\tests_views.py:1064
 #: .\report\views.py:370
 msgid "Google_scholar"
 msgstr "Google Acadêmico"
 
-#: .\report\tests_views.py:1044 .\report\tests_views.py:1060
+#: .\report\tests_views.py:1111 .\report\tests_views.py:1127
 #: .\report\views.py:419
 msgid "Direction related"
 msgstr "Direção relacionada"
 
-#: .\report\tests_views.py:1044 .\report\tests_views.py:1060
+#: .\report\tests_views.py:1111 .\report\tests_views.py:1127
 #: .\report\views.py:419
 msgid "Strategic axis ID"
 msgstr "ID do eixo estratégico"
 
-#: .\report\tests_views.py:1044 .\report\tests_views.py:1060
+#: .\report\tests_views.py:1111 .\report\tests_views.py:1127
 #: .\report\views.py:419
 msgid "Strategic axis text"
 msgstr "Texto do eixo estratégico"
 
-#: .\report\tests_views.py:1077 .\report\tests_views.py:1089
+#: .\report\tests_views.py:1144 .\report\tests_views.py:1156
 #: .\report\views.py:436 .\users\templates\users\login.html:17
 #: .\users\templates\users\register.html:18
 msgid "Username"
 msgstr "Nome de usuário(a/e)"
 
-#: .\report\tests_views.py:1104 .\report\tests_views.py:1119
+#: .\report\tests_views.py:1171 .\report\tests_views.py:1186
 #: .\report\views.py:453
 msgid "Learning question"
 msgstr "Pergunta de aprendizado"
 
-#: .\report\tests_views.py:1104 .\report\tests_views.py:1119
+#: .\report\tests_views.py:1171 .\report\tests_views.py:1186
 #: .\report\views.py:453
 msgid "Learning area ID"
 msgstr "ID da área de aprendizagem"
 
-#: .\report\tests_views.py:1136 .\report\tests_views.py:1152
+#: .\report\tests_views.py:1203 .\report\tests_views.py:1219
 #: .\report\views.py:470
 msgid "Organizer's name"
 msgstr "Nome do(a) organizador(a)"
 
-#: .\report\tests_views.py:1136 .\report\tests_views.py:1152
+#: .\report\tests_views.py:1203 .\report\tests_views.py:1219
 #: .\report\views.py:470
 msgid "Organizer's institution ID"
 msgstr "ID da instituição do(a) organizador(a)"
 
-#: .\report\tests_views.py:1136 .\report\tests_views.py:1152
+#: .\report\tests_views.py:1203 .\report\tests_views.py:1219
 #: .\report\views.py:470
 msgid "Organizer institution's name"
 msgstr "Nome da instituição do(a) organizador(a)"
 
-#: .\report\tests_views.py:1170 .\report\tests_views.py:1181
+#: .\report\tests_views.py:1237 .\report\tests_views.py:1248
 #: .\report\views.py:487
 msgid "Partner's website"
 msgstr "Site do parceiro"
