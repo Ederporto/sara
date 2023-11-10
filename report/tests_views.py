@@ -63,6 +63,21 @@ class ReportAddViewTest(TestCase):
         metric = Metric.objects.create(text="Metric", activity=activity_associated, number_of_editors=10)
 
         data = {
+            "wikipedia_created": 0, "wikipedia_edited": 0,
+            "commons_created": 0, "commons_edited": 0,
+            "wikidata_created": 0, "wikidata_edited": 0,
+            "wikiversity_created": 0, "wikiversity_edited": 0,
+            "wikibooks_created": 0, "wikibooks_edited": 0,
+            "wikisource_created": 0, "wikisource_edited": 0,
+            "wikinews_created": 0, "wikinews_edited": 0,
+            "wikiquote_created": 0, "wikiquote_edited": 0,
+            "wiktionary_created": 0, "wiktionary_edited": 0,
+            "wikivoyage_created": 0, "wikivoyage_edited": 0,
+            "wikispecies_created": 0, "wikispecies_edited": 0,
+            "metawiki_created": 0, "metawiki_edited": 0,
+            "mediawiki_created": 0, "mediawiki_edited": 0,
+            "participants": 0, "resources": 0, "feedbacks": 0,
+            "number_of_people_reached_through_social_media": 0,
             "description": "Report",
             "initial_date": datetime.now().date().strftime("%Y-%m-%d"),
             "directions_related": [direction.id],
@@ -82,6 +97,58 @@ class ReportAddViewTest(TestCase):
 
         report = Report.objects.get(id=1)
         self.assertEqual(report.description, "Report")
+
+    def test_add_report_view_post_associates_metrics_based_on_values(self):
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("report:add_report")
+
+        project = Project.objects.create(text="Wikimedia Community Fund")
+        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
+        direction = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
+        learning_area = LearningArea.objects.create(text="Learning area")
+        slq = StrategicLearningQuestion.objects.create(text="SLQ", learning_area=learning_area)
+        activity_associated = Activity.objects.create(text="Activity")
+        area_reponsible = TeamArea.objects.create(text="Area")
+        metric = Metric.objects.create(text="Metric", activity=activity_associated, number_of_editors=10)
+        metric_2 = Metric.objects.create(text="Metric 2", activity=activity_associated, wikipedia_edited=2)
+        metric_2.project.add(project)
+        metric_2.save()
+        metric_3 = Metric.objects.create(text="Metric 3", activity=activity_associated, number_of_editors=23)
+        metric_3.project.add(project)
+        metric_3.save()
+        Editor.objects.create(username="Editor")
+
+        data = {
+            "wikipedia_created": 0, "wikipedia_edited": 5,
+            "commons_created": 0, "commons_edited": 0,
+            "wikidata_created": 0, "wikidata_edited": 0,
+            "wikiversity_created": 0, "wikiversity_edited": 0,
+            "wikibooks_created": 0, "wikibooks_edited": 0,
+            "wikisource_created": 0, "wikisource_edited": 0,
+            "wikinews_created": 0, "wikinews_edited": 0,
+            "wikiquote_created": 0, "wikiquote_edited": 0,
+            "wiktionary_created": 0, "wiktionary_edited": 0,
+            "wikivoyage_created": 0, "wikivoyage_edited": 0,
+            "wikispecies_created": 0, "wikispecies_edited": 0,
+            "metawiki_created": 0, "metawiki_edited": 0,
+            "mediawiki_created": 0, "mediawiki_edited": 0,
+            "participants": 10, "resources": 0, "feedbacks": 0,
+            "number_of_people_reached_through_social_media": 0,
+            "description": "Report",
+            "initial_date": datetime.now().date().strftime("%Y-%m-%d"),
+            "directions_related": [direction.id],
+            "editors_string": "Editor",
+            "learning": "Learnings!"*51,
+            "learning_questions_related": [slq.id],
+            "activity_associated": activity_associated.id,
+            "area_responsible": area_reponsible.id,
+            "links": "Links",
+            "metrics_related": [metric.id]
+        }
+        self.client.post(url, data=data)
+        report = Report.objects.get(id=1)
+        self.assertIn(metric_2, report.metrics_related.all())
+        self.assertIn(metric_3, report.metrics_related.all())
 
     def test_add_report_view_post_fails_with_invalid_parameters(self):
         self.client.login(username=self.username, password=self.password)
@@ -1407,6 +1474,17 @@ class ReportFormTest(TestCase):
         self.assertEqual(len(cleaned_data[0].institution.all()), 0)
         self.assertEqual(len(cleaned_data[1].institution.all()), 0)
 
+    def test_clean_organizers_with_already_created_organizer(self):
+        Organizer.objects.create(name="Organizer 1")
+        form_data = {"organizers_string": "Organizer 1;\r\nOrganizer 2;"}
+        form = NewReportForm(data=form_data, user=self.user)
+        cleaned_data = form.clean_organizers()
+        self.assertEqual(len(cleaned_data), 2)
+        self.assertEqual(cleaned_data[0].name, "Organizer 1")
+        self.assertEqual(cleaned_data[1].name, "Organizer 2")
+        self.assertEqual(len(cleaned_data[0].institution.all()), 0)
+        self.assertEqual(len(cleaned_data[1].institution.all()), 0)
+
     def test_clean_organizers_single_institution(self):
         form_data = {"organizers_string": "Organizer 1;Institution 1;"}
         form = NewReportForm(data=form_data, user=self.user)
@@ -1502,3 +1580,37 @@ class ReportFormTest(TestCase):
         expected_result = [["Learning area 1", [[1, "SLQ 1"], [2, "SLQ 2"]]],["Learning area 2", [[3, "SLQ 3"]]]]
         result = learning_areas_as_choices()
         self.assertEqual(expected_result, result)
+
+
+class ParterFormTest(TestCase):
+    def test_valid_partner_form(self):
+        data = {
+            "name": "Partner",
+            "website": "https://example.com"
+        }
+
+        form = PartnerForm(data=data)
+        self.assertTrue(form.is_valid())
+
+    def test_name_is_required(self):
+        data = {"website": "https://example.com"}
+        form = PartnerForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("name", form.errors)
+
+    def test_name_is_required_and_not_empty(self):
+        data = {
+            "name": "",
+            "website": "https://example.com"
+        }
+        form = PartnerForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("name", form.errors)
+    def test_website_is_a_url(self):
+        data = {
+            "name": "Partner",
+            "website": "Example"
+        }
+        form = PartnerForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("website", form.errors)

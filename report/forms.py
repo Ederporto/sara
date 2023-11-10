@@ -106,6 +106,58 @@ class NewReportForm(forms.ModelForm):
         else:
             return initial_date
 
+    def add_metrics_related_depending_on_values(self):
+        metrics_related = self.cleaned_data.get("metrics_related")
+        main_funding = Project.objects.get(text="Wikimedia Community Fund")
+        metrics_main_funding = Metric.objects.filter(project=main_funding)
+
+        int_fields_names = [
+            ["wikipedia_created", "wikipedia_edited"],
+            ["commons_created", "commons_edited"],
+            ["wikidata_created", "wikidata_edited"],
+            ["wikiversity_created", "wikiversity_edited"],
+            ["wikibooks_created", "wikibooks_edited"],
+            ["wikisource_created", "wikisource_edited"],
+            ["wikinews_created", "wikinews_edited"],
+            ["wikiquote_created", "wikiquote_edited"],
+            ["wiktionary_created", "wiktionary_edited"],
+            ["wikivoyage_created", "wikivoyage_edited"],
+            ["wikispecies_created", "wikispecies_edited"],
+            ["metawiki_created", "metawiki_edited"],
+            ["mediawiki_created", "mediawiki_edited"],
+            ["participants"],
+            ["resources"],
+            ["feedbacks"],
+            ["number_of_people_reached_through_social_media"],
+        ]
+
+        for field_set in int_fields_names:
+            if any(self.cleaned_data.get(field_name) > 0 for field_name in field_set):
+                query = Q()
+                for field_name in field_set:
+                    if hasattr(Metric, f"{field_name}"):
+                        query |= Q(**{f"{field_name}__gt": 0})
+                    else:
+                        query |= Q(**{f"number_of_{field_name}__gt": 0})
+                if len(query):
+                    metrics_related = metrics_related.union(metrics_main_funding.filter(query))
+
+        obj_fields_names = {
+            "editors": ["number_of_editors", "number_of_editors_retained", "number_of_new_editors"],
+            "organizers": ["number_of_organizers", "number_of_organizers_retained"],
+            "partners_activated": ["number_of_partnerships"],
+        }
+
+        for field_set, field_names in obj_fields_names.items():
+            if self.cleaned_data.get(field_set):
+                query = Q()
+                for field_name in field_names:
+                    query |= Q(**{f"{field_name}__gt": 0})
+                if len(query):
+                    metrics_related = metrics_related.union(metrics_main_funding.filter(query))
+
+        return metrics_related
+
     def save(self, commit=True, user=None, *args, **kwargs):
         report = super(NewReportForm, self).save(commit=False)
         if commit:
@@ -122,7 +174,7 @@ class NewReportForm(forms.ModelForm):
             report.area_activated.set(self.cleaned_data['area_activated'])
             report.directions_related.set(self.cleaned_data['directions_related'])
             report.learning_questions_related.set(self.cleaned_data['learning_questions_related'])
-            report.metrics_related.set(self.cleaned_data['metrics_related'])
+            report.metrics_related.set(self.add_metrics_related_depending_on_values())
             report.end_date = report.initial_date
         return report
 

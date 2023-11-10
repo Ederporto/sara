@@ -9,7 +9,8 @@ from .views import get_metrics_and_aggregate_per_project, get_aggregated_metrics
 from django.urls import reverse
 from django.contrib.auth.models import Permission
 from datetime import datetime, timedelta
-from metrics.templatetags.metricstags import categorize, perc
+from metrics.templatetags.metricstags import categorize, perc, bool_yesno
+from django.utils.translation import gettext_lazy as _
 
 
 class AreaModelTests(TestCase):
@@ -593,3 +594,15 @@ class TagsTests(TestCase):
     def test_perc_for_text(self):
         result = perc("invalid", 100)
         self.assertEqual(result, "-")
+
+    def test_bool_yesno_returns_yes_if_true(self):
+        result = bool_yesno(True)
+        self.assertEqual(result, _("Yes"))
+
+    def test_bool_yesno_returns_no_if_false(self):
+        result = bool_yesno(False)
+        self.assertEqual(result, _("No"))
+
+    def test_bool_yesno_returns_value_if_not_boolean(self):
+        result = bool_yesno("Test")
+        self.assertEqual(result, _("Test"))
