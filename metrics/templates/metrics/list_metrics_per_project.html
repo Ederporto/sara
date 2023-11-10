@@ -33,6 +33,7 @@
                        data-filter-control="true">
                     <thead>
                     <tr>
+                        <th data-field="actions">{% trans "Actions" %}</th>
                         <th data-field="id">{% trans "ID" %}</th>
                         <th data-field="metric">{% trans "Metric" %}</th>
                         <th data-field="done">{% trans "Done" %}</th>
@@ -42,10 +43,11 @@
                     </thead>
                     <tbody>
                     {% for activity in project_value.project_metrics|dictsort:"activity_id" %}
-                        <tr style="background-color: var(--dark-grey-color);"><td colspan="5" style="color: var(--light-color);">{{ activity.activity }}</td></tr>
+                        <tr style="background-color: var(--dark-grey-color);"><td colspan="6" style="color: var(--light-color);">{{ activity.activity }}</td></tr>
                         {% for metric_key, metric_value in activity.activity_metrics.items %}
                             {% for numeric_key, numeric_value in metric_value.metrics.items %}
                                 <tr>
+                                    <th scope="row" style="text-align: center;"><a title="{% trans 'View' %}" href="{% url 'metrics:metrics_reports' metric_id=metric_key %}"><button title="{% trans 'View' %}" type="button" class="btn-circle btn-view"><i class="fa-solid fa-eye"></i></button></a></th>
                                     <th scope="row">{{ metric_key }}</th>
                                     <td>{{ metric_value.title }}<br><small>({% translate numeric_key %})</small></td>
                                     <td>{{ numeric_value.done|bool_yesno }}</td>

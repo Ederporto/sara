@@ -253,6 +253,74 @@ class MetricViewsTests(TestCase):
 
         self.assertRedirects(response, reverse('metrics:per_project'))
 
+    def test_do_not_show_reports_associated_to_a_metric_to_users_without_permission(self):
+        self.user.user_permissions.remove(self.view_metrics_permission)
+        self.client.login(username=self.username, password=self.password)
+
+        area = Area.objects.create(text="Area")
+        activity = Activity.objects.create(text="Activity", area=area)
+        metric = Metric.objects.create(text="Metric 1", activity=activity, number_of_editors=10)
+
+        url = reverse("metrics:metrics_reports", args=[metric.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f"{reverse('login')}?next={url}")
+
+    def test_show_reports_associated_to_a_metric_only_to_users_with_permission(self):
+        self.client.login(username=self.username, password=self.password)
+
+        area = Area.objects.create(text="Area")
+        activity = Activity.objects.create(text="Activity", area=area)
+        metric = Metric.objects.create(text="Metric 1", activity=activity, number_of_editors=10)
+        team_area = TeamArea.objects.create(text="Area")
+        report_1 = Report.objects.create(
+            created_by=self.user_profile,
+            modified_by=self.user_profile,
+            activity_associated=activity,
+            area_responsible=team_area,
+            initial_date=datetime.now().date(),
+            end_date=datetime.now().date() + timedelta(days=1),
+            description="Report 1",
+            links="https://testlink.com",
+            learning="Learning" * 60,
+        )
+        report_1.metrics_related.add(metric)
+        report_1.save()
+
+        url = reverse("metrics:metrics_reports", args=[metric.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "metrics/list_metrics_reports.html")
+
+    def test_redirects_to_list_of_metrics_per_project_if_metric_id_does_not_exist(self):
+        self.client.login(username=self.username, password=self.password)
+
+        area = Area.objects.create(text="Area")
+        activity = Activity.objects.create(text="Activity", area=area)
+        metric = Metric.objects.create(text="Metric 1", activity=activity, number_of_editors=10)
+        team_area = TeamArea.objects.create(text="Area")
+        report_1 = Report.objects.create(
+            created_by=self.user_profile,
+            modified_by=self.user_profile,
+            activity_associated=activity,
+            area_responsible=team_area,
+            initial_date=datetime.now().date(),
+            end_date=datetime.now().date() + timedelta(days=1),
+            description="Report 1",
+            links="https://testlink.com",
+            learning="Learning" * 60,
+        )
+        report_1.metrics_related.add(metric)
+        report_1.save()
+
+        url = reverse("metrics:metrics_reports", args=[123456789])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f"{reverse('metrics:per_project')}")
+
 
 class MetricFunctionsTests(TestCase):
     def setUp(self):
