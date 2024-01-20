@@ -9,7 +9,7 @@
     color: var(--dark-color);
     font-weight: normal;
     padding: 0.5em 0.5em 0.5em 1em;
-    border-radius: 2em;
+    border-radius: 0.5em;
     overflow-y: auto;
     overflow-x: auto;
 }
@@ -22,7 +22,7 @@
     background-color: var(--light-color);
     font-weight: normal !important;
     padding: 0.5em 0.5em 0.5em 1em;
-    border-radius: 2em;
+    border-radius: 0.5em;
     overflow-y: auto;
     overflow-x: auto;
 }
@@ -55,7 +55,7 @@ fieldset input { background-color: var(--main-lighter-color) !important }
 }
 .submitbutton {
     background-color: var(--main-color);
-    border-radius: 2em;
+    border-radius: 0.5em;
     border: none;
     color: var(--light-color);
     margin: 0;
@@ -75,7 +75,7 @@ fieldset input { background-color: var(--main-lighter-color) !important }
     font-size: 0.75em;
     font-weight: bold;
     background: var(--main-color);
-    border-radius: 2em;
+    border-radius: 0.5em;
     border: none;
     transition: all 300ms ease-in-out;
 }

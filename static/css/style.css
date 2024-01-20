@@ -294,7 +294,7 @@ canvas {
 
 .custombutton {
     background-color: var(--main-color);
-    border-radius: 2em;
+    border-radius: 0.5em;
     border: none;
     color: var(--light-color);
     margin: 0 0 1em 0;
@@ -311,7 +311,7 @@ canvas {
 }
 .custombutton-wide {
     background-color: var(--dark-color);
-    border-radius: 2em;
+    border-radius: 0.5em;
     border: none;
     color: var(--main-color);
     margin: 0;
