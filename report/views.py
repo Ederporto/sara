@@ -327,7 +327,7 @@ def export_report_instance(report_id=None):
 
 def export_metrics(report_id=None):
     header = [_('ID'), _('Metric'), _('Activity ID'), _('Activity'), _('Activity code'), _('Number of editors'),
-              _('Number of participants'), _('Number of partnerships'), _('Number of resources'),
+              _('Number of participants'), _('Number of partnerships activated'), _('Number of resources'),
               _('Number of feedbacks'), _('Number of events'), _('Other type? Which?'), _('Observation'),
               _('# Wikipedia created'), _('# Wikipedia edited'), _('# Commons created'), _('# Commons edited'),
               _('# Wikidata created'), _('# Wikidata edited'), _('# Wikiversity created'), _('# Wikiversity edited'),
@@ -348,7 +348,7 @@ def export_metrics(report_id=None):
             for instance in report.activity_associated.metrics.all():
                 rows.append([instance.id, instance.text, instance.activity_id, instance.activity.text,
                              instance.activity.code, instance.number_of_editors, instance.number_of_participants,
-                             instance.number_of_partnerships, instance.number_of_resources, instance.number_of_feedbacks,
+                             instance.number_of_partnerships_activated, instance.number_of_resources, instance.number_of_feedbacks,
                              instance.number_of_events, instance.other_type, instance.observation,
                              instance.wikipedia_created, instance.wikipedia_edited, instance.commons_created,
                              instance.commons_edited, instance.wikidata_created, instance.wikidata_edited,

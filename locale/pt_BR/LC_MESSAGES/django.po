@@ -890,8 +890,8 @@ msgstr "Número de organizadores"
 #: .\metrics\templates\metrics\list_metrics.html:283
 #: .\metrics\templates\metrics\translations.html:22 .\report\tests_views.py:953
 #: .\report\tests_views.py:1012 .\report\views.py:330
-msgid "Number of partnerships"
-msgstr "Número de parcerias"
+msgid "Number of partnerships activated"
+msgstr "Número de parcerias ativadas"
 
 #: .\metrics\templates\metrics\list_metrics.html:241
 msgid "Number of retained editors"

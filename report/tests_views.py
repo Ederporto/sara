@@ -950,7 +950,7 @@ class ReportExportViewTest(TestCase):
 
     def test_export_metrics(self):
         expected_header = [_('ID'), _('Metric'), _('Activity ID'), _('Activity'), _('Activity code'),
-                           _('Number of editors'), _('Number of participants'), _('Number of partnerships'),
+                           _('Number of editors'), _('Number of participants'), _('Number of partnerships activated'),
                            _('Number of resources'), _('Number of feedbacks'), _('Number of events'),
                            _('Other type? Which?'), _('Observation'), _('# Wikipedia created'), _('# Wikipedia edited'),
                            _('# Commons created'), _('# Commons edited'), _('# Wikidata created'),
@@ -970,7 +970,7 @@ class ReportExportViewTest(TestCase):
                         metric.activity.code,
                         metric.number_of_editors,
                         metric.number_of_participants,
-                        metric.number_of_partnerships,
+                        metric.number_of_partnerships_activated,
                         metric.number_of_resources,
                         metric.number_of_feedbacks,
                         metric.number_of_events,
@@ -1009,7 +1009,7 @@ class ReportExportViewTest(TestCase):
 
     def test_export_metrics_without_report_id_returns_metrics_from_all_reports(self):
         expected_header = [_('ID'), _('Metric'), _('Activity ID'), _('Activity'), _('Activity code'),
-                           _('Number of editors'), _('Number of participants'), _('Number of partnerships'),
+                           _('Number of editors'), _('Number of participants'), _('Number of partnerships activated'),
                            _('Number of resources'), _('Number of feedbacks'), _('Number of events'),
                            _('Other type? Which?'), _('Observation'), _('# Wikipedia created'), _('# Wikipedia edited'),
                            _('# Commons created'), _('# Commons edited'), _('# Wikidata created'),
@@ -1023,8 +1023,8 @@ class ReportExportViewTest(TestCase):
 
         metric_1 = Metric.objects.create(text="Metric 1", activity=self.activity_associated)
         metric_2 = Metric.objects.create(text="Metric 2", activity=self.activity_associated)
-        expected_row_1 = [metric_1.id, metric_1.text, metric_1.activity_id, metric_1.activity.text, metric_1.activity.code, metric_1.number_of_editors, metric_1.number_of_participants, metric_1.number_of_partnerships, metric_1.number_of_resources, metric_1.number_of_feedbacks, metric_1.number_of_events, metric_1.other_type, metric_1.observation, metric_1.wikipedia_created, metric_1.wikipedia_edited, metric_1.commons_created, metric_1.commons_edited, metric_1.wikidata_created, metric_1.wikidata_edited, metric_1.wikiversity_created, metric_1.wikiversity_edited, metric_1.wikibooks_created, metric_1.wikibooks_edited, metric_1.wikisource_created, metric_1.wikisource_edited, metric_1.wikinews_created, metric_1.wikinews_edited, metric_1.wikiquote_created, metric_1.wikiquote_edited, metric_1.wiktionary_created, metric_1.wiktionary_edited, metric_1.wikivoyage_created, metric_1.wikivoyage_edited, metric_1.wikispecies_created, metric_1.wikispecies_edited, metric_1.metawiki_created, metric_1.metawiki_edited, metric_1.mediawiki_created, metric_1.mediawiki_edited]
-        expected_row_2 = [metric_2.id, metric_2.text, metric_2.activity_id, metric_2.activity.text, metric_2.activity.code, metric_2.number_of_editors, metric_2.number_of_participants, metric_2.number_of_partnerships, metric_2.number_of_resources, metric_2.number_of_feedbacks, metric_2.number_of_events, metric_2.other_type, metric_2.observation, metric_2.wikipedia_created, metric_2.wikipedia_edited, metric_2.commons_created, metric_2.commons_edited, metric_2.wikidata_created, metric_2.wikidata_edited, metric_2.wikiversity_created, metric_2.wikiversity_edited, metric_2.wikibooks_created, metric_2.wikibooks_edited, metric_2.wikisource_created, metric_2.wikisource_edited, metric_2.wikinews_created, metric_2.wikinews_edited, metric_2.wikiquote_created, metric_2.wikiquote_edited, metric_2.wiktionary_created, metric_2.wiktionary_edited, metric_2.wikivoyage_created, metric_2.wikivoyage_edited, metric_2.wikispecies_created, metric_2.wikispecies_edited, metric_2.metawiki_created, metric_2.metawiki_edited, metric_2.mediawiki_created, metric_2.mediawiki_edited]
+        expected_row_1 = [metric_1.id, metric_1.text, metric_1.activity_id, metric_1.activity.text, metric_1.activity.code, metric_1.number_of_editors, metric_1.number_of_participants, metric_1.number_of_partnerships_activated, metric_1.number_of_resources, metric_1.number_of_feedbacks, metric_1.number_of_events, metric_1.other_type, metric_1.observation, metric_1.wikipedia_created, metric_1.wikipedia_edited, metric_1.commons_created, metric_1.commons_edited, metric_1.wikidata_created, metric_1.wikidata_edited, metric_1.wikiversity_created, metric_1.wikiversity_edited, metric_1.wikibooks_created, metric_1.wikibooks_edited, metric_1.wikisource_created, metric_1.wikisource_edited, metric_1.wikinews_created, metric_1.wikinews_edited, metric_1.wikiquote_created, metric_1.wikiquote_edited, metric_1.wiktionary_created, metric_1.wiktionary_edited, metric_1.wikivoyage_created, metric_1.wikivoyage_edited, metric_1.wikispecies_created, metric_1.wikispecies_edited, metric_1.metawiki_created, metric_1.metawiki_edited, metric_1.mediawiki_created, metric_1.mediawiki_edited]
+        expected_row_2 = [metric_2.id, metric_2.text, metric_2.activity_id, metric_2.activity.text, metric_2.activity.code, metric_2.number_of_editors, metric_2.number_of_participants, metric_2.number_of_partnerships_activated, metric_2.number_of_resources, metric_2.number_of_feedbacks, metric_2.number_of_events, metric_2.other_type, metric_2.observation, metric_2.wikipedia_created, metric_2.wikipedia_edited, metric_2.commons_created, metric_2.commons_edited, metric_2.wikidata_created, metric_2.wikidata_edited, metric_2.wikiversity_created, metric_2.wikiversity_edited, metric_2.wikibooks_created, metric_2.wikibooks_edited, metric_2.wikisource_created, metric_2.wikisource_edited, metric_2.wikinews_created, metric_2.wikinews_edited, metric_2.wikiquote_created, metric_2.wikiquote_edited, metric_2.wiktionary_created, metric_2.wiktionary_edited, metric_2.wikivoyage_created, metric_2.wikivoyage_edited, metric_2.wikispecies_created, metric_2.wikispecies_edited, metric_2.metawiki_created, metric_2.metawiki_edited, metric_2.mediawiki_created, metric_2.mediawiki_edited]
 
         expected_rows = [expected_row_1, expected_row_2]
         expected_df = pd.DataFrame(expected_rows, columns=expected_header)

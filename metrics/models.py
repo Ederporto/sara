@@ -8,7 +8,9 @@ from strategy.models import StrategicAxis
 
 class Project(models.Model):
     text = models.CharField(max_length=420)
-    status = models.BooleanField(default=True)
+    active = models.BooleanField(default=True)
+    current_poa = models.BooleanField(default=False)
+    main_funding = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = _("Project")
@@ -57,7 +59,7 @@ class Objective(models.Model):
 
 class Activity(models.Model):
     text = models.CharField(max_length=420)
-    code = models.CharField(max_length=10, null=True)
+    code = models.CharField(max_length=20, null=True)
     area = models.ForeignKey(Area, on_delete=models.RESTRICT, related_name='activities', null=True)
 
     class Meta:
@@ -75,7 +77,7 @@ class Activity(models.Model):
 class Metric(models.Model):
     text = models.CharField(max_length=420)
 
-    # Projects
+    # Content metrics
     wikipedia_created = models.IntegerField(null=True, default=0)
     wikipedia_edited = models.IntegerField(null=True, default=0)
     commons_created = models.IntegerField(null=True, default=0)
@@ -103,19 +105,26 @@ class Metric(models.Model):
     mediawiki_created = models.IntegerField(null=True, default=0)
     mediawiki_edited = models.IntegerField(null=True, default=0)
 
-    # General
+    # Community metrics
     number_of_editors = models.IntegerField(null=True, default=0)
     number_of_editors_retained = models.IntegerField(null=True, default=0)
     number_of_new_editors = models.IntegerField(null=True, default=0)
     number_of_participants = models.IntegerField(null=True, default=0)
-    number_of_partnerships = models.IntegerField(null=True, default=0)
+    number_of_partnerships_activated = models.IntegerField(null=True, default=0)
+    number_of_new_partnerships = models.IntegerField(null=True, default=0)
     number_of_organizers = models.IntegerField(null=True, default=0)
     number_of_organizers_retained = models.IntegerField(null=True, default=0)
     number_of_resources = models.IntegerField(null=True, default=0)
     number_of_feedbacks = models.IntegerField(null=True, default=0)
     number_of_events = models.IntegerField(null=True, default=0)
+
+    # Communication metrics
+    number_of_new_followers = models.IntegerField(null=True, default=0)
+    number_of_mentions = models.IntegerField(null=True, default=0)
+    number_of_community_communications = models.IntegerField(null=True, default=0)
     number_of_people_reached_through_social_media = models.IntegerField(null=True, default=0)
 
+    # Other metrics
     boolean_type = models.BooleanField(default=False)
     other_type = models.CharField(null=True, blank=True, max_length=420)
     observation = models.CharField(null=True, blank=True, max_length=420)

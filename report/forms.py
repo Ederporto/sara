@@ -145,7 +145,7 @@ class NewReportForm(forms.ModelForm):
         obj_fields_names = {
             "editors": ["number_of_editors", "number_of_editors_retained", "number_of_new_editors"],
             "organizers": ["number_of_organizers", "number_of_organizers_retained"],
-            "partners_activated": ["number_of_partnerships"],
+            "partners_activated": ["number_of_partnerships_activated"],
         }
 
         for field_set, field_names in obj_fields_names.items():

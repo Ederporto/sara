@@ -124,7 +124,7 @@ def get_goal_for_metric(metric):
         "Number of editors": metric.number_of_editors,
         "Number of editors retained": metric.number_of_editors_retained,
         "Number of new editors": metric.number_of_new_editors,
-        "Number of partnerships": metric.number_of_partnerships,
+        "Number of partnerships activated": metric.number_of_partnerships_activated,
         "Number of organizers": metric.number_of_organizers,
         "Number of organizers retained": metric.number_of_organizers_retained,
         "Number of people reached through social media": metric.number_of_people_reached_through_social_media,
@@ -154,7 +154,7 @@ def get_done_for_report(reports):
         "Number of editors": Editor.objects.filter(editors__in=reports).distinct().count() or 0,
         "Number of editors retained": Editor.objects.filter(retained=True, editors__in=reports).distinct().count() or 0,
         "Number of new editors": Editor.objects.filter(editors__in=reports, account_creation_date__gte=F('editors__initial_date')).count() or 0,
-        "Number of partnerships": Partner.objects.filter(partners__in=reports).distinct().count() or 0,
+        "Number of partnerships activated": Partner.objects.filter(partners__in=reports).distinct().count() or 0,
         "Number of organizers": Organizer.objects.filter(organizers__in=reports).distinct().count() or 0,
         "Number of organizers retained": Organizer.objects.filter(retained=True, organizers__in=reports).distinct().count() or 0,
         "Number of people reached through social media": reports.aggregate(total=Sum(F("number_of_people_reached_through_social_media")))["total"] or 0,
@@ -202,11 +202,11 @@ def get_aggregated_metrics_data(project=None):
     number_of_feedbacks = Metric.objects.filter(q_filter).aggregate(Sum('number_of_feedbacks'))['number_of_feedbacks__sum'] or 0
     number_of_editors = Metric.objects.filter(q_filter).aggregate(Sum('number_of_editors'))['number_of_editors__sum'] or 0
     number_of_organizers = Metric.objects.filter(q_filter).aggregate(Sum('number_of_organizers'))['number_of_organizers__sum'] or 0
-    number_of_partnerships = Metric.objects.filter(q_filter).aggregate(Sum('number_of_partnerships'))['number_of_partnerships__sum'] or 0
+    number_of_partnerships_activated = Metric.objects.filter(q_filter).aggregate(Sum('number_of_partnerships_activated'))['number_of_partnerships_activated__sum'] or 0
 
     number_of_retained_editors = Metric.objects.filter(q_filter).filter(other_type="retained").aggregate(Sum('number_of_editors'))['number_of_editors__sum'] or 0
     number_of_retained_organizers = Metric.objects.filter(q_filter).filter(other_type="retained").aggregate(Sum('number_of_organizers'))['number_of_organizers__sum'] or 0
-    number_of_retained_partnerships = Metric.objects.filter(q_filter).filter(other_type="retained").aggregate(Sum('number_of_partnerships'))['number_of_partnerships__sum'] or 0
+    number_of_retained_partnerships = Metric.objects.filter(q_filter).filter(other_type="retained").aggregate(Sum('number_of_partnerships_activated'))['number_of_partnerships_activated__sum'] or 0
 
     total_sum["wikipedia_created"] = wikipedia_created
     total_sum["commons_created"] = commons_created
@@ -241,7 +241,7 @@ def get_aggregated_metrics_data(project=None):
     total_sum["feedbacks"] = number_of_feedbacks
     total_sum["editors"] = number_of_editors
     total_sum["organizers"] = number_of_organizers
-    total_sum["partnerships"] = number_of_partnerships
+    total_sum["partnerships"] = number_of_partnerships_activated
     total_sum["retained_editors"] = number_of_retained_editors
     total_sum["retained_organizers"] = number_of_retained_organizers
     total_sum["retained_partnerships"] = number_of_retained_partnerships
@@ -284,7 +284,7 @@ def get_aggregated_metrics_data_done():
     number_of_feedbacks = Report.objects.aggregate(Sum('feedbacks'))['feedbacks__sum']
     number_of_editors = Report.objects.annotate(num_editors=Count('editors')).aggregate(Sum('num_editors'))['num_editors__sum']
     number_of_organizers = Report.objects.annotate(num_organizers=Count('organizers')).aggregate(Sum('num_organizers'))['num_organizers__sum']
-    number_of_partnerships = Report.objects.annotate(num_partnerships=Count('partners_activated')).aggregate(Sum('num_partnerships'))['num_partnerships__sum']
+    number_of_partnerships_activated = Report.objects.annotate(num_partnerships_activated=Count('partners_activated')).aggregate(Sum('num_partnerships_activated'))['num_partnerships_activated__sum']
 
     editors_in_more_than_one_activity = Editor.objects.annotate(report_count=Count('editors')).filter(report_count__gt=1)
     organizers_in_more_than_one_activity = Organizer.objects.annotate(report_count=Count('organizers')).filter(report_count__gt=1)
@@ -323,7 +323,7 @@ def get_aggregated_metrics_data_done():
     total_sum["feedbacks"] = number_of_feedbacks
     total_sum["editors"] = number_of_editors
     total_sum["organizers"] = number_of_organizers
-    total_sum["partnerships"] = number_of_partnerships
+    total_sum["partnerships"] = number_of_partnerships_activated
 
     total_sum["retained_editors"] = editors_in_more_than_one_activity.count()
     total_sum["retained_organizers"] = organizers_in_more_than_one_activity.count()
