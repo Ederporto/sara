@@ -6,6 +6,7 @@ from django.db.models import Q, Count, Sum, F
 from .models import Activity, Area, Metric
 from report.models import Report, Editor, Organizer, Partner, Project, Funding
 from django import template
+from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 register = template.Library()
 import csv
@@ -25,13 +26,14 @@ def about(request):
 
 
 def show_activities_plan(request):
-    activities = Activity.objects.all()
-    project = Project.objects.get(pk=1)
-    areas = Area.objects.filter(project=project).order_by("id")
-
-    context = {"areas": areas, "activities": activities, "title": _("Activities plan")}
-
-    return render(request, "metrics/activities_plan.html", context)
+    # activities = Activity.objects.all()
+    # project = Project.objects.filter(current_poa=True).first()
+    # areas = Area.objects.filter(project=project).order_by("id")
+    #
+    # context = {"areas": areas, "activities": activities, "title": _("Activities plan")}
+    #
+    # return render(request, "metrics/activities_plan.html", context)
+    return redirect(settings.POA_URL)
 
 
 @login_required
