@@ -145,3 +145,24 @@ fieldset input { background-color: var(--main-lighter-color) !important }
     transform: translateX(var(--height));
     background: var(--light-color);
 }
+
+/* SELECT2 */
+.select2-container { width:100% !important; }
+.select2-selection {
+    width: 100%;
+    height: unset !important;
+    border: none !important;
+    background-color: var(--light-color) !important;
+    color: var(--dark-color) !important;
+    font-weight: normal !important;
+    padding: 0.5em 0.5em 0.5em 1em !important;
+    border-radius: 0.5em !important;
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+}
+.select2-selection__rendered { line-height:unset !important; }
+.select2-results__option { color:var(--dark-color); }
+.select2-results__option--highlighted[aria-selected] { background-color:var(--main-color) !important; color: white; }
+.select2-selection__arrow { height: 100% !important; position: absolute; top: 0 !important; right: 0.5em !important; width: 1em; }
+.select2-selection__arrow b { border-color: var(--dark-color) transparent transparent transparent !important; }
+.select2-results__options { max-height: 400px !important; }
