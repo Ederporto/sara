@@ -128,6 +128,7 @@ class Metric(models.Model):
     boolean_type = models.BooleanField(default=False)
     other_type = models.CharField(null=True, blank=True, max_length=420)
     observation = models.CharField(null=True, blank=True, max_length=420)
+    is_operation = models.BooleanField(default=False)
 
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, related_name="metrics")
     project = models.ManyToManyField(Project, related_name="project_associated", blank=True)

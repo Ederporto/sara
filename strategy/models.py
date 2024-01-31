@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 
 class StrategicAxis(models.Model):
     text = models.CharField(max_length=420)
+    intentionality = models.CharField(max_length=420, null=True, blank=True)
 
     class Meta:
         verbose_name = _("Strategic axis")

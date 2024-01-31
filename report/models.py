@@ -161,17 +161,7 @@ class Report(models.Model):
     links = models.TextField(max_length=10000, blank=False)
     public_communication = models.TextField(max_length=10000, null=True, blank=True, default="")
 
-    # Quantitative metrics
-    participants = models.IntegerField(blank=True, default=0)
-    resources = models.IntegerField(blank=True, default=0)
-    feedbacks = models.IntegerField(blank=True, default=0)
-    editors = models.ManyToManyField(Editor, related_name="editors", blank=True)
-    organizers = models.ManyToManyField(Organizer, related_name="organizers", blank=True)
-    partners_activated = models.ManyToManyField(Partner, related_name="partners", blank=True)
-    technologies_used = models.ManyToManyField(Technology, related_name="tecnologies", blank=True)
-    number_of_people_reached_through_social_media = models.IntegerField(blank=True, default=0)
-
-    # Wikimedia projects
+    # Content metrics
     wikipedia_created = models.IntegerField(blank=True, default=0)
     wikipedia_edited = models.IntegerField(blank=True, default=0)
     commons_created = models.IntegerField(blank=True, default=0)
@@ -199,6 +189,18 @@ class Report(models.Model):
     mediawiki_created = models.IntegerField(blank=True, default=0)
     mediawiki_edited = models.IntegerField(blank=True, default=0)
 
+    # Community metrics
+    editors = models.ManyToManyField(Editor, related_name="editors", blank=True)
+    participants = models.IntegerField(blank=True, default=0)
+    organizers = models.ManyToManyField(Organizer, related_name="organizers", blank=True)
+    feedbacks = models.IntegerField(blank=True, default=0)
+
+    # Operational metrics
+    partners_activated = models.ManyToManyField(Partner, related_name="partners", blank=True)
+
+    # Other metrics
+    technologies_used = models.ManyToManyField(Technology, related_name="tecnologies", blank=True)
+
     # Strategy
     directions_related = models.ManyToManyField(Direction, related_name="direction_related", blank=False)
     learning = models.TextField(max_length=5000, validators=[MinLengthValidator(500)])
@@ -220,3 +222,19 @@ class Report(models.Model):
 
     def __str__(self):
         return self.description
+
+
+class OperationReport(models.Model):
+    metric = models.ForeignKey(Metric, related_name="operation_metric", on_delete=models.RESTRICT)
+    report = models.ForeignKey(Report, related_name="operation_report", on_delete=models.CASCADE)
+
+    # Communication metrics
+    number_of_people_reached_through_social_media = models.IntegerField(blank=True, default=0)
+    number_of_new_followers = models.IntegerField(blank=True, default=0)
+    number_of_mentions = models.IntegerField(blank=True, default=0)
+    number_of_community_communications = models.IntegerField(blank=True, default=0)
+
+    # Operational metrics
+    number_of_events = models.IntegerField(blank=True, default=0)
+    number_of_resources = models.IntegerField(blank=True, default=0)
+    number_of_partnerships_activated = models.IntegerField(blank=True, default=0)
