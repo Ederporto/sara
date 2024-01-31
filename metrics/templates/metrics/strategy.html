@@ -23,6 +23,7 @@
                 <h2>{% translate "Strategic Axes:" %}</h2>
                 {% for axis in axes %}
                     <h3 id="{{ axis.text|slugify }}">{{ axis.text }}</h3>
+                    <h4>{{ axis.intentionality }}</h4>
                     <ul>
                         {% for direction in axis.directions.all %}
                             <li>{{ direction.text }}</li>
