@@ -19,8 +19,7 @@
         <div class="w3-row">
             <div class="w3-row">
                 <div class="w3-half" style="text-align: center">
-                    <a title="{% trans 'Track general metrics' %}" href="{% url 'metrics:metrics' %}"><button type="button" class="btn100 btn-round btn-view"><i class="fa-solid fa-chart-pie"></i> {% trans 'Track general metrics' %}</button></a>
-                    <a title="{% trans 'Track metrics by project' %}" href="{% url 'metrics:per_project' %}"><button type="button" class="btn100 btn-round btn-update"><i class="fa-solid fa-bullseye"></i> {% trans 'Track metrics by project' %}</button></a>
+                    <a title="{% trans 'Track metrics by project' %}" href="{% url 'metrics:per_project' %}"><button type="button" class="btn100 btn-round btn-view"><i class="fa-solid fa-bullseye"></i> {% trans 'Track metrics by project' %}</button></a>
                     <a title="{% trans 'Export all reports' %}" href="{% url 'report:export_all_reports' %}"><button type="button" class="btn100 btn-round btn-export"><i class="fa-solid fa-file-export"></i> {% trans 'Export all reports' %}</button></a>
                 </div>
                 <div class="w3-half formfield"><input id="customSearch" type="search" placeholder="{% trans 'Search' %}" aria-label="{% trans 'Search' %}" autocomplete="off" ></div>

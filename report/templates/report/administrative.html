@@ -3,7 +3,7 @@
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="activity_associated">{% translate "Activity associated" %}*</label>
         <div class="w3-twothird formfield">
-            <select id="activity_associated" name="activity_associated" onchange="show_metrics_options();">
+            <select class="select-with-text" id="activity_associated" name="activity_associated" onchange="show_metrics_options();">
                 <option value="" selected>----------</option>
                 <option value="1">{% translate "Other (not listed)" %}</option>
                 {% for area in report_form.fields.activity_associated.choices %}
@@ -19,7 +19,7 @@
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="area_responsible">{% translate "Area responsible" %}*</label>
         <div class="w3-twothird formfield">
-            <select id="area_responsible" name="area_responsible" required>
+            <select class="select-with-text" id="area_responsible" name="area_responsible" required>
                 <option value="" selected>----------</option>
                 {% for area_responsible in report_form.fields.area_responsible.queryset %}
                     <option value="{{ area_responsible.id }}" {% if area_responsible.id == report_form.fields.area_responsible.initial %}selected{% endif %}>{{ area_responsible.text }}</option>
@@ -30,12 +30,11 @@
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="area_activated">{% translate "Areas activated" %}</label>
         <div class="w3-twothird formfield">
-            <select id="area_activated" name="area_activated" size="8" multiple>
+            <select class="select-with-text" id="area_activated" name="area_activated" size="8" multiple>
                 {% for area_activated in report_form.fields.area_activated.queryset %}
                     <option value="{{ area_activated.id }}" {% if area_activated in report_form.instance.area_activated.all %}selected{% endif %}>{{ area_activated.text }}</option>
                 {% endfor %}
             </select>
-            <button type="button" id="add_area_activated" class="add_button"><i class="fa-solid fa-plus"></i> {% translate "Add" %}</button>
         </div>
     </div>
     <div class="w3-row">
@@ -53,12 +52,11 @@
     <div class="w3-row">
         <label class="w3-third formfieldtitle" for="funding_associated">{% translate "Funding associated" %}</label>
         <div class="w3-twothird formfield">
-            <select id="funding_associated" name="funding_associated" multiple onchange="show_metrics_options();">
+            <select class="select-with-text" id="funding_associated" name="funding_associated" multiple onchange="show_metrics_options();">
                 {% for funding_associated in report_form.fields.funding_associated.queryset %}
                     <option value="{{ funding_associated.id }}" {% if funding_associated in report_form.instance.funding_associated.all %}selected{% endif %}>{{ funding_associated.name }}</option>
                 {% endfor %}
             </select>
-            <button type="button" id="add_funding" class="add_button"><i class="fa-solid fa-plus"></i> {% translate "Add" %}</button>
         </div>
     </div>
     <div class="w3-row">
@@ -66,62 +64,7 @@
         <div class="w3-twothird formfield"><textarea id="links" name="links" rows="3" required>{{ report_form.instance.links }}</textarea></div>
     </div>
     <div class="w3-row">
-        <label class="w3-third formfieldtitle" for="public_communication">{% translate "Public communication" %}</label>
-        <div class="w3-twothird formfield"><textarea id="public_communication" name="public_communication" rows="3">{{ report_form.instance.public_communication }}</textarea></div>
-    </div>
-    <div class="w3-row">
         <div class="w3-third formfield">&nbsp;</div>
         <div class="w3-twothird formfield"><button type="button" class="tablinks submitbutton" onclick="openTab(this, 'Quantitative')">{% translate "Fill quantitative report" %}</button></div>
     </div>
-    <script>
-        $("#add_area_activated").on('click', function (){
-            let url = "{% url 'report:add_area_activated' %}";
-            let popup = window.open(url, 'area_activated_popup', 'width=800,height=600')
-
-             popup.postMessage({
-                 action: 'add_area_activated'
-             }, '*');
-
-            $(window).on('message', function(event){
-                if(event.originalEvent.source === popup && event.originalEvent.data.action === "add_area_activated") {
-                    let areas = $('#area_activated');
-                    let existingOption = areas.find('option[value="' + event.originalEvent.data.id + '"]');
-                    if (existingOption.length === 0) {
-                        areas.append($('<option>', {
-                            value: event.originalEvent.data.id,
-                            text: event.originalEvent.data.text,
-                            selected: true
-                        }));
-                    } else {
-                        existingOption.prop('selected', true);
-                    }
-                }
-            })
-        });
-
-        $("#add_funding").on('click', function (){
-            let url = "{% url 'report:add_funding' %}";
-            let popup = window.open(url, 'funding_popup', 'width=800,height=600')
-
-             popup.postMessage({
-                 action: 'add_funding'
-             }, '*');
-
-            $(window).on('message', function(event){
-                if(event.originalEvent.source === popup && event.originalEvent.data.action === "add_funding") {
-                    let fundings = $('#funding_associated');
-                    let existingOption = fundings.find('option[value="' + event.originalEvent.data.id + '"]');
-                    if (existingOption.length === 0) {
-                        fundings.append($('<option>', {
-                            value: event.originalEvent.data.id,
-                            text: event.originalEvent.data.text,
-                            selected: true
-                        }));
-                    } else {
-                        existingOption.prop('selected', true);
-                    }
-                }
-            })
-        });
-    </script>
 </div>

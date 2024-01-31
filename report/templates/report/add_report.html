@@ -5,10 +5,12 @@
 
 {% block styles %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
-    <link href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.13/css/select2.min.css">
 {% endblock %}
 {% block scripts %}
     <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -16,6 +18,7 @@
         <div class="w3-row main_content">
             <div class="w3-row tab">
                 <button id="nav_Administrative" class="tablinks active" onclick="openTab(this, 'Administrative')">{% translate "Administrative" %}</button>
+                <button id="nav_Operations" class="tablinks" onclick="openTab(this, 'Operations')">{% translate "Operations" %}</button>
                 <button id="nav_Quantitative" class="tablinks" onclick="openTab(this, 'Quantitative')">{% translate "Quantitative" %}</button>
                 <button id="nav_Strategy" class="tablinks" onclick="openTab(this, 'Strategy')">{% translate "Strategy" %}</button>
                 <button id="nav_Learning" class="tablinks" onclick="openTab(this, 'Learning')">{% translate "Learning" %}</button>
@@ -27,6 +30,10 @@
                         <div class="w3-container tabcontent active" id="Administrative">
                             <h2 id="section_Administrative">{% translate "Administrative" %}</h2>
                             {% include 'report/administrative.html' %}
+                        </div>
+                        <div class="w3-container tabcontent" id="Operations">
+                            <h2 id="section_Operations">{% translate "Operations" %}</h2>
+                            {% include 'report/operations.html' %}
                         </div>
                         <div class="w3-container tabcontent" id="Quantitative">
                             <h2 id="section_Quantitative">{% translate "Quantitative" %}</h2>
@@ -53,6 +60,7 @@
                 }
             })
             show_metrics_options();
+            $(".select-with-text").select2();
         });
 
         function toggle_field(selectObject) {
@@ -94,6 +102,7 @@
         function validateForm(){
             let form = $("#report");
             let admin_tab = $("#nav_Administrative");
+            let operations_tab = $("#nav_Operations");
             let quantitative_tab = $("#nav_Quantitative");
             let strategy_tab = $("#nav_Strategy");
             let learning_tab = $("#nav_Learning");
