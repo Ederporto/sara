@@ -248,6 +248,28 @@ class OperationForm(forms.ModelForm):
         model = OperationReport
         fields = "__all__"
 
+    def clean_number_of_people_reached_through_social_media(self):
+        number_of_people_reached_through_social_media = self.cleaned_data.get("number_of_people_reached_through_social_media", 0)
+        return number_of_people_reached_through_social_media if number_of_people_reached_through_social_media else 0
+    def clean_number_of_new_followers(self):
+        number_of_new_followers = self.cleaned_data.get("number_of_new_followers", 0)
+        return number_of_new_followers if number_of_new_followers else 0
+    def clean_number_of_mentions(self):
+        number_of_mentions = self.cleaned_data.get("number_of_mentions", 0)
+        return number_of_mentions if number_of_mentions else 0
+    def clean_number_of_community_communications(self):
+        number_of_community_communications = self.cleaned_data.get("number_of_community_communications", 0)
+        return number_of_community_communications if number_of_community_communications else 0
+    def clean_number_of_events(self):
+        number_of_events = self.cleaned_data.get("number_of_events", 0)
+        return number_of_events if number_of_events else 0
+    def clean_number_of_resources(self):
+        number_of_resources = self.cleaned_data.get("number_of_resources", 0)
+        return number_of_resources if number_of_resources else 0
+    def clean_number_of_partnerships_activated(self):
+        number_of_partnerships_activated = self.cleaned_data.get("number_of_partnerships_activated", 0)
+        return number_of_partnerships_activated if number_of_partnerships_activated else 0
+
 
 OperationFormSet = inlineformset_factory(
     Report,
@@ -261,6 +283,19 @@ OperationFormSet = inlineformset_factory(
             'number_of_events',
             'number_of_resources',
             'number_of_partnerships_activated'), extra=Metric.objects.filter(is_operation=True).count(),
+    can_delete=False)
+OperationUpdateFormSet = inlineformset_factory(
+    Report,
+    OperationReport,
+    form=OperationForm,
+    fields=('metric',
+            'number_of_people_reached_through_social_media',
+            'number_of_new_followers',
+            'number_of_mentions',
+            'number_of_community_communications',
+            'number_of_events',
+            'number_of_resources',
+            'number_of_partnerships_activated'), extra=0,
     can_delete=False)
 
 class AreaActivatedForm(forms.ModelForm):

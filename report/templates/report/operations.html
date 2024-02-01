@@ -3,54 +3,121 @@
 <div class="w3-container">
     {{ operation_metrics.management_form }}
     {% for form in operation_metrics.forms %}
-        <h3 id="Operation metrics">{{ form.initial.metric.activity }}</h3>
-        <h4><label class="formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-metric">{{ form.initial.metric }}</label></h4>
-        <div class="w3-row">
-            <select name="Operation-{{ forloop.counter0 }}-metric" id="id_Operation-{{ forloop.counter0 }}-metric" hidden>
-                <option value="{{ form.initial.metric.id }}" selected>{{ form.initial.metric.text }}</option>
-            </select>
-        </div>
-        {% if form.initial.metric.number_of_people_reached_through_social_media %}
+        {% if not form.instance.pk %}
+            <h3 id="Operation metrics">{{ form.initial.metric.activity }}</h3>
+            <h4><label class="formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-metric">{{ form.initial.metric }}</label></h4>
             <div class="w3-row">
-                <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_people_reached_through_social_media">{% translate "Number of people reached through social media" %}</label>
-                <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_people_reached_through_social_media" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_people_reached_through_social_media"></div>
+                <select name="Operation-{{ forloop.counter0 }}-metric" id="id_Operation-{{ forloop.counter0 }}-metric" hidden>
+                    <option value="{{ form.initial.metric.id }}" selected>{{ form.initial.metric.text }}</option>
+                </select>
             </div>
-        {% endif %}
-        {% if form.initial.metric.number_of_new_followers %}
+            {% if form.initial.metric.number_of_people_reached_through_social_media %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_people_reached_through_social_media">{% translate "Number of people reached through social media" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_people_reached_through_social_media" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_people_reached_through_social_media"></div>
+                </div>
+            {% endif %}
+            {% if form.initial.metric.number_of_new_followers %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_new_followers">{% translate "Number of new followers" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_new_followers" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_new_followers"></div>
+                </div>
+            {% endif %}
+            {% if form.initial.metric.number_of_mentions %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_mentions">{% translate "Number of mentions" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_mentions" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_mentions"></div>
+                </div>
+            {% endif %}
+            {% if form.initial.metric.number_of_community_communications %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_community_communications">{% translate "Number of community communications" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_community_communications" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_community_communications"></div>
+                </div>
+            {% endif %}
+            {% if form.initial.metric.number_of_events %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_events">{% translate "Number of events" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_events" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_events"></div>
+                </div>
+            {% endif %}
+            {% if form.initial.metric.number_of_resources %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_resources">{% translate "Number of resources" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_resources" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_resources"></div>
+                </div>
+            {% endif %}
+            {% if form.initial.metric.number_of_partnerships_activated %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_partnerships_activated">{% translate "Number of partnerships activated" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_partnerships_activated" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_partnerships_activated"></div>
+                </div>
+            {% endif %}
+            {% if form.initial.metric.number_of_new_partnerships %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_new_partnerships">{% translate "Number of new partnerships" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_new_partnerships" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_new_partnerships"></div>
+                </div>
+            {% endif %}
+        {% else %}
+            {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            <h3 id="Operation metrics">{{ form.instance.metric.activity }}</h3>
+            <h4><label class="formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-metric">{{ form.instance.metric }}</label></h4>
             <div class="w3-row">
-                <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_new_followers">{% translate "Number of new followers" %}</label>
-                <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_new_followers" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_new_followers"></div>
+                <select name="Operation-{{ forloop.counter0 }}-metric" id="id_Operation-{{ forloop.counter0 }}-metric" hidden>
+                    <option value="{{ form.instance.metric.id }}" selected>{{ form.instance.metric.text }}</option>
+                </select>
             </div>
-        {% endif %}
-        {% if form.initial.metric.number_of_mentions %}
-            <div class="w3-row">
-                <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_mentions">{% translate "Number of mentions" %}</label>
-                <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_mentions" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_mentions"></div>
-            </div>
-        {% endif %}
-        {% if form.initial.metric.number_of_community_communications %}
-            <div class="w3-row">
-                <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_community_communications">{% translate "Number of community communications" %}</label>
-                <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_community_communications" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_community_communications"></div>
-            </div>
-        {% endif %}
-        {% if form.initial.metric.number_of_events %}
-            <div class="w3-row">
-                <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_events">{% translate "Number of events" %}</label>
-                <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_events" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_events"></div>
-            </div>
-        {% endif %}
-        {% if form.initial.metric.number_of_resources %}
-            <div class="w3-row">
-                <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_resources">{% translate "Number of resources" %}</label>
-                <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_resources" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_resources"></div>
-            </div>
-        {% endif %}
-        {% if form.initial.metric.number_of_partnerships_activated %}
-            <div class="w3-row">
-                <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_partnerships_activated">{% translate "Number of partnerships activated" %}</label>
-                <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_partnerships_activated" value="0" id="id_Operation-{{ forloop.counter0 }}-number_of_partnerships_activated"></div>
-            </div>
+            {% if form.instance.metric.number_of_people_reached_through_social_media %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_people_reached_through_social_media">{% translate "Number of people reached through social media" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_people_reached_through_social_media" value="{{ form.instance.number_of_people_reached_through_social_media }}" id="id_Operation-{{ forloop.counter0 }}-number_of_people_reached_through_social_media"></div>
+                </div>
+            {% endif %}
+            {% if form.instance.metric.number_of_new_followers %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_new_followers">{% translate "Number of new followers" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_new_followers" value="{{ form.instance.number_of_new_followers }}" id="id_Operation-{{ forloop.counter0 }}-number_of_new_followers"></div>
+                </div>
+            {% endif %}
+            {% if form.instance.metric.number_of_mentions %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_mentions">{% translate "Number of mentions" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_mentions" value="{{ form.instance.number_of_mentions }}" id="id_Operation-{{ forloop.counter0 }}-number_of_mentions"></div>
+                </div>
+            {% endif %}
+            {% if form.instance.metric.number_of_community_communications %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_community_communications">{% translate "Number of community communications" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_community_communications" value="{{ form.instance.number_of_community_communications }}" id="id_Operation-{{ forloop.counter0 }}-number_of_community_communications"></div>
+                </div>
+            {% endif %}
+            {% if form.instance.metric.number_of_events %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_events">{% translate "Number of events" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_events" value="{{ form.instance.number_of_events }}" id="id_Operation-{{ forloop.counter0 }}-number_of_events"></div>
+                </div>
+            {% endif %}
+            {% if form.instance.metric.number_of_resources %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_resources">{% translate "Number of resources" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_resources" value="{{ form.instance.number_of_resources }}" id="id_Operation-{{ forloop.counter0 }}-number_of_resources"></div>
+                </div>
+            {% endif %}
+            {% if form.instance.metric.number_of_partnerships_activated %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_partnerships_activated">{% translate "Number of partnerships activated" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_partnerships_activated" value="{{ form.instance.number_of_partnerships_activated }}" id="id_Operation-{{ forloop.counter0 }}-number_of_partnerships_activated"></div>
+                </div>
+            {% endif %}
+            {% if form.instance.metric.number_of_new_partnerships %}
+                <div class="w3-row">
+                    <label class="w3-third formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-number_of_new_partnerships">{% translate "Number of new partnerships" %}</label>
+                    <div class="w3-twothird formfield"><input type="number" name="Operation-{{ forloop.counter0 }}-number_of_new_partnerships" value="{{ form.instance.number_of_new_partnerships }}" id="id_Operation-{{ forloop.counter0 }}-number_of_new_partnerships"></div>
+                </div>
+            {% endif %}
         {% endif %}
     {% endfor %}
     <div class="w3-row">

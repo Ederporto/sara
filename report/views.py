@@ -15,7 +15,7 @@ from report.models import LearningArea, EvaluationObjective, Editor, Organizer, 
     Funding, Technology, Report, AreaActivated, Activity, OperationReport
 from users.models import TeamArea, UserProfile
 from report.forms import NewReportForm, activities_associated_as_choices,\
-    AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm, OperationFormSet
+    AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm, OperationFormSet, OperationUpdateFormSet
 from django.db import models
 
 
@@ -535,8 +535,11 @@ def update_report(request, report_id):
     obj = get_object_or_404(Report, id=report_id)
     if request.method == "POST":
         report_form = NewReportForm(request.POST or None, instance=obj, user=request.user)
-        if report_form.is_valid():
+        operation_metrics = OperationUpdateFormSet(request.POST, instance=obj, prefix='Operation')
+        if report_form.is_valid() and operation_metrics.is_valid():
             report_instance = report_form.save(commit=False)
+
+            operation_metrics.save()
 
             # Editors
             editors = get_or_create_editors(request.POST["editors_string"])
@@ -583,8 +586,10 @@ def update_report(request, report_id):
             return redirect(reverse("report:detail_report", kwargs={"report_id": report_id}))
     else:
         report_form = NewReportForm(instance=obj, user=request.user)
+        operation_metrics = OperationUpdateFormSet(prefix="Operation", instance=obj)
         context = {"report_form": report_form,
                    "report_id": report_id,
+                   "operation_metrics": operation_metrics,
                    "directions_related_set": list(obj.directions_related.values_list("id", flat=True)),
                    "learning_questions_related_set": list(obj.learning_questions_related.values_list("id", flat=True)),
                    "metrics_set": list(obj.metrics_related.values_list("id", flat=True)),
@@ -639,6 +644,7 @@ def get_or_create_organizers(organizers_string):
 
 def get_metrics(request):
     projects = []
+    main_ = False
 
     # ACTIVITY
     activity = request.GET.get("activity")
@@ -652,6 +658,7 @@ def get_metrics(request):
             metrics = Metric.objects.filter(project=project).values()
             if metrics:
                 projects.append({"project": project.text, "metrics": list(metrics)})
+
     # FUNDINGS
     fundings_ids = request.GET.getlist("fundings[]")
     projects_ids = Project.objects.filter(Q(project_related__in=fundings_ids))
@@ -662,17 +669,16 @@ def get_metrics(request):
     # INSTANCE
     instance = request.GET.get("instance")
     if instance:
+        report = Report.objects.get(pk=instance)
         metrics_ids = [metric["id"] for project in projects for metric in project["metrics"]]
-        metrics_aux = Report.objects.get(pk=instance).metrics_related.all().values()
+        metrics_aux = report.metrics_related.all().values()
         metrics = [metric for metric in metrics_aux if metric["id"] not in metrics_ids]
+        main_ = report.activity_associated.is_main_activity
 
         if metrics:
             projects.append({"project": _("Other metrics"), "metrics": list(metrics)})
 
     if projects:
-        return JsonResponse({"objects": projects})
+        return JsonResponse({"objects": projects, "main": main_})
     else:
-        return JsonResponse({"objects": None})
-
-def get_operation_metrics():
-    operation_metrics = Metric.objects.filter(is_operation=True)
+        return JsonResponse({"objects": None, "main": main_})

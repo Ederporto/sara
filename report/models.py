@@ -203,7 +203,7 @@ class Report(models.Model):
 
     # Strategy
     directions_related = models.ManyToManyField(Direction, related_name="direction_related", blank=False)
-    learning = models.TextField(max_length=5000, validators=[MinLengthValidator(500)])
+    learning = models.TextField(max_length=5000, null=True, blank=True, default="")
 
     # Theory of Change
     learning_questions_related = models.ManyToManyField(StrategicLearningQuestion, related_name="strategic_learning_question_related", blank=False)
@@ -238,3 +238,4 @@ class OperationReport(models.Model):
     number_of_events = models.IntegerField(blank=True, default=0)
     number_of_resources = models.IntegerField(blank=True, default=0)
     number_of_partnerships_activated = models.IntegerField(blank=True, default=0)
+    number_of_new_partnerships = models.IntegerField(blank=True, default=0)

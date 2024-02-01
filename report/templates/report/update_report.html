@@ -5,10 +5,12 @@
 
 {% block styles %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
-    <link href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.13/css/select2.min.css">
 {% endblock %}
 {% block scripts %}
     <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -16,8 +18,9 @@
         <div class="w3-row main_content">
             <div class="w3-row tab">
                 <button id="nav_Administrative" class="tablinks active" onclick="openTab(this, 'Administrative')">{% translate "Administrative" %}</button>
+                <button id="nav_Operational" class="tablinks" onclick="openTab(this, 'Operational')">{% translate "Operational" %}</button>
                 <button id="nav_Quantitative" class="tablinks" onclick="openTab(this, 'Quantitative')">{% translate "Quantitative" %}</button>
-                <button id="nav_Strategy" class="tablinks" onclick="openTab(this, 'Strategy')">{% translate "Strategy" %}</button>
+                <button id="nav_Strategic" class="tablinks" onclick="openTab(this, 'Strategic')">{% translate "Strategic" %}</button>
                 <button id="nav_Learning" class="tablinks" onclick="openTab(this, 'Learning')">{% translate "Learning" %}</button>
             </div>
             <div class="w3-row userform">
@@ -28,12 +31,16 @@
                             <h2 id="section_Administrative">{% translate "Administrative" %}</h2>
                             {% include 'report/administrative.html' %}
                         </div>
+                        <div class="w3-container tabcontent" id="Operational">
+                            <h2 id="section_Operational">{% translate "Operational" %}</h2>
+                            {% include 'report/operations.html' %}
+                        </div>
                         <div class="w3-container tabcontent" id="Quantitative">
                             <h2 id="section_Quantitative">{% translate "Quantitative" %}</h2>
                             {% include 'report/quantitative.html' %}
                         </div>
-                        <div class="w3-container tabcontent" id="Strategy">
-                            <h2 id="section_Strategy">{% translate "Strategy" %}</h2>
+                        <div class="w3-container tabcontent" id="Strategic">
+                            <h2 id="section_Strategic">{% translate "Strategic" %}</h2>
                             {% include 'report/strategy.html' %}
                         </div>
                         <div class="w3-container tabcontent" id="Learning">
@@ -53,6 +60,12 @@
                 }
             })
             show_metrics_options();
+            $(".select-with-text").select2();
+
+            let learning = $("#learning");
+            if (learning.val() > 0) {
+                $("#learning_container").hide();
+            }
         });
 
         function toggle_field(selectObject) {
@@ -94,8 +107,9 @@
         function validateForm(){
             let form = $("#report");
             let admin_tab = $("#nav_Administrative");
+            let operations_tab = $("#nav_Operational");
             let quantitative_tab = $("#nav_Quantitative");
-            let strategy_tab = $("#nav_Strategy");
+            let strategy_tab = $("#nav_Strategic");
             let learning_tab = $("#nav_Learning");
             let admin_fields = ["#activity_associated", "#area_responsible", "#initial_date", "#description", "#links"];
             let learning_fields = ["#learning"];
@@ -127,18 +141,20 @@
             }
 
             let learning = $("#learning");
-
-            if (learning.val() === 0 || learning.val().length < 500 ) {
-                learning_tab.click();
-                learning.focus();
-                return;
-            }
-
-            for (let i = 0; i < learning_fields.length; i++ ){
-                if (focus_is_empty(form.find(learning_fields[i]))){
+            let has_learning = learning.data("has_learning");
+            if (has_learning) {
+                if (learning.val() === 0 || learning.val().length < 500) {
                     learning_tab.click();
-                    form.find(learning_fields[i]).focus();
+                    learning.focus();
                     return;
+                }
+
+                for (let i = 0; i < learning_fields.length; i++) {
+                    if (focus_is_empty(form.find(learning_fields[i]))) {
+                        learning_tab.click();
+                        form.find(learning_fields[i]).focus();
+                        return;
+                    }
                 }
             }
 
@@ -158,22 +174,31 @@
                     dataType: 'json',
                     data: {activity: activity_associated, fundings: funding_associated, instance: report_id},
                     success: function (response) {
+                        let learning = $("#learning");
+                        let learning_container = $("#learning_container");
                         let inner_html = "<fieldset id='metrics_fieldset' class='subcontainer'><div style='overflow-y:scroll; max-height:200px'>";
                         if (response["objects"]) {
                             response["objects"].forEach(function (projectEl) {
                                 inner_html += "<div class='w3-container formfieldtitle' style='color:var(--main-color);'>"+projectEl["project"]+"</div>"
                                 projectEl["metrics"].forEach(function (metric) {
                                     let checked = "";
-                                    if (jQuery.inArray(metric.id, metrics_related) >= 0) {
-                                        checked = "checked";
-                                    }
+                                    let button_type = "checkbox"
+                                    if (jQuery.inArray(metric.id, metrics_related) >= 0) { checked = "checked"; }
+                                    if (projectEl["main"]) { button_type = "radio"; }
                                     let metric_element = "<label class='select-container'>" + metric.text +
-                                        "<input type='checkbox' name='metrics_related' value='" + metric.id +
+                                        "<input type='" + button_type + "' name='metrics_related' value='" + metric.id +
                                         "' " + checked + ">" + "<span class='checkmark'></span></label>"
                                     inner_html += metric_element
                                 })});
                             inner_html += "</div></fieldset>";
                             $("#metrics_to_select").html(inner_html);
+                        }
+                        if (response["main"]) {
+                            learning.data("has_learning", true);
+                            learning_container.show();
+                        } else {
+                            learning.data("has_learning", false);
+                            learning_container.hide();
                         }
                         },
                     error: function (response) {

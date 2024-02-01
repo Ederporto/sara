@@ -25,9 +25,9 @@
         <p class="formfieldtitle">{% translate "Strategic learning questions selected" %}</p>
         <fieldset class="selected-choices"></fieldset>
     </div>
-    <div class="w3-container formfield">
+    <div id="learning_container" class="w3-container formfield">
         <label class="formfieldtitle" for="learning">{% translate "Learning" %}*</label>
-        <textarea type="text" id="learning" name="learning" rows="10" placeholder="{% translate "Describe the learning with this activity and how it relates with the strategy axis and directions" %}" onkeyup="countCharacters()" required>{{ report_form.instance.learning }}</textarea>
+        <textarea type="text" id="learning" name="learning" rows="10" placeholder="{% translate "Describe the learning with this activity and how it relates with the strategy axis and directions" %}" onkeyup="countCharacters()">{{ report_form.instance.learning }}</textarea>
         <span id="character_count" class="btn-round {% if report_form.instance.learning|length > 500 %}btn-view{% else %}btn-delete{% endif %}" style="float: right; color:black;">{{ report_form.instance.learning|length }}/500</span>
     </div>
     <div class="w3-row">
@@ -88,7 +88,7 @@
             } else {
                 counter.removeClass("btn-delete");
                 counter.addClass("btn-view");
-    }
+            }
         }
     </script>
 </div>
