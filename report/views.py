@@ -10,13 +10,13 @@ from django.utils.translation import gettext as _
 from django.contrib import messages
 from django.db.models import Q
 
-
-from metrics.models import Metric, Project
+from metrics.models import Metric, Project, Area
 from report.models import LearningArea, EvaluationObjective, Editor, Organizer, Partner, \
-    Funding, Technology, Report, AreaActivated, Activity
+    Funding, Technology, Report, AreaActivated, Activity, OperationReport
 from users.models import TeamArea, UserProfile
 from report.forms import NewReportForm, activities_associated_as_choices,\
-    AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm
+    AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm, OperationFormSet
+from django.db import models
 
 
 # CREATE
@@ -28,8 +28,13 @@ def add_report(request):
     learning_questions_related_set = list(map(int, report_form.data.getlist('learning_questions_related', [])))
     metrics_set = list(map(int, report_form.data.getlist('metrics_related', [])))
     if request.method == "POST":
-        if report_form.is_valid():
+        operation_metrics = OperationFormSet(request.POST, prefix='Operation')
+        if report_form.is_valid() and operation_metrics.is_valid():
             report = report_form.save(user=request.user)
+            instances = operation_metrics.save(commit=False)
+            for instance in instances:
+                instance.report = report
+                instance.save()
 
             messages.success(request, _("Report registered successfully!"))
             return redirect(reverse("report:detail_report", kwargs={"report_id": report.id}))
@@ -42,14 +47,17 @@ def add_report(request):
                 "directions_related_set": directions_related_set,
                 "learning_questions_related_set": learning_questions_related_set,
                 "metrics_set": metrics_set,
+                "operation_metrics": operation_metrics,
                 "report_form": report_form,
                 "title": _("Add report")
             }
             return render(request, "report/add_report.html", context)
     else:
+        operation_metrics = OperationFormSet(prefix="Operation", initial=[{"metric": metric_object} for metric_object in Metric.objects.filter(is_operation=True)])
         context = {"directions_related_set": directions_related_set,
                    "learning_questions_related_set": learning_questions_related_set,
                    "metrics_set": metrics_set,
+                   "operation_metrics": operation_metrics,
                    "report_form": report_form,
                    "title": _("Add report")}
 
@@ -163,40 +171,43 @@ def add_excel_file(report_id=None):
 @login_required
 @permission_required("report.view_report")
 def export_report(request, report_id=None):
-    buffer = BytesIO()
-    zip_file = zipfile.ZipFile(buffer, mode="w")
-    sub_directory = "csv/"
+    if report_id or Report.objects.count():
+        buffer = BytesIO()
+        zip_file = zipfile.ZipFile(buffer, mode="w")
+        sub_directory = "csv/"
 
-    if report_id:
-        zip_name = _("Report")
-        identifier = " {}".format(report_id)
+        if report_id:
+            zip_name = _("Report")
+            identifier = " {}".format(report_id)
+        else:
+            zip_name = _("SARA - Reports")
+            identifier = ""
+
+        posfix = identifier + " - {}".format(datetime.datetime.today().strftime('%Y-%m-%d'))
+        files = [[export_report_instance, sub_directory + 'Report' + posfix],
+                 [export_metrics, sub_directory + 'Metrics' + posfix],
+                 [export_user_profile, sub_directory + 'Users' + posfix],
+                 [export_area_activated, sub_directory + 'Areas' + posfix],
+                 [export_directions_related, sub_directory + 'Directions' + posfix],
+                 [export_editors, sub_directory + 'Editors' + posfix],
+                 [export_learning_questions_related, sub_directory + 'Learning questions' + posfix],
+                 [export_organizers, sub_directory + 'Organizers' + posfix],
+                 [export_partners_activated, sub_directory + 'Partners' + posfix],
+                 [export_technologies_used, sub_directory + 'Technologies' + posfix]]
+
+        for file in files:
+            zip_file.writestr('{}.csv'.format(file[1]), add_csv_file(file[0], report_id).getvalue())
+        zip_file.writestr('Export' + posfix + '.xlsx', add_excel_file(report_id).getvalue())
+
+        zip_file.close()
+
+        response = HttpResponse(buffer.getvalue())
+        response['Content-Type'] = 'application/x-zip-compressed'
+        response['Content-Disposition'] = 'attachment; filename=' + zip_name + posfix + '.zip'
+
+        return response
     else:
-        zip_name = _("SARA - Reports")
-        identifier = ""
-
-    posfix = identifier + " - {}".format(datetime.datetime.today().strftime('%Y-%m-%d'))
-    files = [[export_report_instance, sub_directory + 'Report' + posfix],
-             [export_metrics, sub_directory + 'Metrics' + posfix],
-             [export_user_profile, sub_directory + 'Users' + posfix],
-             [export_area_activated, sub_directory + 'Areas' + posfix],
-             [export_directions_related, sub_directory + 'Directions' + posfix],
-             [export_editors, sub_directory + 'Editors' + posfix],
-             [export_learning_questions_related, sub_directory + 'Learning questions' + posfix],
-             [export_organizers, sub_directory + 'Organizers' + posfix],
-             [export_partners_activated, sub_directory + 'Partners' + posfix],
-             [export_technologies_used, sub_directory + 'Technologies' + posfix]]
-
-    for file in files:
-        zip_file.writestr('{}.csv'.format(file[1]), add_csv_file(file[0], report_id).getvalue())
-    zip_file.writestr('Export' + posfix + '.xlsx', add_excel_file(report_id).getvalue())
-
-    zip_file.close()
-
-    response = HttpResponse(buffer.getvalue())
-    response['Content-Type'] = 'application/x-zip-compressed'
-    response['Content-Disposition'] = 'attachment; filename=' + zip_name + posfix + '.zip'
-
-    return response
+        return redirect(reverse("report:list_reports"))
 
 
 def export_report_instance(report_id=None):
@@ -628,12 +639,14 @@ def get_or_create_organizers(organizers_string):
 
 def get_metrics(request):
     projects = []
+
     # ACTIVITY
     activity = request.GET.get("activity")
     if activity and activity != "1":
         activity_project = Project.objects.get(project_activity__activities=int(activity))
         metrics = Metric.objects.filter(activity_id=activity).values()
-        projects.append({"project": activity_project.text, "metrics": list(metrics)})
+        main_ = Activity.objects.get(pk=int(activity)).is_main_activity
+        projects.append({"project": activity_project.text, "metrics": list(metrics), "main": main_})
     elif activity == "1":
         for project in Project.objects.all().exclude(pk=1):
             metrics = Metric.objects.filter(project=project).values()
@@ -645,6 +658,7 @@ def get_metrics(request):
     for project in projects_ids:
         metrics = Metric.objects.filter(project=project).values().order_by('text')
         projects.append({"project": project.text, "metrics": list(metrics)})
+
     # INSTANCE
     instance = request.GET.get("instance")
     if instance:
@@ -659,3 +673,6 @@ def get_metrics(request):
         return JsonResponse({"objects": projects})
     else:
         return JsonResponse({"objects": None})
+
+def get_operation_metrics():
+    operation_metrics = Metric.objects.filter(is_operation=True)

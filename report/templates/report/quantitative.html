@@ -1,63 +1,47 @@
 {% load i18n %}
 <div class="w3-container">
     <div class="w3-row" id="metrics">
-        <label class="formfieldtitle" for="metrics_formfield">{% translate "Metrics" %}*</label>
-        <div class="formfield" id="metrics_to_select">
-
-        </div>
+        <label class="w3-third formfieldtitle" for="metrics_formfield">{% translate "Metrics" %}*</label>
+        <div class="w3-twothird formfield" id="metrics_to_select"></div>
     </div>
     <div class="w3-row">
-        <div class="w3-quarter formfield form-left">
-            <label class="formfieldtitle" for="number_of_participants">{% translate "Number of participants" %}</label>
+        <label class="w3-third formfieldtitle" for="number_of_participants">{% translate "Number of participants" %}</label>
+        <div class="w3-twothird formfield">
             <input type="number" min="0" value="{{ report_form.instance.participants }}" id="number_of_participants" name="participants"/>
         </div>
-        <div class="w3-quarter formfield form-left form-right">
-            <label class="formfieldtitle" for="number_of_resources">{% translate "Number of resources" %}</label>
-            <input type="number" min="0" value="{{ report_form.instance.resources }}" id="number_of_resources" name="resources"/>
-        </div>
-        <div class="w3-quarter formfield form-left form-right">
-            <label class="formfieldtitle" for="number_of_feedbacks">{% translate "Number of feedbacks" %}</label>
+    </div>
+    <div class="w3-row">
+        <label class="w3-third formfieldtitle" for="number_of_feedbacks">{% translate "Number of feedbacks" %}</label>
+        <div class="w3-twothird formfield">
             <input type="number" min="0" value="{{ report_form.instance.feedbacks }}" id="number_of_feedbacks" name="feedbacks"/>
         </div>
-        <div class="w3-quarter formfield form-right">
-            <label class="formfieldtitle" for="number_of_people_reached_through_social_media">{% translate "Number of people reached through social media" %}</label>
-            <input type="number" min="0" value="{{ report_form.instance.number_of_people_reached_through_social_media }}" id="number_of_people_reached_through_social_media" name="number_of_people_reached_through_social_media"/>
+    </div>
+    <div class="w3-row">
+        <label class="w3-third formfieldtitle" for="editors">{% translate "Editors" %}</label>
+        <div class="w3-twothird formfield">
+            <textarea id="editors" name="editors_string" rows="4">{% if report_form.instance.id %}{% for editor in report_form.instance.editors.all %}{{ editor.username }}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}{% endif %}</textarea>
         </div>
     </div>
     <div class="w3-row">
-        <div class="w3-half formfield form-left">
-        <label class="formfieldtitle" for="editors">{% translate "Editors" %}</label>
-        <textarea id="editors" name="editors_string" rows="4">{% if report_form.instance.id %}{% for editor in report_form.instance.editors.all %}{{ editor.username }}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}{% endif %}</textarea>
-    </div>
-        <div class="w3-half formfield form-right">
-        <label class="formfieldtitle" for="organizers">{% translate "Organizers" %}</label>
-        <textarea id="organizers" name="organizers_string" rows="4">{% if report_form.instance.id %}{% for organizer in report_form.instance.organizers.all %}{{ organizer.name }}{% for institution in organizer.institution.all %};{{ institution.name }}{% endfor %}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}{% endif %}</textarea>
-    </div>
+        <label class="w3-third formfieldtitle" for="organizers">{% translate "Organizers" %}</label>
+        <div class="w3-twothird formfield">
+            <textarea id="organizers" name="organizers_string" rows="4">{% if report_form.instance.id %}{% for organizer in report_form.instance.organizers.all %}{{ organizer.name }}{% for institution in organizer.institution.all %};{{ institution.name }}{% endfor %}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}{% endif %}</textarea>
+        </div>
     </div>
     <div class="w3-row">
-        <div class="w3-half formfield form-left">
-            <label class="formfieldtitle" for="partners_activated">{% translate "Partnerships activated" %}</label>
-            <select id="partners_activated" name="partners_activated" multiple>
-                {% for partner in report_form.fields.partners_activated.queryset %}
-                    <option value="{{ partner.id }}" {% if partner in report_form.instance.partners_activated.all %}selected{% endif %}>{{ partner.name }}</option>
-                {% endfor %}
-            </select>
-            <button type="button" id="add_partnerships" class="add_button"><i class="fa-solid fa-plus"></i> {% translate "Add" %}</button>
-        </div>
-        <div class="w3-half formfield form-right">
-            <label class="formfieldtitle" for="technologies_used">{% translate "Technologies used" %}</label>
-            <select id="technologies_used" name="technologies_used" multiple>
+        <label class="w3-third formfieldtitle" for="technologies_used">{% translate "Technologies used" %}</label>
+        <div class="w3-twothird formfield">
+            <select class="select-with-text" id="technologies_used" name="technologies_used" multiple>
                 {% for technology in report_form.fields.technologies_used.queryset %}
                     <option value="{{ technology.id }}" {% if technology in report_form.instance.technologies_used.all %}selected{% endif %}>{{ technology.name }}</option>
                 {% endfor %}
             </select>
-            <button type="button" id="add_technology" class="add_button"><i class="fa-solid fa-plus"></i> {% translate "Add" %}</button>
         </div>
     </div>
     <div class="w3-container">
         <h3 id="Wikimedia projects">{% translate "Wikimedia projects" %}</h3>
-        <div class="w3-row formfieldtitle">{% translate "Which projects are you reporting?" %}</div>
-        <div class="w3-row">
+        <div class="w3-third formfieldtitle">{% translate "Which projects are you reporting?" %}</div>
+        <div class="w3-twothird">
             <label class="w3-third formfield toggle" for="wikipedia">
                 <input class="toggle__input wiki" type="checkbox" id="wikipedia" onclick="toggle_field(this.id)"
                        {% if report_form.instance.wikipedia_created or report_form.instance.wikipedia_edited %}checked{% endif %}/>
@@ -289,55 +273,4 @@
             <button type="button" class="tablinks submitbutton" onclick="openTab(this, 'Strategy')">{% translate "Fill strategy report" %}</button>
         </div>
     </div>
-    <script>
-        $("#add_partnerships").on('click', function (){
-            let url = "{% url 'report:add_partner' %}";
-            let popup = window.open(url, 'partnerships_popup', 'width=800,height=600')
-
-             popup.postMessage({
-                 action: 'add_partnerships'
-             }, '*');
-
-            $(window).on('message', function(event){
-                if(event.originalEvent.source === popup && event.originalEvent.data.action === "add_partnerships") {
-                    let partners = $('#partners_activated');
-                    let existingOption = partners.find('option[value="' + event.originalEvent.data.id + '"]');
-                    if (existingOption.length === 0) {
-                        partners.append($('<option>', {
-                            value: event.originalEvent.data.id,
-                            text: event.originalEvent.data.text,
-                            selected: true
-                        }));
-                    } else {
-                        existingOption.prop('selected', true);
-                    }
-                }
-            })
-        });
-
-        $("#add_technology").on('click', function (){
-            let url = "{% url 'report:add_technology' %}";
-            let popup = window.open(url, 'technologies_popup', 'width=800,height=600')
-
-             popup.postMessage({
-                 action: 'add_technology'
-             }, '*');
-
-            $(window).on('message', function(event){
-                if(event.originalEvent.source === popup && event.originalEvent.data.action === "add_technology") {
-                    let technologies = $('#technologies_used');
-                    let existingOption = technologies.find('option[value="' + event.originalEvent.data.id + '"]');
-                    if (existingOption.length === 0) {
-                        technologies.append($('<option>', {
-                            value: event.originalEvent.data.id,
-                            text: event.originalEvent.data.text,
-                            selected: true
-                        }));
-                    } else {
-                        existingOption.prop('selected', true);
-                    }
-                }
-            })
-        });
-    </script>
 </div>

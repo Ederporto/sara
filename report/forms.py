@@ -5,7 +5,7 @@ from django.utils.translation import gettext as _
 from django.db.models import fields, Q
 from django.db.models.functions import Lower
 from .models import Report, StrategicLearningQuestion, LearningArea, AreaActivated, Funding, Partner, Technology,\
-    Editor, Organizer
+    Editor, Organizer, OperationReport
 from metrics.models import Area, Metric, Project
 from strategy.models import StrategicAxis
 from users.models import TeamArea, UserProfile
@@ -13,6 +13,7 @@ from users.models import TeamArea, UserProfile
 from urllib.parse import quote
 import requests
 from datetime import datetime
+from django.forms import inlineformset_factory
 
 
 class NewReportForm(forms.ModelForm):
@@ -108,7 +109,7 @@ class NewReportForm(forms.ModelForm):
 
     def add_metrics_related_depending_on_values(self):
         metrics_related = self.cleaned_data.get("metrics_related")
-        main_funding = Project.objects.get(text="Wikimedia Community Fund")
+        main_funding = Project.objects.get(main_funding=True)
         metrics_main_funding = Metric.objects.filter(project=main_funding)
 
         int_fields_names = [
@@ -126,9 +127,7 @@ class NewReportForm(forms.ModelForm):
             ["metawiki_created", "metawiki_edited"],
             ["mediawiki_created", "mediawiki_edited"],
             ["participants"],
-            ["resources"],
             ["feedbacks"],
-            ["number_of_people_reached_through_social_media"],
         ]
 
         for field_set in int_fields_names:
@@ -243,6 +242,26 @@ def get_user_date_of_registration(user):
     except:
         return None
 
+
+class OperationForm(forms.ModelForm):
+    class Meta:
+        model = OperationReport
+        fields = "__all__"
+
+
+OperationFormSet = inlineformset_factory(
+    Report,
+    OperationReport,
+    form=OperationForm,
+    fields=('metric',
+            'number_of_people_reached_through_social_media',
+            'number_of_new_followers',
+            'number_of_mentions',
+            'number_of_community_communications',
+            'number_of_events',
+            'number_of_resources',
+            'number_of_partnerships_activated'), extra=Metric.objects.filter(is_operation=True).count(),
+    can_delete=False)
 
 class AreaActivatedForm(forms.ModelForm):
     class Meta:

@@ -108,7 +108,7 @@
                 }
             }
 
-            if ($("#metrics_fieldset input[type='checkbox']:checked").length === 0) {
+            if ($("#metrics_fieldset input[type='checkbox']:checked").length === 0 && $("#metrics_fieldset input[type='radio']:checked").length === 0) {
                 quantitative_tab.click();
                 $("#metrics_fieldset input[value=1]").focus();
                 return;

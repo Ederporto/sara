@@ -61,6 +61,7 @@ class Activity(models.Model):
     text = models.CharField(max_length=420)
     code = models.CharField(max_length=20, null=True)
     area = models.ForeignKey(Area, on_delete=models.RESTRICT, related_name='activities', null=True)
+    is_main_activity = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = _("Activity")
