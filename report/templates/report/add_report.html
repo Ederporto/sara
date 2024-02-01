@@ -117,7 +117,7 @@
                 }
             }
 
-            if ($("#metrics_fieldset input[type='checkbox']:checked").length === 0) {
+            if ($("#metrics_fieldset input[type='checkbox']:checked").length === 0 && $("#metrics_fieldset input[type='radio']:checked").length === 0) {
                 quantitative_tab.click();
                 $("#metrics_fieldset input[value=1]").focus();
                 return;
@@ -172,11 +172,11 @@
                                 inner_html += "<div class='w3-container formfieldtitle' style='color:var(--main-color);'>"+projectEl["project"]+"</div>"
                                 projectEl["metrics"].forEach(function (metric) {
                                     let checked = "";
-                                    if (jQuery.inArray(metric.id, metrics_related) >= 0) {
-                                        checked = "checked";
-                                    }
+                                    let button_type = "checkbox"
+                                    if (jQuery.inArray(metric.id, metrics_related) >= 0) { checked = "checked"; }
+                                    if (projectEl["main"]) { button_type = "radio"; }
                                     let metric_element = "<label class='select-container'>" + metric.text +
-                                        "<input type='checkbox' name='metrics_related' value='" + metric.id +
+                                        "<input type='" + button_type + "' name='metrics_related' value='" + metric.id +
                                         "' " + checked + ">" + "<span class='checkmark'></span></label>"
                                     inner_html += metric_element
                                 })});
