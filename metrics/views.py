@@ -38,24 +38,6 @@ def show_activities_plan(request):
 
 @login_required
 @permission_required("metrics.view_metric")
-def show_metrics(request):
-    total_sum = get_aggregated_metrics_data()
-    total_done = get_aggregated_metrics_data_done()
-    timeline_activites = get_activities()
-
-    projects = Project.objects.filter(pk__in=list(Metric.objects.filter(project__isnull=False).values_list("project__pk", flat=True))).exclude(pk=1)
-    projects_metrics_sum = []
-
-    if projects.count():
-        for project in projects:
-            projects_metrics_sum.append({"funding": project.text, "total_sum": get_aggregated_metrics_data(project=project)})
-
-    context = {"total_sum": total_sum, "total_done": total_done, "timeline": timeline_activites, "projects_metrics": projects_metrics_sum, "title": _("Show general metrics")}
-    return render(request, "metrics/list_metrics.html", context)
-
-
-@login_required
-@permission_required("metrics.view_metric")
 def show_metrics_per_project(request):
     context = {"dataset": get_metrics_and_aggregate_per_project(), "title": _("Show metrics per project")}
     return render(request, "metrics/list_metrics_per_project.html", context)
@@ -150,7 +132,7 @@ def get_done_for_report(reports):
         "MetaWiki": reports.aggregate(total=Sum(F("metawiki_created") + F("metawiki_edited")))["total"] or 0,
         "MediaWiki": reports.aggregate(total=Sum(F("mediawiki_created") + F("mediawiki_edited")))["total"] or 0,
         "Number of participants": reports.aggregate(total=Sum("participants"))["total"] or 0,
-        "Number of resources": reports.aggregate(total=Sum("resources"))["total"] or 0,
+        # "Number of resources": reports.aggregate(total=Sum("resources"))["total"] or 0,
         "Number of feedbacks": reports.aggregate(total=Sum("feedbacks"))["total"] or 0,
         "Number of events": reports.count() or 0,
         "Number of editors": Editor.objects.filter(editors__in=reports).distinct().count() or 0,
@@ -159,7 +141,7 @@ def get_done_for_report(reports):
         "Number of partnerships activated": Partner.objects.filter(partners__in=reports).distinct().count() or 0,
         "Number of organizers": Organizer.objects.filter(organizers__in=reports).distinct().count() or 0,
         "Number of organizers retained": Organizer.objects.filter(retained=True, organizers__in=reports).distinct().count() or 0,
-        "Number of people reached through social media": reports.aggregate(total=Sum(F("number_of_people_reached_through_social_media")))["total"] or 0,
+        # "Number of people reached through social media": reports.aggregate(total=Sum(F("number_of_people_reached_through_social_media")))["total"] or 0,
         "Occurence": reports.filter(metrics_related__boolean_type=True).exists() or False,
     }
 
@@ -282,7 +264,7 @@ def get_aggregated_metrics_data_done():
     mediawiki_edited = Report.objects.aggregate(Sum('mediawiki_edited'))['mediawiki_edited__sum']
 
     number_of_participants = Report.objects.aggregate(Sum('participants'))['participants__sum']
-    number_of_resources = Report.objects.aggregate(Sum('resources'))['resources__sum']
+    # number_of_resources = Report.objects.aggregate(Sum('resources'))['resources__sum']
     number_of_feedbacks = Report.objects.aggregate(Sum('feedbacks'))['feedbacks__sum']
     number_of_editors = Report.objects.annotate(num_editors=Count('editors')).aggregate(Sum('num_editors'))['num_editors__sum']
     number_of_organizers = Report.objects.annotate(num_organizers=Count('organizers')).aggregate(Sum('num_organizers'))['num_organizers__sum']
@@ -321,7 +303,7 @@ def get_aggregated_metrics_data_done():
     total_sum["mediawiki_edited"] = mediawiki_edited
 
     total_sum["participants"] = number_of_participants
-    total_sum["resources"] = number_of_resources
+    # total_sum["resources"] = number_of_resources
     total_sum["feedbacks"] = number_of_feedbacks
     total_sum["editors"] = number_of_editors
     total_sum["organizers"] = number_of_organizers
@@ -332,57 +314,6 @@ def get_aggregated_metrics_data_done():
     total_sum["retained_partnerships"] = partners_in_more_than_one_activity.count()
 
     return total_sum
-
-
-def get_activities():
-    activities = Report.objects.all().order_by("end_date")
-    chart_data = {}
-    chart_data["wikipedia"] = get_chart_data(activities, "wikipedia_created", "wikipedia_edited")
-    chart_data["commons"] = get_chart_data(activities, "commons_created", "commons_edited")
-    chart_data["wikidata"] = get_chart_data(activities, "wikidata_created", "wikidata_edited")
-    chart_data["wikiversity"] = get_chart_data(activities, "wikiversity_created", "wikiversity_edited")
-    chart_data["wikibooks"] = get_chart_data(activities, "wikibooks_created", "wikibooks_edited")
-    chart_data["wikisource"] = get_chart_data(activities, "wikisource_created", "wikisource_edited")
-    chart_data["wikinews"] = get_chart_data(activities, "wikinews_created", "wikinews_edited")
-    chart_data["wikiquote"] = get_chart_data(activities, "wikiquote_created", "wikiquote_edited")
-    chart_data["wiktionary"] = get_chart_data(activities, "wiktionary_created", "wiktionary_edited")
-    chart_data["wikivoyage"] = get_chart_data(activities, "wikivoyage_created", "wikivoyage_edited")
-    chart_data["wikispecies"] = get_chart_data(activities, "wikispecies_created", "wikispecies_edited")
-    chart_data["metawiki"] = get_chart_data(activities, "metawiki_created", "metawiki_edited")
-    chart_data["mediawiki"] = get_chart_data(activities, "mediawiki_created", "mediawiki_edited")
-
-    chart_data["participants"] = get_chart_data(activities, "participants")
-    chart_data["resources"] = get_chart_data(activities, "resources")
-    chart_data["feedbacks"] = get_chart_data(activities, "feedbacks")
-    chart_data["editors"] = get_chart_data_many_to_many(activities, "editors")
-    chart_data["organizers"] = get_chart_data_many_to_many(activities, "organizers")
-    chart_data["partnerships"] = get_chart_data_many_to_many(activities, "partners_activated")
-
-    return chart_data
-
-
-def get_chart_data(activities, created_field=None, edited_field=None):
-    created_filter = Q(**{created_field + '__gt': 0}) if created_field else Q()
-    edited_filter = Q(**{edited_field + '__gt': 0}) if edited_field else Q()
-    filtered_activities = activities.filter(created_filter | edited_filter).order_by("end_date")
-    chart_data = []
-    total_ = 0
-    for activity in filtered_activities:
-        total_created = getattr(activity, created_field) if created_field else 0
-        total_edited = getattr(activity, edited_field) if edited_field else 0
-        total_ += total_created + total_edited
-        chart_data.append({"x": activity.end_date.isoformat(), "y": total_, "label": activity.description})
-    return chart_data
-
-
-def get_chart_data_many_to_many(activities, field):
-    filtered_activities = Report.objects.filter(Q(**{field + '__isnull': False})).distinct().order_by("end_date")
-    chart_data = []
-    total_ = 0
-    for activity in filtered_activities:
-        total_ += getattr(activity, field).count()
-        chart_data.append({"x": activity.end_date.isoformat(), "y": total_, "label": activity.description})
-    return chart_data
 
 
 def update_metrics_relations(request):

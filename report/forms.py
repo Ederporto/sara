@@ -84,7 +84,7 @@ class NewReportForm(forms.ModelForm):
 
     def clean_metrics_related(self):
         metrics_related = self.cleaned_data.get('metrics_related')
-        main_funding = Project.objects.get(text="Wikimedia Community Fund")
+        main_funding = Project.objects.get(main_funding=True)
         metrics_main_funding = Metric.objects.filter(project=main_funding)
         for metric in metrics_related:
             field_names = [metric_field.name for metric_field in metric._meta.fields if isinstance(metric_field, fields.IntegerField) and metric_field.name != "id" and getattr(metric, metric_field.name) > 0]
@@ -269,6 +269,9 @@ class OperationForm(forms.ModelForm):
     def clean_number_of_partnerships_activated(self):
         number_of_partnerships_activated = self.cleaned_data.get("number_of_partnerships_activated", 0)
         return number_of_partnerships_activated if number_of_partnerships_activated else 0
+    def clean_number_of_new_partnerships(self):
+        number_of_new_partnerships = self.cleaned_data.get("number_of_new_partnerships", 0)
+        return number_of_new_partnerships if number_of_new_partnerships else 0
 
 
 OperationFormSet = inlineformset_factory(
@@ -282,7 +285,8 @@ OperationFormSet = inlineformset_factory(
             'number_of_community_communications',
             'number_of_events',
             'number_of_resources',
-            'number_of_partnerships_activated'), extra=Metric.objects.filter(is_operation=True).count(),
+            'number_of_partnerships_activated',
+            'number_of_new_partnerships'), extra=Metric.objects.filter(is_operation=True).count(),
     can_delete=False)
 OperationUpdateFormSet = inlineformset_factory(
     Report,
@@ -295,7 +299,8 @@ OperationUpdateFormSet = inlineformset_factory(
             'number_of_community_communications',
             'number_of_events',
             'number_of_resources',
-            'number_of_partnerships_activated'), extra=0,
+            'number_of_partnerships_activated',
+            'number_of_new_partnerships'), extra=0,
     can_delete=False)
 
 class AreaActivatedForm(forms.ModelForm):

@@ -5,7 +5,7 @@ from .models import Objective, Area, Metric, Activity, Project
 from report.models import Report, Editor
 from users.models import User, UserProfile, TeamArea
 from strategy.models import StrategicAxis
-from .views import get_metrics_and_aggregate_per_project, get_aggregated_metrics_data, get_aggregated_metrics_data_done, get_activities, get_chart_data, get_chart_data_many_to_many
+from .views import get_metrics_and_aggregate_per_project, get_aggregated_metrics_data, get_aggregated_metrics_data_done
 from django.urls import reverse
 from django.contrib.auth.models import Permission
 from datetime import datetime, timedelta
@@ -73,7 +73,7 @@ class ProjectModelTests(TestCase):
     def setUp(self):
         self.text = "text"
         self.status = True
-        self.project = Project.objects.create(text=self.text, status=self.status)
+        self.project = Project.objects.create(text=self.text, active=self.status)
 
     def test_project_str_returns_text(self):
         self.assertEqual(str(self.project), self.text)
@@ -138,33 +138,10 @@ class MetricViewsTests(TestCase):
         self.assertTemplateUsed(response, "metrics/about.html")
 
     def test_show_activities_plan_view(self):
-        project = Project.objects.create(text="Plano de atividades")
-        area = Area.objects.create(text="Area")
-        area.project.add(project)
-        Activity.objects.create(text="Activity", area=area)
         url = reverse("metrics:show_activities")
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "metrics/activities_plan.html")
-        self.assertContains(response, "Activity")
-        self.assertContains(response, "Area")
-
-    def test_show_metrics_is_only_visible_for_users_with_permission(self):
-        self.user.user_permissions.remove(self.view_metrics_permission)
-        self.client.login(username=self.username, password=self.password)
-        url = reverse("metrics:metrics")
-        response = self.client.get(url)
-
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, f"{reverse('login')}?next={reverse('metrics:metrics')}")
-
-    def test_show_metrics_get_is_shown(self):
-        self.client.login(username=self.username, password=self.password)
-        url = reverse("metrics:metrics")
-        response = self.client.get(url)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "metrics/list_metrics.html")
+        self.assertEqual(response.url, "https://meta.wikimedia.org/wiki/Wiki_Movement_Brazil_User_Group/Plan_of_Activities")
 
     def test_show_metrics_per_project(self):
         self.client.login(username=self.username, password=self.password)
@@ -173,53 +150,6 @@ class MetricViewsTests(TestCase):
 
         response = self.client.get(url)
         self.assertIn("dataset", str(response.context))
-
-    def test_show_metrics_shows_metrics_charts(self):
-        self.client.login(username=self.username, password=self.password)
-
-        area = Area.objects.create(text="Area")
-        activity = Activity.objects.create(text="Activity", area=area)
-        metric = Metric.objects.create(text="Metric 1", activity=activity, wikipedia_created=4)
-
-        url = reverse("metrics:metrics")
-        response = self.client.get(url)
-
-        self.assertIn("wikipedia_created", str(response.context["total_sum"]))
-        self.assertIn("<canvas id=\"wikipedia_pie_chart\">", str(response.content))
-        self.assertIn("<canvas id=\"wikipedia_timeline_chart\">", str(response.content))
-        self.assertNotIn("<canvas id=\"commons_pie_chart\">", str(response.content))
-
-    def test_show_metrics_shows_metrics_charts_with_more_than_one_activity(self):
-        self.client.login(username=self.username, password=self.password)
-
-        area = Area.objects.create(text="Area")
-        activity_1 = Activity.objects.create(text="Activity 1", area=area)
-        activity_2 = Activity.objects.create(text="Activity 2", area=area)
-        metric = Metric.objects.create(text="Metric 1", activity=activity_2, wikipedia_created=4)
-
-        url = reverse("metrics:metrics")
-        response = self.client.get(url)
-
-        self.assertIn("wikipedia_created", str(response.context["total_sum"]))
-        self.assertIn("<canvas id=\"wikipedia_pie_chart\">", str(response.content))
-        self.assertIn("<canvas id=\"wikipedia_timeline_chart\">", str(response.content))
-        self.assertNotIn("<canvas id=\"commons_pie_chart\">", str(response.content))
-
-    def test_show_metrics_shows_projects_metrics_as_charts(self):
-        self.client.login(username=self.username, password=self.password)
-
-        area = Area.objects.create(text="Area")
-        activity = Activity.objects.create(text="Activity", area=area)
-        project_1 = Project.objects.create(text="Project 1")
-        project_2 = Project.objects.create(text="Project 2")
-        metric = Metric.objects.create(text="Metric 1", activity=activity, wikipedia_created=4)
-        metric.project.add(project_2)
-        metric.save()
-
-        url = reverse("metrics:metrics")
-        response = self.client.get(url)
-
-        self.assertIn(project_2.text, str(response.context["projects_metrics"]))
 
     def test_update_metrics(self):
         self.client.login(username=self.username, password=self.password)
@@ -506,88 +436,6 @@ class MetricFunctionsTests(TestCase):
     def test_get_metrics_and_aggregate_per_project_without_data(self):
         aggregated_metrics = get_metrics_and_aggregate_per_project()
         self.assertEqual(aggregated_metrics, {})
-
-    def test_get_activities_with_data(self):
-        self.report_1.wikipedia_created = 1
-        self.report_2.editors.add(self.editor_1)
-        self.report_1.save()
-        self.report_2.save()
-
-        chart_data = get_activities()
-        self.assertEqual(chart_data, {"wikipedia": [{"x": str(datetime.now().date() + timedelta(days=1)),
-                                                     "y": self.report_1.wikipedia_created,
-                                                     "label": self.report_1.description}],
-                                      "commons": [],
-                                      "wikidata": [],
-                                      "wikiversity": [],
-                                      "wikibooks": [],
-                                      "wikisource": [],
-                                      "wikinews": [],
-                                      "wikiquote": [],
-                                      "wiktionary": [],
-                                      "wikivoyage": [],
-                                      "wikispecies": [],
-                                      "metawiki": [],
-                                      "mediawiki": [],
-                                      "participants": [],
-                                      "resources": [],
-                                      "feedbacks": [],
-                                      "editors": [{"x": str(datetime.now().date() + timedelta(days=2)),
-                                                   "y": self.report_2.editors.count(),
-                                                   "label": self.report_2.description}],
-                                      "organizers": [],
-                                      "partnerships": []})
-
-    def test_get_activities_without_data(self):
-        chart_data = get_activities()
-        self.assertEqual(chart_data, {"wikipedia": [], "commons": [], "wikidata": [], "wikiversity": [], "wikibooks": [], "wikisource": [], "wikinews": [], "wikiquote": [], "wiktionary": [], "wikivoyage": [], "wikispecies": [], "metawiki": [], "mediawiki": [], "participants": [], "resources": [], "feedbacks": [], "editors": [], "organizers": [], "partnerships": []})
-
-    def test_get_chart_data_with_data(self):
-        self.report_1.wikipedia_created = 1
-        self.report_2.wikipedia_edited = 2
-        self.report_3.wikipedia_created = 3
-        self.report_3.wikipedia_edited = 4
-        self.report_1.save()
-        self.report_2.save()
-        self.report_3.save()
-
-        activities = Report.objects.all().order_by("end_date")
-        chart_data = get_chart_data(activities, "wikipedia_created", "wikipedia_edited")
-        self.assertEqual(chart_data, [{"x": str(datetime.now().date() + timedelta(days=1)),
-                                       "y": self.report_1.wikipedia_created + self.report_1.wikipedia_edited,
-                                       "label": self.report_1.description},
-                                      {"x": str(datetime.now().date() + timedelta(days=2)),
-                                       "y": self.report_1.wikipedia_created + self.report_1.wikipedia_edited + self.report_2.wikipedia_created + self.report_2.wikipedia_edited,
-                                       "label": self.report_2.description},
-                                      {"x": str(datetime.now().date() + timedelta(days=2)),
-                                       "y": self.report_1.wikipedia_created + self.report_1.wikipedia_edited + self.report_2.wikipedia_created + self.report_2.wikipedia_edited + self.report_3.wikipedia_created + self.report_3.wikipedia_edited,
-                                       "label": self.report_3.description}])
-
-    def test_get_chart_data_without_data(self):
-        activities = Report.objects.all().order_by("end_date")
-        chart_data = get_chart_data(activities, "wikipedia_created", "wikipedia_edited")
-        self.assertEqual(chart_data, [])
-
-    def test_get_chart_data_many_to_many_with_data(self):
-        self.report_1.editors.add(self.editor_1)
-        self.report_1.editors.add(self.editor_2)
-        self.report_2.editors.add(self.editor_3)
-        self.report_1.save()
-        self.report_2.save()
-
-        activities = Report.objects.all().order_by("end_date")
-        chart_data = get_chart_data_many_to_many(activities, "editors")
-        self.assertEqual(chart_data, [{"x": str(datetime.now().date() + timedelta(days=1)),
-                                       "y": self.report_1.editors.count(),
-                                       "label": self.report_1.description},
-                                      {"x": str(datetime.now().date() + timedelta(days=2)),
-                                       "y": self.report_1.editors.count() + self.report_2.editors.count(),
-                                       "label": self.report_2.description}])
-
-    def test_get_chart_data_many_to_many_without_data(self):
-        activities = Report.objects.all().order_by("end_date")
-        chart_data = get_chart_data_many_to_many(activities, "editors")
-        self.assertEqual(chart_data, [])
 
 
 class TagsTests(TestCase):

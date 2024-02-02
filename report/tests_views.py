@@ -15,7 +15,7 @@ from metrics.models import Activity, Area
 from strategy.models import Direction
 from datetime import datetime
 from django.contrib.auth.models import Permission
-from .forms import NewReportForm, AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm, activities_associated_as_choices, learning_areas_as_choices
+from .forms import NewReportForm, AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm, OperationForm, activities_associated_as_choices, learning_areas_as_choices
 from .views import export_report_instance, export_metrics, export_user_profile, export_area_activated, export_directions_related, export_editors, export_learning_questions_related, export_organizers, export_partners_activated, export_technologies_used, get_or_create_editors, get_or_create_organizers
 
 
@@ -49,60 +49,11 @@ class ReportAddViewTest(TestCase):
         self.assertEqual(response.context["directions_related_set"], [])
         self.assertEqual(response.context["learning_questions_related_set"], [])
 
-    def test_add_report_view_post(self):
-        self.client.login(username=self.username, password=self.password)
-        url = reverse("report:add_report")
-
-        Project.objects.create(text="Wikimedia Community Fund")
-        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
-        direction = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
-        learning_area = LearningArea.objects.create(text="Learning area")
-        slq = StrategicLearningQuestion.objects.create(text="SLQ", learning_area=learning_area)
-        activity_associated = Activity.objects.create(text="Activity")
-        area_reponsible = TeamArea.objects.create(text="Area")
-        metric = Metric.objects.create(text="Metric", activity=activity_associated, number_of_editors=10)
-
-        data = {
-            "wikipedia_created": 0, "wikipedia_edited": 0,
-            "commons_created": 0, "commons_edited": 0,
-            "wikidata_created": 0, "wikidata_edited": 0,
-            "wikiversity_created": 0, "wikiversity_edited": 0,
-            "wikibooks_created": 0, "wikibooks_edited": 0,
-            "wikisource_created": 0, "wikisource_edited": 0,
-            "wikinews_created": 0, "wikinews_edited": 0,
-            "wikiquote_created": 0, "wikiquote_edited": 0,
-            "wiktionary_created": 0, "wiktionary_edited": 0,
-            "wikivoyage_created": 0, "wikivoyage_edited": 0,
-            "wikispecies_created": 0, "wikispecies_edited": 0,
-            "metawiki_created": 0, "metawiki_edited": 0,
-            "mediawiki_created": 0, "mediawiki_edited": 0,
-            "participants": 0, "resources": 0, "feedbacks": 0,
-            "number_of_people_reached_through_social_media": 0,
-            "description": "Report",
-            "initial_date": datetime.now().date().strftime("%Y-%m-%d"),
-            "directions_related": [direction.id],
-            "learning": "Learnings!"*51,
-            "learning_questions_related": [slq.id],
-            "activity_associated": activity_associated.id,
-            "area_responsible": area_reponsible.id,
-            "links": "Links",
-            "metrics_related": [metric.id]
-        }
-        form = NewReportForm(data, user=self.user)
-        self.assertTrue(form.is_valid())
-
-        response = self.client.post(url, data=data)
-        report = Report.objects.get(description=data["description"])
-        self.assertRedirects(response, reverse("report:detail_report", kwargs={"report_id": report.id}), target_status_code=302)
-
-        report = Report.objects.get(id=1)
-        self.assertEqual(report.description, "Report")
-
     def test_add_report_view_post_associates_metrics_based_on_values(self):
         self.client.login(username=self.username, password=self.password)
         url = reverse("report:add_report")
 
-        project = Project.objects.create(text="Wikimedia Community Fund")
+        project = Project.objects.create(text="Wikimedia Community Fund", main_funding=True)
         strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
         direction = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
         learning_area = LearningArea.objects.create(text="Learning area")
@@ -145,10 +96,92 @@ class ReportAddViewTest(TestCase):
             "links": "Links",
             "metrics_related": [metric.id]
         }
+        operation_data = {
+            "Operation-TOTAL_FORMS": 1,
+            "Operation-INITIAL_FORMS": 0,
+            "Operation-MIN_NUM_FORMS": 0,
+            "Operation-MAX_NUM_FORMS": 1000,
+            "Operation-0-metric": metric.id,
+            "Operation-0-number_of_people_reached_through_social_media": 1,
+            "Operation-0-number_of_new_followers": 2,
+            "Operation-0-number_of_mentions": 3,
+            "Operation-0-number_of_community_communications": 0,
+            "Operation-0-number_of_events": 4,
+            "Operation-0-number_of_resources": 5,
+            "Operation-0-number_of_partnerships_activated": 6,
+            "Operation-0-number_of_new_partnerships": 0
+        }
+        data.update(operation_data)
         self.client.post(url, data=data)
         report = Report.objects.get(id=1)
         self.assertIn(metric_2, report.metrics_related.all())
         self.assertIn(metric_3, report.metrics_related.all())
+
+    def test_add_report_view_post(self):
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("report:add_report")
+
+        Project.objects.create(text="Wikimedia Community Fund", main_funding=True)
+        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
+        direction = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
+        learning_area = LearningArea.objects.create(text="Learning area")
+        slq = StrategicLearningQuestion.objects.create(text="SLQ", learning_area=learning_area)
+        activity_associated = Activity.objects.create(text="Activity")
+        area_reponsible = TeamArea.objects.create(text="Area")
+        metric = Metric.objects.create(text="Metric", activity=activity_associated, number_of_editors=10, is_operation=True)
+
+        data = {
+            "wikipedia_created": 0, "wikipedia_edited": 0,
+            "commons_created": 0, "commons_edited": 0,
+            "wikidata_created": 0, "wikidata_edited": 0,
+            "wikiversity_created": 0, "wikiversity_edited": 0,
+            "wikibooks_created": 0, "wikibooks_edited": 0,
+            "wikisource_created": 0, "wikisource_edited": 0,
+            "wikinews_created": 0, "wikinews_edited": 0,
+            "wikiquote_created": 0, "wikiquote_edited": 0,
+            "wiktionary_created": 0, "wiktionary_edited": 0,
+            "wikivoyage_created": 0, "wikivoyage_edited": 0,
+            "wikispecies_created": 0, "wikispecies_edited": 0,
+            "metawiki_created": 0, "metawiki_edited": 0,
+            "mediawiki_created": 0, "mediawiki_edited": 0,
+            "participants": 0, "resources": 0, "feedbacks": 0,
+            "number_of_people_reached_through_social_media": 0,
+            "description": "Report",
+            "initial_date": datetime.now().date().strftime("%Y-%m-%d"),
+            "directions_related": [direction.id],
+            "learning": "Learnings!"*51,
+            "learning_questions_related": [slq.id],
+            "activity_associated": activity_associated.id,
+            "area_responsible": area_reponsible.id,
+            "links": "Links",
+            "metrics_related": [metric.id]
+        }
+        form = NewReportForm(data, user=self.user)
+        self.assertTrue(form.is_valid())
+
+        operation_data = {
+            "Operation-TOTAL_FORMS": 1,
+            "Operation-INITIAL_FORMS": 0,
+            "Operation-MIN_NUM_FORMS": 0,
+            "Operation-MAX_NUM_FORMS": 1000,
+            "Operation-0-metric":metric.id,
+            "Operation-0-number_of_people_reached_through_social_media": 1,
+            "Operation-0-number_of_new_followers": 2,
+            "Operation-0-number_of_mentions": 3,
+            "Operation-0-number_of_community_communications": 0,
+            "Operation-0-number_of_events": 4,
+            "Operation-0-number_of_resources": 5,
+            "Operation-0-number_of_partnerships_activated": 6,
+            "Operation-0-number_of_new_partnerships": 0
+        }
+
+        data.update(operation_data)
+        response = self.client.post(url, data=data)
+        report = Report.objects.get(description=data["description"])
+        self.assertRedirects(response, reverse("report:detail_report", kwargs={"report_id": report.id}), target_status_code=302)
+
+        report = Report.objects.get(id=1)
+        self.assertEqual(report.description, "Report")
 
     def test_add_report_view_post_fails_with_invalid_parameters(self):
         self.client.login(username=self.username, password=self.password)
@@ -570,7 +603,7 @@ class ReportViewViewTest(TestCase):
         self.assertTemplateUsed(response, 'report/update_report.html')
 
     def test_update_report_post_with_valid_parameters(self):
-        Project.objects.create(text="Wikimedia Community Fund")
+        Project.objects.create(text="Wikimedia Community Fund", main_funding=True)
         self.client.login(username=self.username, password=self.password)
         url = reverse("report:update_report", kwargs={"report_id": self.report_1.id})
         data = {
@@ -590,6 +623,22 @@ class ReportViewViewTest(TestCase):
             "learning_questions_related": [self.learning_questions_related.id],
             "metrics_related": [self.metrics_related.id]
         }
+        operation_data = {
+            "Operation-TOTAL_FORMS": 1,
+            "Operation-INITIAL_FORMS": 0,
+            "Operation-MIN_NUM_FORMS": 0,
+            "Operation-MAX_NUM_FORMS": 1000,
+            "Operation-0-metric": self.metrics_related.id,
+            "Operation-0-number_of_people_reached_through_social_media": 1,
+            "Operation-0-number_of_new_followers": 2,
+            "Operation-0-number_of_mentions": 3,
+            "Operation-0-number_of_community_communications": 0,
+            "Operation-0-number_of_events": 4,
+            "Operation-0-number_of_resources": 5,
+            "Operation-0-number_of_partnerships_activated": 6,
+            "Operation-0-number_of_new_partnerships": 0
+        }
+        data.update(operation_data)
 
         response = self.client.post(url, data=data)
         self.report_1.refresh_from_db()
@@ -725,18 +774,17 @@ class ReportExportViewTest(TestCase):
                            _('Activity associated'), _('Name of the activity'), _('Area responsible'),
                            _('Area activated'), _('Initial date'), _('End date'), _('Description'),
                            _('Funding associated'), _('Links'), _('Public communication'), _('Number of participants'),
-                           _('Number of resources'), _('Number of feedbacks'), _('Editors'), _('Organizers'),
-                           _('Partnerships activated'), _('Technologies used'), _('# Wikipedia created'),
-                           _('# Wikipedia edited'), _('# Commons created'), _('# Commons edited'),
-                           _('# Wikidata created'), _('# Wikidata edited'), _('# Wikiversity created'),
-                           _('# Wikiversity edited'), _('# Wikibooks created'), _('# Wikibooks edited'),
-                           _('# Wikisource created'), _('# Wikisource edited'), _('# Wikinews created'),
-                           _('# Wikinews edited'), _('# Wikiquote created'), _('# Wikiquote edited'),
-                           _('# Wiktionary created'), _('# Wiktionary edited'), _('# Wikivoyage created'),
-                           _('# Wikivoyage edited'), _('# Wikispecies created'), _('# Wikispecies edited'),
-                           _('# Metawiki created'), _('# Metawiki edited'), _('# MediaWiki created'),
-                           _('# MediaWiki edited'), _('Directions related'), _('Learning'),
-                           _('Learning questions related')]
+                           _('Number of feedbacks'), _('Editors'), _('Organizers'), _('Partnerships activated'),
+                           _('Technologies used'), _('# Wikipedia created'), _('# Wikipedia edited'),
+                           _('# Commons created'), _('# Commons edited'), _('# Wikidata created'),
+                           _('# Wikidata edited'), _('# Wikiversity created'), _('# Wikiversity edited'),
+                           _('# Wikibooks created'), _('# Wikibooks edited'), _('# Wikisource created'),
+                           _('# Wikisource edited'), _('# Wikinews created'), _('# Wikinews edited'),
+                           _('# Wikiquote created'), _('# Wikiquote edited'), _('# Wiktionary created'),
+                           _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'),
+                           _('# Wikispecies created'), _('# Wikispecies edited'), _('# Metawiki created'),
+                           _('# Metawiki edited'), _('# MediaWiki created'), _('# MediaWiki edited'),
+                           _('Directions related'), _('Learning'), _('Learning questions related')]
 
         self.report_1.area_activated.add(self.area_activated)
         self.report_1.funding_associated.add(self.funding_associated)
@@ -764,7 +812,6 @@ class ReportExportViewTest(TestCase):
                         self.report_1.links,
                         self.report_1.public_communication,
                         self.report_1.participants,
-                        self.report_1.resources,
                         self.report_1.feedbacks,
                         "; ".join(map(str, self.report_1.editors.values_list("id", flat=True))),
                         "; ".join(map(str, self.report_1.organizers.values_list("id", flat=True))),
@@ -809,18 +856,17 @@ class ReportExportViewTest(TestCase):
                            _('Activity associated'), _('Name of the activity'), _('Area responsible'),
                            _('Area activated'), _('Initial date'), _('End date'), _('Description'),
                            _('Funding associated'), _('Links'), _('Public communication'), _('Number of participants'),
-                           _('Number of resources'), _('Number of feedbacks'), _('Editors'), _('Organizers'),
-                           _('Partnerships activated'), _('Technologies used'), _('# Wikipedia created'),
-                           _('# Wikipedia edited'), _('# Commons created'), _('# Commons edited'),
-                           _('# Wikidata created'), _('# Wikidata edited'), _('# Wikiversity created'),
-                           _('# Wikiversity edited'), _('# Wikibooks created'), _('# Wikibooks edited'),
-                           _('# Wikisource created'), _('# Wikisource edited'), _('# Wikinews created'),
-                           _('# Wikinews edited'), _('# Wikiquote created'), _('# Wikiquote edited'),
-                           _('# Wiktionary created'), _('# Wiktionary edited'), _('# Wikivoyage created'),
-                           _('# Wikivoyage edited'), _('# Wikispecies created'), _('# Wikispecies edited'),
-                           _('# Metawiki created'), _('# Metawiki edited'), _('# MediaWiki created'),
-                           _('# MediaWiki edited'), _('Directions related'), _('Learning'),
-                           _('Learning questions related')]
+                           _('Number of feedbacks'), _('Editors'), _('Organizers'), _('Partnerships activated'),
+                           _('Technologies used'), _('# Wikipedia created'), _('# Wikipedia edited'),
+                           _('# Commons created'), _('# Commons edited'), _('# Wikidata created'),
+                           _('# Wikidata edited'), _('# Wikiversity created'), _('# Wikiversity edited'),
+                           _('# Wikibooks created'), _('# Wikibooks edited'), _('# Wikisource created'),
+                           _('# Wikisource edited'), _('# Wikinews created'), _('# Wikinews edited'),
+                           _('# Wikiquote created'), _('# Wikiquote edited'), _('# Wiktionary created'),
+                           _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'),
+                           _('# Wikispecies created'), _('# Wikispecies edited'), _('# Metawiki created'),
+                           _('# Metawiki edited'), _('# MediaWiki created'), _('# MediaWiki edited'),
+                           _('Directions related'), _('Learning'), _('Learning questions related')]
 
         area_activated = [""]
         funding_associated = [""]
@@ -848,7 +894,7 @@ class ReportExportViewTest(TestCase):
         if self.report_1.learning_questions_related:
             learning_questions_related = self.report_1.learning_questions_related.values_list("id", flat=True)
 
-        expected_row_1 = [self.report_1.id, self.report_1.created_by.id, pd.to_datetime(self.report_1.created_at).tz_localize(None), self.report_1.modified_by.id, pd.to_datetime(self.report_1.modified_at).tz_localize(None), self.report_1.activity_associated.id, self.report_1.activity_other, self.report_1.area_responsible.id, "; ".join(map(str, area_activated)), self.report_1.initial_date, self.report_1.end_date, self.report_1.description, "; ".join(map(str, funding_associated)), self.report_1.links, self.report_1.public_communication, self.report_1.participants, self.report_1.resources, self.report_1.feedbacks, "; ".join(editors), "; ".join(organizers), "; ".join(partners_activated), "; ".join(technologies_used), self.report_1.wikipedia_created, self.report_1.wikipedia_edited, self.report_1.commons_created, self.report_1.commons_edited, self.report_1.wikidata_created, self.report_1.wikidata_edited, self.report_1.wikiversity_created, self.report_1.wikiversity_edited, self.report_1.wikibooks_created, self.report_1.wikibooks_edited, self.report_1.wikisource_created, self.report_1.wikisource_edited, self.report_1.wikinews_created, self.report_1.wikinews_edited, self.report_1.wikiquote_created, self.report_1.wikiquote_edited, self.report_1.wiktionary_created, self.report_1.wiktionary_edited, self.report_1.wikivoyage_created, self.report_1.wikivoyage_edited, self.report_1.wikispecies_created, self.report_1.wikispecies_edited, self.report_1.metawiki_created, self.report_1.metawiki_edited, self.report_1.mediawiki_created, self.report_1.mediawiki_edited, "; ".join(map(str, directions_related)), self.report_1.learning, "; ".join(map(str, learning_questions_related))]
+        expected_row_1 = [self.report_1.id, self.report_1.created_by.id, pd.to_datetime(self.report_1.created_at).tz_localize(None), self.report_1.modified_by.id, pd.to_datetime(self.report_1.modified_at).tz_localize(None), self.report_1.activity_associated.id, self.report_1.activity_other, self.report_1.area_responsible.id, "; ".join(map(str, area_activated)), self.report_1.initial_date, self.report_1.end_date, self.report_1.description, "; ".join(map(str, funding_associated)), self.report_1.links, self.report_1.public_communication, self.report_1.participants, self.report_1.feedbacks, "; ".join(editors), "; ".join(organizers), "; ".join(partners_activated), "; ".join(technologies_used), self.report_1.wikipedia_created, self.report_1.wikipedia_edited, self.report_1.commons_created, self.report_1.commons_edited, self.report_1.wikidata_created, self.report_1.wikidata_edited, self.report_1.wikiversity_created, self.report_1.wikiversity_edited, self.report_1.wikibooks_created, self.report_1.wikibooks_edited, self.report_1.wikisource_created, self.report_1.wikisource_edited, self.report_1.wikinews_created, self.report_1.wikinews_edited, self.report_1.wikiquote_created, self.report_1.wikiquote_edited, self.report_1.wiktionary_created, self.report_1.wiktionary_edited, self.report_1.wikivoyage_created, self.report_1.wikivoyage_edited, self.report_1.wikispecies_created, self.report_1.wikispecies_edited, self.report_1.metawiki_created, self.report_1.metawiki_edited, self.report_1.mediawiki_created, self.report_1.mediawiki_edited, "; ".join(map(str, directions_related)), self.report_1.learning, "; ".join(map(str, learning_questions_related))]
 
         if self.report_2.area_activated:
             area_activated = self.report_2.area_activated.values_list("id", flat=True)
@@ -867,7 +913,7 @@ class ReportExportViewTest(TestCase):
         if self.report_2.learning_questions_related:
             learning_questions_related = self.report_2.learning_questions_related.values_list("id", flat=True)
 
-        expected_row_2 = [self.report_2.id, self.report_2.created_by.id, pd.to_datetime(self.report_2.created_at).tz_localize(None), self.report_2.modified_by.id, pd.to_datetime(self.report_2.modified_at).tz_localize(None), self.report_2.activity_associated.id, self.report_2.activity_other, self.report_2.area_responsible.id, "; ".join(map(str, area_activated)), self.report_2.initial_date, self.report_2.end_date, self.report_2.description, "; ".join(map(str, funding_associated)), self.report_2.links, self.report_2.public_communication, self.report_2.participants, self.report_2.resources, self.report_2.feedbacks, "; ".join(editors), "; ".join(organizers), "; ".join(partners_activated), "; ".join(technologies_used), self.report_2.wikipedia_created, self.report_2.wikipedia_edited, self.report_2.commons_created, self.report_2.commons_edited, self.report_2.wikidata_created, self.report_2.wikidata_edited, self.report_2.wikiversity_created, self.report_2.wikiversity_edited, self.report_2.wikibooks_created, self.report_2.wikibooks_edited, self.report_2.wikisource_created, self.report_2.wikisource_edited, self.report_2.wikinews_created, self.report_2.wikinews_edited, self.report_2.wikiquote_created, self.report_2.wikiquote_edited, self.report_2.wiktionary_created, self.report_2.wiktionary_edited, self.report_2.wikivoyage_created, self.report_2.wikivoyage_edited, self.report_2.wikispecies_created, self.report_2.wikispecies_edited, self.report_2.metawiki_created, self.report_2.metawiki_edited, self.report_2.mediawiki_created, self.report_2.mediawiki_edited, "; ".join(map(str, directions_related)), self.report_2.learning, "; ".join(map(str, learning_questions_related))]
+        expected_row_2 = [self.report_2.id, self.report_2.created_by.id, pd.to_datetime(self.report_2.created_at).tz_localize(None), self.report_2.modified_by.id, pd.to_datetime(self.report_2.modified_at).tz_localize(None), self.report_2.activity_associated.id, self.report_2.activity_other, self.report_2.area_responsible.id, "; ".join(map(str, area_activated)), self.report_2.initial_date, self.report_2.end_date, self.report_2.description, "; ".join(map(str, funding_associated)), self.report_2.links, self.report_2.public_communication, self.report_2.participants, self.report_2.feedbacks, "; ".join(editors), "; ".join(organizers), "; ".join(partners_activated), "; ".join(technologies_used), self.report_2.wikipedia_created, self.report_2.wikipedia_edited, self.report_2.commons_created, self.report_2.commons_edited, self.report_2.wikidata_created, self.report_2.wikidata_edited, self.report_2.wikiversity_created, self.report_2.wikiversity_edited, self.report_2.wikibooks_created, self.report_2.wikibooks_edited, self.report_2.wikisource_created, self.report_2.wikisource_edited, self.report_2.wikinews_created, self.report_2.wikinews_edited, self.report_2.wikiquote_created, self.report_2.wikiquote_edited, self.report_2.wiktionary_created, self.report_2.wiktionary_edited, self.report_2.wikivoyage_created, self.report_2.wikivoyage_edited, self.report_2.wikispecies_created, self.report_2.wikispecies_edited, self.report_2.metawiki_created, self.report_2.metawiki_edited, self.report_2.mediawiki_created, self.report_2.mediawiki_edited, "; ".join(map(str, directions_related)), self.report_2.learning, "; ".join(map(str, learning_questions_related))]
 
         expected_rows = [expected_row_1, expected_row_2]
         expected_df = pd.DataFrame(expected_rows, columns=expected_header)
@@ -879,18 +925,17 @@ class ReportExportViewTest(TestCase):
                            _('Activity associated'), _('Name of the activity'), _('Area responsible'),
                            _('Area activated'), _('Initial date'), _('End date'), _('Description'),
                            _('Funding associated'), _('Links'), _('Public communication'), _('Number of participants'),
-                           _('Number of resources'), _('Number of feedbacks'), _('Editors'), _('Organizers'),
-                           _('Partnerships activated'), _('Technologies used'), _('# Wikipedia created'),
-                           _('# Wikipedia edited'), _('# Commons created'), _('# Commons edited'),
-                           _('# Wikidata created'), _('# Wikidata edited'), _('# Wikiversity created'),
-                           _('# Wikiversity edited'), _('# Wikibooks created'), _('# Wikibooks edited'),
-                           _('# Wikisource created'), _('# Wikisource edited'), _('# Wikinews created'),
-                           _('# Wikinews edited'), _('# Wikiquote created'), _('# Wikiquote edited'),
-                           _('# Wiktionary created'), _('# Wiktionary edited'), _('# Wikivoyage created'),
-                           _('# Wikivoyage edited'), _('# Wikispecies created'), _('# Wikispecies edited'),
-                           _('# Metawiki created'), _('# Metawiki edited'), _('# MediaWiki created'),
-                           _('# MediaWiki edited'), _('Directions related'), _('Learning'),
-                           _('Learning questions related')]
+                           _('Number of feedbacks'), _('Editors'), _('Organizers'), _('Partnerships activated'),
+                           _('Technologies used'), _('# Wikipedia created'), _('# Wikipedia edited'),
+                           _('# Commons created'), _('# Commons edited'), _('# Wikidata created'),
+                           _('# Wikidata edited'), _('# Wikiversity created'), _('# Wikiversity edited'),
+                           _('# Wikibooks created'), _('# Wikibooks edited'), _('# Wikisource created'),
+                           _('# Wikisource edited'), _('# Wikinews created'), _('# Wikinews edited'),
+                           _('# Wikiquote created'), _('# Wikiquote edited'), _('# Wiktionary created'),
+                           _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'),
+                           _('# Wikispecies created'), _('# Wikispecies edited'), _('# Metawiki created'),
+                           _('# Metawiki edited'), _('# MediaWiki created'), _('# MediaWiki edited'),
+                           _('Directions related'), _('Learning'), _('Learning questions related')]
 
         expected_row = [self.report_1.id,
                         self.report_1.created_by.id,
@@ -908,7 +953,6 @@ class ReportExportViewTest(TestCase):
                         self.report_1.links,
                         self.report_1.public_communication,
                         self.report_1.participants,
-                        self.report_1.resources,
                         self.report_1.feedbacks,
                         "",
                         "",
@@ -951,16 +995,16 @@ class ReportExportViewTest(TestCase):
     def test_export_metrics(self):
         expected_header = [_('ID'), _('Metric'), _('Activity ID'), _('Activity'), _('Activity code'),
                            _('Number of editors'), _('Number of participants'), _('Number of partnerships activated'),
-                           _('Number of resources'), _('Number of feedbacks'), _('Number of events'),
-                           _('Other type? Which?'), _('Observation'), _('# Wikipedia created'), _('# Wikipedia edited'),
-                           _('# Commons created'), _('# Commons edited'), _('# Wikidata created'),
-                           _('# Wikidata edited'), _('# Wikiversity created'), _('# Wikiversity edited'),
-                           _('# Wikibooks created'), _('# Wikibooks edited'), _('# Wikisource created'),
-                           _('# Wikisource edited'), _('# Wikinews created'), _('# Wikinews edited'),
-                           _('# Wikiquote created'), _('# Wikiquote edited'), _('# Wiktionary created'),
-                           _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'),
-                           _('# Wikispecies created'), _('# Wikispecies edited'), _('# Metawiki created'),
-                           _('# Metawiki edited'), _('# MediaWiki created'), _('# MediaWiki edited')]
+                           _('Number of feedbacks'), _('Number of events'), _('Other type? Which?'), _('Observation'),
+                           _('# Wikipedia created'), _('# Wikipedia edited'), _('# Commons created'),
+                           _('# Commons edited'), _('# Wikidata created'), _('# Wikidata edited'),
+                           _('# Wikiversity created'), _('# Wikiversity edited'), _('# Wikibooks created'),
+                           _('# Wikibooks edited'), _('# Wikisource created'), _('# Wikisource edited'),
+                           _('# Wikinews created'), _('# Wikinews edited'), _('# Wikiquote created'),
+                           _('# Wikiquote edited'), _('# Wiktionary created'), _('# Wiktionary edited'),
+                           _('# Wikivoyage created'), _('# Wikivoyage edited'), _('# Wikispecies created'),
+                           _('# Wikispecies edited'), _('# Metawiki created'), _('# Metawiki edited'),
+                           _('# MediaWiki created'), _('# MediaWiki edited')]
 
         metric = Metric.objects.create(text="Metric", activity=self.activity_associated)
         expected_row = [metric.id,
@@ -971,7 +1015,6 @@ class ReportExportViewTest(TestCase):
                         metric.number_of_editors,
                         metric.number_of_participants,
                         metric.number_of_partnerships_activated,
-                        metric.number_of_resources,
                         metric.number_of_feedbacks,
                         metric.number_of_events,
                         metric.other_type,
@@ -1010,21 +1053,21 @@ class ReportExportViewTest(TestCase):
     def test_export_metrics_without_report_id_returns_metrics_from_all_reports(self):
         expected_header = [_('ID'), _('Metric'), _('Activity ID'), _('Activity'), _('Activity code'),
                            _('Number of editors'), _('Number of participants'), _('Number of partnerships activated'),
-                           _('Number of resources'), _('Number of feedbacks'), _('Number of events'),
-                           _('Other type? Which?'), _('Observation'), _('# Wikipedia created'), _('# Wikipedia edited'),
-                           _('# Commons created'), _('# Commons edited'), _('# Wikidata created'),
-                           _('# Wikidata edited'), _('# Wikiversity created'), _('# Wikiversity edited'),
-                           _('# Wikibooks created'), _('# Wikibooks edited'), _('# Wikisource created'),
-                           _('# Wikisource edited'), _('# Wikinews created'), _('# Wikinews edited'),
-                           _('# Wikiquote created'), _('# Wikiquote edited'), _('# Wiktionary created'),
-                           _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'),
-                           _('# Wikispecies created'), _('# Wikispecies edited'), _('# Metawiki created'),
-                           _('# Metawiki edited'), _('# MediaWiki created'), _('# MediaWiki edited')]
+                           _('Number of feedbacks'), _('Number of events'), _('Other type? Which?'), _('Observation'),
+                           _('# Wikipedia created'), _('# Wikipedia edited'), _('# Commons created'),
+                           _('# Commons edited'), _('# Wikidata created'), _('# Wikidata edited'),
+                           _('# Wikiversity created'), _('# Wikiversity edited'), _('# Wikibooks created'),
+                           _('# Wikibooks edited'), _('# Wikisource created'), _('# Wikisource edited'),
+                           _('# Wikinews created'), _('# Wikinews edited'), _('# Wikiquote created'),
+                           _('# Wikiquote edited'), _('# Wiktionary created'), _('# Wiktionary edited'),
+                           _('# Wikivoyage created'), _('# Wikivoyage edited'), _('# Wikispecies created'),
+                           _('# Wikispecies edited'), _('# Metawiki created'), _('# Metawiki edited'),
+                           _('# MediaWiki created'), _('# MediaWiki edited')]
 
         metric_1 = Metric.objects.create(text="Metric 1", activity=self.activity_associated)
         metric_2 = Metric.objects.create(text="Metric 2", activity=self.activity_associated)
-        expected_row_1 = [metric_1.id, metric_1.text, metric_1.activity_id, metric_1.activity.text, metric_1.activity.code, metric_1.number_of_editors, metric_1.number_of_participants, metric_1.number_of_partnerships_activated, metric_1.number_of_resources, metric_1.number_of_feedbacks, metric_1.number_of_events, metric_1.other_type, metric_1.observation, metric_1.wikipedia_created, metric_1.wikipedia_edited, metric_1.commons_created, metric_1.commons_edited, metric_1.wikidata_created, metric_1.wikidata_edited, metric_1.wikiversity_created, metric_1.wikiversity_edited, metric_1.wikibooks_created, metric_1.wikibooks_edited, metric_1.wikisource_created, metric_1.wikisource_edited, metric_1.wikinews_created, metric_1.wikinews_edited, metric_1.wikiquote_created, metric_1.wikiquote_edited, metric_1.wiktionary_created, metric_1.wiktionary_edited, metric_1.wikivoyage_created, metric_1.wikivoyage_edited, metric_1.wikispecies_created, metric_1.wikispecies_edited, metric_1.metawiki_created, metric_1.metawiki_edited, metric_1.mediawiki_created, metric_1.mediawiki_edited]
-        expected_row_2 = [metric_2.id, metric_2.text, metric_2.activity_id, metric_2.activity.text, metric_2.activity.code, metric_2.number_of_editors, metric_2.number_of_participants, metric_2.number_of_partnerships_activated, metric_2.number_of_resources, metric_2.number_of_feedbacks, metric_2.number_of_events, metric_2.other_type, metric_2.observation, metric_2.wikipedia_created, metric_2.wikipedia_edited, metric_2.commons_created, metric_2.commons_edited, metric_2.wikidata_created, metric_2.wikidata_edited, metric_2.wikiversity_created, metric_2.wikiversity_edited, metric_2.wikibooks_created, metric_2.wikibooks_edited, metric_2.wikisource_created, metric_2.wikisource_edited, metric_2.wikinews_created, metric_2.wikinews_edited, metric_2.wikiquote_created, metric_2.wikiquote_edited, metric_2.wiktionary_created, metric_2.wiktionary_edited, metric_2.wikivoyage_created, metric_2.wikivoyage_edited, metric_2.wikispecies_created, metric_2.wikispecies_edited, metric_2.metawiki_created, metric_2.metawiki_edited, metric_2.mediawiki_created, metric_2.mediawiki_edited]
+        expected_row_1 = [metric_1.id, metric_1.text, metric_1.activity_id, metric_1.activity.text, metric_1.activity.code, metric_1.number_of_editors, metric_1.number_of_participants, metric_1.number_of_partnerships_activated, metric_1.number_of_feedbacks, metric_1.number_of_events, metric_1.other_type, metric_1.observation, metric_1.wikipedia_created, metric_1.wikipedia_edited, metric_1.commons_created, metric_1.commons_edited, metric_1.wikidata_created, metric_1.wikidata_edited, metric_1.wikiversity_created, metric_1.wikiversity_edited, metric_1.wikibooks_created, metric_1.wikibooks_edited, metric_1.wikisource_created, metric_1.wikisource_edited, metric_1.wikinews_created, metric_1.wikinews_edited, metric_1.wikiquote_created, metric_1.wikiquote_edited, metric_1.wiktionary_created, metric_1.wiktionary_edited, metric_1.wikivoyage_created, metric_1.wikivoyage_edited, metric_1.wikispecies_created, metric_1.wikispecies_edited, metric_1.metawiki_created, metric_1.metawiki_edited, metric_1.mediawiki_created, metric_1.mediawiki_edited]
+        expected_row_2 = [metric_2.id, metric_2.text, metric_2.activity_id, metric_2.activity.text, metric_2.activity.code, metric_2.number_of_editors, metric_2.number_of_participants, metric_2.number_of_partnerships_activated, metric_2.number_of_feedbacks, metric_2.number_of_events, metric_2.other_type, metric_2.observation, metric_2.wikipedia_created, metric_2.wikipedia_edited, metric_2.commons_created, metric_2.commons_edited, metric_2.wikidata_created, metric_2.wikidata_edited, metric_2.wikiversity_created, metric_2.wikiversity_edited, metric_2.wikibooks_created, metric_2.wikibooks_edited, metric_2.wikisource_created, metric_2.wikisource_edited, metric_2.wikinews_created, metric_2.wikinews_edited, metric_2.wikiquote_created, metric_2.wikiquote_edited, metric_2.wiktionary_created, metric_2.wiktionary_edited, metric_2.wikivoyage_created, metric_2.wikivoyage_edited, metric_2.wikispecies_created, metric_2.wikispecies_edited, metric_2.metawiki_created, metric_2.metawiki_edited, metric_2.mediawiki_created, metric_2.mediawiki_edited]
 
         expected_rows = [expected_row_1, expected_row_2]
         expected_df = pd.DataFrame(expected_rows, columns=expected_header)

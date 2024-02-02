@@ -214,13 +214,13 @@ def export_report_instance(report_id=None):
     header = [_('ID'), _('Created by'), _('Created at'), _('Modified by'), _('Modified at'), _('Activity associated'),
               _('Name of the activity'), _('Area responsible'), _('Area activated'), _('Initial date'), _('End date'),
               _('Description'), _('Funding associated'), _('Links'), _('Public communication'),
-              _('Number of participants'), _('Number of resources'), _('Number of feedbacks'), _('Editors'),
-              _('Organizers'), _('Partnerships activated'), _('Technologies used'), _('# Wikipedia created'),
-              _('# Wikipedia edited'), _('# Commons created'), _('# Commons edited'), _('# Wikidata created'),
-              _('# Wikidata edited'), _('# Wikiversity created'), _('# Wikiversity edited'), _('# Wikibooks created'),
-              _('# Wikibooks edited'), _('# Wikisource created'), _('# Wikisource edited'), _('# Wikinews created'),
-              _('# Wikinews edited'), _('# Wikiquote created'), _('# Wikiquote edited'), _('# Wiktionary created'),
-              _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'), _('# Wikispecies created'),
+              _('Number of participants'), _('Number of feedbacks'), _('Editors'), _('Organizers'),
+              _('Partnerships activated'), _('Technologies used'), _('# Wikipedia created'), _('# Wikipedia edited'),
+              _('# Commons created'), _('# Commons edited'), _('# Wikidata created'), _('# Wikidata edited'),
+              _('# Wikiversity created'), _('# Wikiversity edited'), _('# Wikibooks created'), _('# Wikibooks edited'),
+              _('# Wikisource created'), _('# Wikisource edited'), _('# Wikinews created'), _('# Wikinews edited'),
+              _('# Wikiquote created'), _('# Wikiquote edited'), _('# Wiktionary created'), _('# Wiktionary edited'),
+              _('# Wikivoyage created'), _('# Wikivoyage edited'), _('# Wikispecies created'),
               _('# Wikispecies edited'), _('# Metawiki created'), _('# Metawiki edited'), _('# MediaWiki created'),
               _('# MediaWiki edited'), _('Directions related'), _('Learning'), _('Learning questions related')]
 
@@ -258,7 +258,7 @@ def export_report_instance(report_id=None):
 
         # Quantitative
         participants = report.participants
-        resources = report.resources
+        # resources = report.resources
         feedbacks = report.feedbacks
         if report.editors.exists():
             editors = "; ".join(map(str, report.editors.values_list("id", flat=True)))
@@ -320,14 +320,13 @@ def export_report_instance(report_id=None):
 
         rows.append([id_, created_by, created_at, modified_by, modified_at, activity_associated, activity_other,
                      area_responsible, area_activated, initial_date, end_date, description, funding_associated, links,
-                     public_communication, participants, resources, feedbacks, editors,
-                     organizers, partners_activated, technologies_used, wikipedia_created, wikipedia_edited,
-                     commons_created, commons_edited, wikidata_created, wikidata_edited, wikiversity_created,
-                     wikiversity_edited, wikibooks_created, wikibooks_edited, wikisource_created, wikisource_edited,
-                     wikinews_created, wikinews_edited, wikiquote_created, wikiquote_edited, wiktionary_created,
-                     wiktionary_edited, wikivoyage_created, wikivoyage_edited, wikispecies_created, wikispecies_edited,
-                     metawiki_created, metawiki_edited, mediawiki_created, mediawiki_edited, directions_related,
-                     learning, learning_questions_related])
+                     public_communication, participants, feedbacks, editors, organizers, partners_activated,
+                     technologies_used, wikipedia_created, wikipedia_edited, commons_created, commons_edited,
+                     wikidata_created, wikidata_edited, wikiversity_created, wikiversity_edited, wikibooks_created,
+                     wikibooks_edited, wikisource_created, wikisource_edited, wikinews_created, wikinews_edited,
+                     wikiquote_created, wikiquote_edited, wiktionary_created, wiktionary_edited, wikivoyage_created,
+                     wikivoyage_edited, wikispecies_created, wikispecies_edited, metawiki_created, metawiki_edited,
+                     mediawiki_created, mediawiki_edited, directions_related, learning, learning_questions_related])
 
     df = pd.DataFrame(rows, columns=header).drop_duplicates()
 
@@ -338,15 +337,15 @@ def export_report_instance(report_id=None):
 
 def export_metrics(report_id=None):
     header = [_('ID'), _('Metric'), _('Activity ID'), _('Activity'), _('Activity code'), _('Number of editors'),
-              _('Number of participants'), _('Number of partnerships activated'), _('Number of resources'),
-              _('Number of feedbacks'), _('Number of events'), _('Other type? Which?'), _('Observation'),
-              _('# Wikipedia created'), _('# Wikipedia edited'), _('# Commons created'), _('# Commons edited'),
-              _('# Wikidata created'), _('# Wikidata edited'), _('# Wikiversity created'), _('# Wikiversity edited'),
-              _('# Wikibooks created'), _('# Wikibooks edited'), _('# Wikisource created'), _('# Wikisource edited'),
-              _('# Wikinews created'), _('# Wikinews edited'), _('# Wikiquote created'), _('# Wikiquote edited'),
-              _('# Wiktionary created'), _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'),
-              _('# Wikispecies created'), _('# Wikispecies edited'), _('# Metawiki created'), _('# Metawiki edited'),
-              _('# MediaWiki created'), _('# MediaWiki edited')]
+              _('Number of participants'), _('Number of partnerships activated'), _('Number of feedbacks'),
+              _('Number of events'), _('Other type? Which?'), _('Observation'), _('# Wikipedia created'),
+              _('# Wikipedia edited'), _('# Commons created'), _('# Commons edited'), _('# Wikidata created'),
+              _('# Wikidata edited'), _('# Wikiversity created'), _('# Wikiversity edited'), _('# Wikibooks created'),
+              _('# Wikibooks edited'), _('# Wikisource created'), _('# Wikisource edited'), _('# Wikinews created'),
+              _('# Wikinews edited'), _('# Wikiquote created'), _('# Wikiquote edited'), _('# Wiktionary created'),
+              _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'), _('# Wikispecies created'),
+              _('# Wikispecies edited'), _('# Metawiki created'), _('# Metawiki edited'), _('# MediaWiki created'),
+              _('# MediaWiki edited')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
@@ -359,7 +358,7 @@ def export_metrics(report_id=None):
             for instance in report.activity_associated.metrics.all():
                 rows.append([instance.id, instance.text, instance.activity_id, instance.activity.text,
                              instance.activity.code, instance.number_of_editors, instance.number_of_participants,
-                             instance.number_of_partnerships_activated, instance.number_of_resources, instance.number_of_feedbacks,
+                             instance.number_of_partnerships_activated, instance.number_of_feedbacks,
                              instance.number_of_events, instance.other_type, instance.observation,
                              instance.wikipedia_created, instance.wikipedia_edited, instance.commons_created,
                              instance.commons_edited, instance.wikidata_created, instance.wikidata_edited,

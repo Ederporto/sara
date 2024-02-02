@@ -169,7 +169,6 @@ class ReportModelTest(TestCase):
             description="Report",
             links="https://testlink.com",
             participants=10,
-            resources=5,
             feedbacks=3,
             learning="Learning"*60,
         )
@@ -185,7 +184,6 @@ class ReportModelTest(TestCase):
             description="Report",
             links="https://testlink.com",
             participants=10,
-            resources=5,
             feedbacks=3,
             learning="Learning",
         )
@@ -202,7 +200,6 @@ class ReportModelTest(TestCase):
             description="Report",
             links="https://testlink.com",
             participants=10,
-            resources=5,
             feedbacks=3,
             learning="Learning",
         )
