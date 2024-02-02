@@ -30,6 +30,7 @@ jobs:
         echo "SECRET_KEY = 'SECRET_KEY'" > sara/settings_local.py
         echo "DEBUG = True" >> sara/settings_local.py
         echo "ALLOWED_HOSTS = ['localhost', '127.0.0.1']" >> sara/settings_local.py
+        echo "DATABASES = { 'default': { 'ENGINE': 'django.db.backends.sqlite3', 'NAME': 'db.sqlite3' } }" >>sara/settings_local.py
     - name: Coverage report
       run: |
         pip install coverage
