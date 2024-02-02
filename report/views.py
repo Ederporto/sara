@@ -171,7 +171,7 @@ def add_excel_file(report_id=None):
 @login_required
 @permission_required("report.view_report")
 def export_report(request, report_id=None):
-    if report_id or Report.objects.count():
+    if Report.objects.count():
         buffer = BytesIO()
         zip_file = zipfile.ZipFile(buffer, mode="w")
         sub_directory = "csv/"

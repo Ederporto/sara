@@ -1329,6 +1329,17 @@ class ReportExportViewTest(TestCase):
         self.assertTrue(result[result.isin(expected_df)].equals(expected_df))
 
 
+    def test_export_with_no_reports_redirects_to_list_of_reports(self):
+        self.client.login(username=self.username, password=self.password)
+        self.report_1.delete()
+        self.report_2.delete()
+
+        url = reverse("report:export_report", kwargs={"report_id": 1})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response,f"{reverse('report:list_reports')}")
+
+
 class OtherViewsTest(TestCase):
     def setUp(self):
         self.username = "testuser"

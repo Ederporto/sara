@@ -5,7 +5,7 @@ from .models import Objective, Area, Metric, Activity, Project
 from report.models import Report, Editor
 from users.models import User, UserProfile, TeamArea
 from strategy.models import StrategicAxis
-from .views import get_metrics_and_aggregate_per_project, get_aggregated_metrics_data, get_aggregated_metrics_data_done
+from .views import get_metrics_and_aggregate_per_project
 from django.urls import reverse
 from django.contrib.auth.models import Permission
 from datetime import datetime, timedelta
@@ -303,46 +303,6 @@ class MetricFunctionsTests(TestCase):
         self.editor_1 = Editor.objects.create(username="Editor 1")
         self.editor_2 = Editor.objects.create(username="Editor 2")
         self.editor_3 = Editor.objects.create(username="Editor 3")
-
-    def test_get_aggregated_metrics_data_with_data(self):
-        self.metric_1.wikipedia_created = 1
-        self.metric_2.number_of_editors = 4
-        self.metric_3.number_of_editors = 2
-        self.metric_1.save()
-        self.metric_2.save()
-        self.metric_3.save()
-
-        aggregated_metrics = get_aggregated_metrics_data()
-        self.assertEqual(aggregated_metrics["editors"], self.metric_2.number_of_editors + self.metric_3.number_of_editors)
-        self.assertEqual(aggregated_metrics["wikipedia_created"], self.metric_1.wikipedia_created)
-        self.assertEqual(aggregated_metrics["wikipedia_edited"], 0)
-
-    def test_get_aggregated_metrics_data_without_data(self):
-        aggregated_metrics = get_aggregated_metrics_data()
-        self.assertEqual(aggregated_metrics["editors"], 0)
-        self.assertEqual(aggregated_metrics["wikipedia_created"], 0)
-        self.assertEqual(aggregated_metrics["wikipedia_edited"], 0)
-
-    def test_get_aggregated_metrics_data_done_with_data(self):
-        self.report_1.wikipedia_created = 1
-        self.report_1.editors.add(self.editor_1)
-        self.report_1.editors.add(self.editor_2)
-        self.report_2.editors.add(self.editor_3)
-        self.report_3.editors.add(self.editor_3)
-        self.report_1.save()
-        self.report_2.save()
-        self.report_3.save()
-
-        aggregated_metrics_done = get_aggregated_metrics_data_done()
-        self.assertEqual(aggregated_metrics_done["editors"], self.report_1.editors.count() + self.report_2.editors.count() + self.report_3.editors.count())
-        self.assertEqual(aggregated_metrics_done["wikipedia_created"], self.report_1.wikipedia_created)
-        self.assertEqual(aggregated_metrics_done["wikipedia_edited"], 0)
-
-    def test_get_aggregated_metrics_data_done_without_data(self):
-        aggregated_metrics_done = get_aggregated_metrics_data_done()
-        self.assertEqual(aggregated_metrics_done["editors"], 0)
-        self.assertEqual(aggregated_metrics_done["wikipedia_created"], 0)
-        self.assertEqual(aggregated_metrics_done["wikipedia_edited"], 0)
 
     def test_get_metrics_and_aggregate_per_project_with_data_and_metric_unclear_when_id_ge_1(self):
         project = Project.objects.create(text="Project")
