@@ -286,7 +286,7 @@ OperationFormSet = inlineformset_factory(
             'number_of_events',
             'number_of_resources',
             'number_of_partnerships_activated',
-            'number_of_new_partnerships'), extra=Metric.objects.filter(is_operation=True).count(),
+            'number_of_new_partnerships'),
     can_delete=False)
 OperationUpdateFormSet = inlineformset_factory(
     Report,
