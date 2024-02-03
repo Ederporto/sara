@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, Count, Sum, F
 from .models import Activity, Area, Metric
-from report.models import Report, Editor, Organizer, Partner, Project, Funding
+from report.models import Report, Editor, Organizer, Partner, Project, Funding, OperationReport
 from django import template
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
@@ -26,13 +26,6 @@ def about(request):
 
 
 def show_activities_plan(request):
-    # activities = Activity.objects.all()
-    # project = Project.objects.filter(current_poa=True).first()
-    # areas = Area.objects.filter(project=project).order_by("id")
-    #
-    # context = {"areas": areas, "activities": activities, "title": _("Activities plan")}
-    #
-    # return render(request, "metrics/activities_plan.html", context)
     return redirect(settings.POA_URL)
 
 
@@ -88,6 +81,7 @@ def get_goal_and_done_for_metric(metric):
 
 def get_goal_for_metric(metric):
     return {
+        # Content metrics
         "Wikipedia": metric.wikipedia_created + metric.wikipedia_edited,
         "Wikimedia Commons": metric.commons_created + metric.commons_edited,
         "Wikidata": metric.wikidata_created + metric.wikidata_edited,
@@ -101,23 +95,31 @@ def get_goal_for_metric(metric):
         "Wikispecies": metric.wikispecies_created + metric.wikispecies_edited,
         "MetaWiki": metric.metawiki_created + metric.metawiki_edited,
         "MediaWiki": metric.mediawiki_created + metric.mediawiki_edited,
-        "Number of participants": metric.number_of_participants,
-        "Number of resources": metric.number_of_resources,
-        "Number of feedbacks": metric.number_of_feedbacks,
-        "Number of events": metric.number_of_events,
+        # Community metrics
         "Number of editors": metric.number_of_editors,
         "Number of editors retained": metric.number_of_editors_retained,
         "Number of new editors": metric.number_of_new_editors,
+        "Number of participants": metric.number_of_participants,
         "Number of partnerships activated": metric.number_of_partnerships_activated,
+        "Number of new partnerships": metric.number_of_new_partnerships,
         "Number of organizers": metric.number_of_organizers,
         "Number of organizers retained": metric.number_of_organizers_retained,
+        "Number of resources": metric.number_of_resources,
+        "Number of feedbacks": metric.number_of_feedbacks,
+        "Number of events": metric.number_of_events,
+        # Communication metrics
+        "Number of new followers": metric.number_of_new_followers,
+        "Number of mentions": metric.number_of_mentions,
+        "Number of community communications": metric.number_of_community_communications,
         "Number of people reached through social media": metric.number_of_people_reached_through_social_media,
         "Occurence": metric.boolean_type,
     }
 
 
 def get_done_for_report(reports):
+    operation_reports = OperationReport.objects.filter(report__in=reports)
     return {
+        # Content metrics
         "Wikipedia": reports.aggregate(total=Sum(F("wikipedia_created") + F("wikipedia_edited")))["total"] or 0,
         "Wikimedia Commons": reports.aggregate(total=Sum(F("commons_created") + F("commons_edited")))["total"] or 0,
         "Wikidata": reports.aggregate(total=Sum(F("wikidata_created") + F("wikidata_edited")))["total"] or 0,
@@ -131,20 +133,26 @@ def get_done_for_report(reports):
         "Wikispecies": reports.aggregate(total=Sum(F("wikispecies_created") + F("wikispecies_edited")))["total"] or 0,
         "MetaWiki": reports.aggregate(total=Sum(F("metawiki_created") + F("metawiki_edited")))["total"] or 0,
         "MediaWiki": reports.aggregate(total=Sum(F("mediawiki_created") + F("mediawiki_edited")))["total"] or 0,
-        "Number of participants": reports.aggregate(total=Sum("participants"))["total"] or 0,
-        # "Number of resources": reports.aggregate(total=Sum("resources"))["total"] or 0,
-        "Number of feedbacks": reports.aggregate(total=Sum("feedbacks"))["total"] or 0,
-        "Number of events": reports.count() or 0,
+        # Community metrics
         "Number of editors": Editor.objects.filter(editors__in=reports).distinct().count() or 0,
         "Number of editors retained": Editor.objects.filter(retained=True, editors__in=reports).distinct().count() or 0,
         "Number of new editors": Editor.objects.filter(editors__in=reports, account_creation_date__gte=F('editors__initial_date')).count() or 0,
+        "Number of participants": reports.aggregate(total=Sum("participants"))["total"] or 0,
         "Number of partnerships activated": Partner.objects.filter(partners__in=reports).distinct().count() or 0,
+        "Number of new partnerships": 0, # OPERATION REPORT
         "Number of organizers": Organizer.objects.filter(organizers__in=reports).distinct().count() or 0,
         "Number of organizers retained": Organizer.objects.filter(retained=True, organizers__in=reports).distinct().count() or 0,
-        # "Number of people reached through social media": reports.aggregate(total=Sum(F("number_of_people_reached_through_social_media")))["total"] or 0,
+        "Number of resources": operation_reports.aggregate(total=Sum("number_of_resources"))["total"] or 0,
+        "Number of feedbacks": reports.aggregate(total=Sum("feedbacks"))["total"] or 0,
+        "Number of events": operation_reports.aggregate(total=Sum("number_of_events"))["total"] or 0,
+        # Communication metrics
+        "Number of new followers": operation_reports.aggregate(total=Sum("number_of_new_followers"))["total"] or 0,
+        "Number of mentions": operation_reports.aggregate(total=Sum("number_of_mentions"))["total"] or 0,
+        "Number of community communications": operation_reports.aggregate(total=Sum("number_of_community_communications"))["total"] or 0,
+        "Number of people reached through social media": operation_reports.aggregate(total=Sum("number_of_people_reached_through_social_media"))["total"] or 0,
+        # Other metrics
         "Occurence": reports.filter(metrics_related__boolean_type=True).exists() or False,
     }
-
 
 def update_metrics_relations(request):
     main_funding = Project.objects.get(text="Wikimedia Community Fund")
