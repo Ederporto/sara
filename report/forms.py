@@ -188,7 +188,7 @@ def area_responsible_of_user(user):
 
 def activities_associated_as_choices():
     areas = []
-    for area in Area.objects.filter(project__active=True):
+    for area in Area.objects.filter(project__active=True).distinct():
         activities = []
         for activity in area.activities.all():
             activities.append((activity.id, activity.text + " (" + activity.code + ")"))
