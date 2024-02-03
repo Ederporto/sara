@@ -155,7 +155,7 @@ def get_done_for_report(reports):
     }
 
 def update_metrics_relations(request):
-    main_funding = Project.objects.get(text="Wikimedia Community Fund")
+    main_funding = Project.objects.get(main_funding=True)
     editors_metrics = Metric.objects.filter(project=main_funding).filter(Q(number_of_editors__gt=0) | Q(number_of_editors_retained__gt=0) | Q(number_of_new_editors__gt=0))
     reports = Report.objects.filter(Q(metrics_related__number_of_editors__gt=0))
     for report in reports:
