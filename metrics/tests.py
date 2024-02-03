@@ -155,7 +155,7 @@ class MetricViewsTests(TestCase):
         self.client.login(username=self.username, password=self.password)
         area = Area.objects.create(text="Area")
         activity = Activity.objects.create(text="Activity", area=area)
-        project_1 = Project.objects.create(text="Wikimedia Community Fund")
+        project_1 = Project.objects.create(text="Wikimedia Community Fund", main_funding=True)
 
         metric = Metric.objects.create(text="Metric 1", activity=activity, number_of_editors=10)
         metric.project.add(project_1)
