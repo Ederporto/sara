@@ -3,7 +3,7 @@
     {{ operation_metrics.management_form }}
     {% for form in operation_metrics.forms %}
         {% if not form.instance.pk %}
-            <h3 id="Operation metrics">{{ form.initial.metric.activity }}</h3>
+            <h3 class="operation-header">{{ form.initial.metric.activity }}</h3>
             <h4><label class="formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-metric">{{ form.initial.metric }}</label></h4>
             <div class="w3-row">
                 <select name="Operation-{{ forloop.counter0 }}-metric" id="id_Operation-{{ forloop.counter0 }}-metric" hidden>
@@ -62,7 +62,7 @@
             {% for hidden in form.hidden_fields %}
                 {{ hidden }}
             {% endfor %}
-            <h3 id="Operation metrics">{{ form.instance.metric.activity }}</h3>
+            <h3 class="operation-header">{{ form.instance.metric.activity }}</h3>
             <h4><label class="formfieldtitle" for="id_Operation-{{ forloop.counter0 }}-metric">{{ form.instance.metric }}</label></h4>
             <div class="w3-row">
                 <select name="Operation-{{ forloop.counter0 }}-metric" id="id_Operation-{{ forloop.counter0 }}-metric" hidden>

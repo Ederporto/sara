@@ -62,6 +62,7 @@
             show_metrics_options();
             $(".select-with-text").select2();
             $("#learning_container").hide();
+            hide_duplicate_headers();
         });
 
         function toggle_field(selectObject) {
@@ -201,6 +202,19 @@
                     }
                 });
             }
+        }
+
+        function hide_duplicate_headers(){
+            let operation_headers = $(".operation-header");
+            let unique_elems = {};
+            operation_headers.each(function () {
+                let content = $(this).text().trim();
+                if (unique_elems[content]) {
+                    $(this).hide();
+                } else {
+                    unique_elems[content] = true;
+                }
+            });
         }
     </script>
 {% endblock %}
