@@ -1,8 +1,9 @@
 import datetime
 import pandas as pd
 import zipfile
-from io import BytesIO
 
+from django.forms import inlineformset_factory
+from io import BytesIO
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, reverse, HttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
@@ -15,7 +16,7 @@ from report.models import LearningArea, EvaluationObjective, Editor, Organizer, 
     Funding, Technology, Report, AreaActivated, Activity, OperationReport
 from users.models import TeamArea, UserProfile
 from report.forms import NewReportForm, activities_associated_as_choices,\
-    AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm, OperationFormSet, OperationUpdateFormSet
+    AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm, OperationForm, OperationUpdateFormSet
 from django.db import models
 
 
@@ -27,8 +28,9 @@ def add_report(request):
     directions_related_set = list(map(int, report_form.data.getlist('directions_related', [])))
     learning_questions_related_set = list(map(int, report_form.data.getlist('learning_questions_related', [])))
     metrics_set = list(map(int, report_form.data.getlist('metrics_related', [])))
+    operation_formset = get_operation_formset()
     if request.method == "POST":
-        operation_metrics = OperationFormSet(request.POST, prefix='Operation')
+        operation_metrics = operation_formset(request.POST, prefix='Operation')
         if report_form.is_valid() and operation_metrics.is_valid():
             report = report_form.save(user=request.user)
             instances = operation_metrics.save(commit=False)
@@ -53,7 +55,7 @@ def add_report(request):
             }
             return render(request, "report/add_report.html", context)
     else:
-        operation_metrics = OperationFormSet(prefix="Operation", initial=[{"metric": metric_object} for metric_object in Metric.objects.filter(is_operation=True)])
+        operation_metrics = operation_formset(prefix="Operation", initial=[{"metric": metric_object} for metric_object in Metric.objects.filter(is_operation=True)])
         context = {"directions_related_set": directions_related_set,
                    "learning_questions_related_set": learning_questions_related_set,
                    "metrics_set": metrics_set,
@@ -62,6 +64,22 @@ def add_report(request):
                    "title": _("Add report")}
 
         return render(request, "report/add_report.html", context)
+
+def get_operation_formset():
+    return inlineformset_factory(
+        Report,
+        OperationReport,
+        form=OperationForm,
+        fields=('metric',
+                'number_of_people_reached_through_social_media',
+                'number_of_new_followers',
+                'number_of_mentions',
+                'number_of_community_communications',
+                'number_of_events',
+                'number_of_resources',
+                'number_of_partnerships_activated',
+                'number_of_new_partnerships'), extra=Metric.objects.filter(is_operation=True).count(),
+        can_delete=False)
 
 
 @login_required

@@ -274,20 +274,6 @@ class OperationForm(forms.ModelForm):
         return number_of_new_partnerships if number_of_new_partnerships else 0
 
 
-OperationFormSet = inlineformset_factory(
-    Report,
-    OperationReport,
-    form=OperationForm,
-    fields=('metric',
-            'number_of_people_reached_through_social_media',
-            'number_of_new_followers',
-            'number_of_mentions',
-            'number_of_community_communications',
-            'number_of_events',
-            'number_of_resources',
-            'number_of_partnerships_activated',
-            'number_of_new_partnerships'),
-    can_delete=False)
 OperationUpdateFormSet = inlineformset_factory(
     Report,
     OperationReport,
