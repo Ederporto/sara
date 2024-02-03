@@ -653,12 +653,12 @@ def get_metrics(request):
     # ACTIVITY
     activity = request.GET.get("activity")
     if activity and activity != "1":
-        activity_project = Project.objects.get(project_activity__activities=int(activity))
+        activity_project = Project.objects.get(project_activity__activities=int(activity), active=True)
         metrics = Metric.objects.filter(activity_id=activity).values()
         main_ = Activity.objects.get(pk=int(activity)).is_main_activity
         projects.append({"project": activity_project.text, "metrics": list(metrics), "main": main_})
     elif activity == "1":
-        for project in Project.objects.all().exclude(pk=1):
+        for project in Project.objects.filter(active=True).exclude(current_poa=True):
             metrics = Metric.objects.filter(project=project).values()
             if metrics:
                 projects.append({"project": project.text, "metrics": list(metrics)})
