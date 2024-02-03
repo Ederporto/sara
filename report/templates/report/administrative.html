@@ -5,7 +5,6 @@
         <div class="w3-twothird formfield">
             <select class="select-with-text" id="activity_associated" name="activity_associated" onchange="show_metrics_options();">
                 <option value="" selected>----------</option>
-                <option value="1">{% translate "Other (not listed)" %}</option>
                 {% for area in report_form.fields.activity_associated.choices %}
                     <optgroup label="{{ area.0 }}">
                         {% for activity in area.1 %}
