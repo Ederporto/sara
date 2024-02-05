@@ -1611,10 +1611,15 @@ class ReportFormTest(TestCase):
 
     def test_activities_associated_as_choices(self):
         strategic_axis = StrategicAxis.objects.create(text="Strategic axis")
+        project_1 = Project.objects.create(text="Project")
         area_1 = Area.objects.create(text="Area 1")
         area_1.related_axis.add(strategic_axis)
+        area_1.project.add(project_1)
+        area_1.save()
         area_2 = Area.objects.create(text="Area 2")
         area_2.related_axis.add(strategic_axis)
+        area_2.project.add(project_1)
+        area_2.save()
 
         Activity.objects.create(text="Activity 1", code="Code 1", area=area_1)
         Activity.objects.create(text="Activity 2", code="Code 2", area=area_1)
