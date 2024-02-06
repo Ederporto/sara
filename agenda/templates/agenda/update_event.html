@@ -13,36 +13,55 @@
                 <form method="post">
                     {% csrf_token %}
                     <div class="w3-row">
-                        <div class="w3-quarter dissapear">&nbsp;</div>
-                        <div class="w3-half">
-                            {% for field in eventform %}
-                                <label class="w3-third formfieldtitle" for="id_{{ field.name }}">
-                                    {{ field.label }}*
-                                </label>
-                                <div class="w3-twothird formfield">
-                                    {{ field }}
-                                </div>
-                            {% endfor %}
+                        <label class="w3-third formfieldtitle" for="id_name">{% trans "Name" %}*</label>
+                        <div class="w3-twothird formfield"><input type="text" name="name" maxlength="420" required="" id="id_name" value="{{ eventform.instance.name }}"></div>
+                    </div>
+                    <div class="w3-row">
+                        <label class="w3-third formfieldtitle" for="id_initial_date">{% trans "Initial date" %}*</label>
+                        <div class="w3-twothird formfield"><input type="date" name="initial_date" required="" id="id_initial_date" value="{{ eventform.instance.initial_date|date:'Y-m-d' }}"></div>
+                    </div>
+                    <div class="w3-row">
+                        <label class="w3-third formfieldtitle" for="id_end_date">{% trans "End date" %}*</label>
+                        <div class="w3-twothird formfield"><input type="date" name="end_date" required="" id="id_end_date" value="{{ eventform.instance.end_date|date:'Y-m-d' }}"></div>
+                    </div>
+                    <div class="w3-row">
+                        <label class="w3-third formfieldtitle" for="id_area_responsible">{% trans "Area responsible" %}*</label>
+                        <div class="w3-twothird formfield">
+                            <select class="select-with-text" name="area_responsible" id="id_area_responsible">
+                                {% for area in eventform.fields.area_responsible.queryset %}
+                                    <option value="{{ area.id }}" {% if area == eventform.instance.area_responsible %}selected{% endif %}>{{ area.text }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="w3-row">
-                        <div class="w3-quarter dissapear">&nbsp;</div>
-                        <div class="w3-half">
-                            <div class="w3-third note formfieldtitle">
-                                {% translate "* Required fields" %}
-                            </div>
-                            <div class="w3-third formfield">
-                                <button class="submitbutton" type="submit">{% translate "Submit" %}</button>
-                            </div>
-                            <div class="w3-third formfield" style="margin-bottom: 0; ">
-                                <a href="{% url 'agenda:delete_event' event_id=event_id %}">
-                                    <button class="submitbutton" type="button">{% translate "Delete" %}</button>
-                                </a>
-                            </div>
+                        <label class="w3-third formfieldtitle" for="id_area_involved">{% trans "Area involved" %}*</label>
+                        <div class="w3-twothird formfield">
+                            <select class="select-with-text" name="area_involved" id="id_area_involved" multiple>
+                                {% for area in eventform.fields.area_involved.queryset %}
+                                    <option value="{{ area.id }}" {% if area == eventform.instance.area_responsible %}selected{% endif %}>{{ area.text }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="w3-row">
+                        <div class="w3-third note formfieldtitle">
+                            {% translate "* Required fields" %}
+                        </div>
+                        <div class="w3-twothird formfield">
+                            <button class="submitbutton" type="submit">{% translate "Submit" %}</button>
                         </div>
                     </div>
                 </form>
             </div>
+        </div>
+        <div class="w3-row">
+            <h2>{% translate "Reports related to this event" %}</h2>
+            {% for report in reports %}
+                <div class="w3-row">
+                    <a title="{{ report.description }}" href="{% url 'report:detail_report' report_id=report.id %}">{{ report.description }}</a> <small>({{ report.initial_date }} - {{ report.end_date }})</small>
+                </div>
+            {% endfor %}
         </div>
     </div>
 {% endblock %}

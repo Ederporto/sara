@@ -3,8 +3,14 @@
 {% load i18n %}
 {% block title %}{{ title }}{% endblock %}
 
-{% block styles %}<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
+    <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.13/css/select2.min.css">
+{% endblock %}
 {% block banner %}{% endblock %}
+{% block scripts %}
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+{% endblock %}
 
 {% block content %}
     <div class="w3-container">
@@ -13,31 +19,63 @@
                 <form method="post">
                     {% csrf_token %}
                     <div class="w3-row">
-                        <div class="w3-quarter dissapear">&nbsp;</div>
-                        <div class="w3-half">
-                            {% for field in eventform %}
-                                <label class="w3-third formfieldtitle" for="id_{{ field.name }}">
-                                    {{ field.label }}*
-                                </label>
-                                <div class="w3-twothird formfield">
-                                    {{ field }}
-                                </div>
-                            {% endfor %}
+                        <label class="w3-third formfieldtitle" for="id_name">{% trans "Name" %}*</label>
+                        <div class="w3-twothird formfield"><input type="text" name="name" maxlength="420" required="" id="id_name"></div>
+                    </div>
+                    <div class="w3-row">
+                        <label class="w3-third formfieldtitle" for="id_initial_date">{% trans "Initial date" %}*</label>
+                        <div class="w3-twothird formfield"><input type="date" name="initial_date" required="" id="id_initial_date"></div>
+                    </div>
+                    <div class="w3-row">
+                        <label class="w3-third formfieldtitle" for="id_end_date">{% trans "End date" %}*</label>
+                        <div class="w3-twothird formfield"><input type="date" name="end_date" required="" id="id_end_date"></div>
+                    </div>
+                    <div class="w3-row">
+                        <label class="w3-third formfieldtitle" for="id_area_responsible">{% trans "Area responsible" %}*</label>
+                        <div class="w3-twothird formfield">
+                            <select class="select-with-text" name="area_responsible" id="id_area_responsible" required>
+                                <option value="">------</option>
+                                {% for area in eventform.fields.area_responsible.queryset %}
+                                    <option value="{{ area.id }}">{{ area.text }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="w3-row">
-                        <div class="w3-quarter dissapear">&nbsp;</div>
-                        <div class="w3-half">
-                            <div class="w3-third note formfieldtitle">
-                                {% translate "* Required fields" %}
-                            </div>
-                            <div class="w3-twothird formfield">
-                                <button class="submitbutton" type="submit">{% translate "Submit" %}</button>
-                            </div>
+                        <label class="w3-third formfieldtitle" for="id_area_involved">{% trans "Area involved" %}</label>
+                        <div class="w3-twothird formfield">
+                            <select class="select-with-text" name="area_involved" id="id_area_involved" multiple>
+                                {% for area in eventform.fields.area_involved.queryset %}
+                                    <option value="{{ area.id }}">{{ area.text }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="w3-row">
+                        <label class="w3-third formfieldtitle" for="id_metric_associated">{% trans "Metrics associated" %}</label>
+                        <div class="w3-twothird formfield">
+                            <select class="select-with-text" name="metric_associated" id="id_metric_associated" multiple>
+                                {% for metric in eventform.fields.metric_associated.queryset %}
+                                    <option value="{{ metric.id }}">{{ metric.text }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="w3-row">
+                        <div class="w3-third note formfieldtitle">
+                            {% translate "* Required fields" %}
+                        </div>
+                        <div class="w3-twothird formfield">
+                            <button class="submitbutton" type="submit">{% translate "Submit" %}</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+    <script>
+        $(document).ready(function () {
+            $(".select-with-text").select2();
+        })
+    </script>
 {% endblock %}

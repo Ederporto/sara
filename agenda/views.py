@@ -5,13 +5,19 @@ from django.contrib import messages
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import gettext as _
-from .forms import EventForm
-from .models import Event
+from agenda.forms import EventForm
+from agenda.models import Event
 
 
 # MONTH CALENDAR
 @login_required
 def show_calendar(request):
+    """
+    Redirects to the calendar view for the current month and year.
+
+    :param request: The HTTP request object.
+    :return: HttpResponseRedirect: Redirects to the 'show_specific_calendar' view.
+    """
     month = datetime.datetime.now().month
     year = datetime.datetime.now().year
 
@@ -20,6 +26,14 @@ def show_calendar(request):
 
 @login_required
 def show_specific_calendar(request, year, month):
+    """
+    Shows calendar for specific month and year.
+
+    :param request: The HTTP request object.
+    :param year: Year of the calendar.
+    :param month: Month of the calendar.
+    :return: HttpResponse: Renders a calendar spreadsheet
+    """
     user = request.user
     username = user.first_name if user else "None"
 
@@ -33,6 +47,12 @@ def show_specific_calendar(request, year, month):
 # DAY CALENDAR
 @login_required
 def show_calendar_day(request):
+    """
+    Shows calendar for specific month and year.
+
+    :param request: The HTTP request object.
+    :return: HttpResponseRedirect: Redirects to the 'show_specific_calendar_day' view.
+    """
     day = datetime.datetime.now().day
     month = datetime.datetime.now().month
     year = datetime.datetime.now().year
@@ -42,6 +62,15 @@ def show_calendar_day(request):
 
 @login_required
 def show_specific_calendar_day(request, year, month, day):
+    """
+    Shows calendar for specific day, month and year.
+
+    :param request:
+    :param year: Year of the calendar.
+    :param month: Month of the calendar.
+    :param day: Day of the calendar.
+    :return: HttpResponse: Renders a calendar spreadsheet
+    """
     day_aux = day
     month_aux = month
     year_aux = year
@@ -52,9 +81,17 @@ def show_specific_calendar_day(request, year, month, day):
 
 
 def days_of_the_month(year, month):
+    """
+    Creates an array with the days of the month.
+
+    :param year: Year of the calendar.
+    :param month: Month of the calendar.
+    :return: Array: The days of the month as an array, divided into weeks.
+    """
     return calendar.monthcalendar(int(year), int(month))
 
 
+# CREATE
 @login_required
 @transaction.atomic
 def add_event(request):
@@ -79,6 +116,7 @@ def add_event(request):
     return render(request, "agenda/add_event.html", context)
 
 
+# READ
 @login_required
 @transaction.atomic
 def list_events(request):

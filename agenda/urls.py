@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 
-from . import views
+from agenda import views
 
 app_name = 'agenda'
 

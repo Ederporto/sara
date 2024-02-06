@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 
-from .models import Event
+from agenda.models import Event
 from users.models import User, UserProfile, TeamArea
 
 
