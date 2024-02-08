@@ -26,3 +26,11 @@ def bool_yesno(a):
         return _("Yes") if a else _("No")
     else:
         return a
+
+
+@register.filter
+def is_yesno(a):
+    if type(a) == bool:
+        return True
+    else:
+        return False

@@ -1,17 +1,15 @@
 import calendar
-from django.shortcuts import render, redirect, reverse, HttpResponse
+from django.shortcuts import render, redirect, reverse
 from django.utils.translation import gettext as _
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q, Count, Sum, F
-from .models import Activity, Area, Metric
-from report.models import Report, Editor, Organizer, Partner, Project, Funding, OperationReport
+from django.db.models import Q, Sum, F
+from metrics.models import Activity, Metric
+from report.models import Report, Editor, Organizer, Partner, Project, OperationReport
 from django import template
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
-register = template.Library()
-import csv
-import json
 
+register = template.Library()
 calendar.setfirstweekday(calendar.SUNDAY)
 
 
@@ -32,29 +30,45 @@ def show_activities_plan(request):
 @login_required
 @permission_required("metrics.view_metric")
 def show_metrics_per_project(request):
-    context = {"dataset": get_metrics_and_aggregate_per_project(), "title": _("Show metrics per project")}
+    poa_project = Project.objects.get(current_poa=True)
+    operational_dataset = get_metrics_and_aggregate_per_project(Q(current_poa=True), Q(is_operation=True))
+
+    poa_dataset = get_metrics_and_aggregate_per_project(Q(current_poa=True), Q(boolean_type=True), "Occurence")
+    if poa_dataset and operational_dataset:
+        poa_dataset[poa_project.id]["project_metrics"] += operational_dataset[poa_project.id]["project_metrics"]
+
+    context = {
+        "poa_dataset": poa_dataset,
+        "dataset": get_metrics_and_aggregate_per_project(Q(active=True, current_poa=False)),
+        "title": _("Show metrics per project")
+    }
+    # context = {"dataset": get_metrics_and_aggregate_per_project(Q(active=True, current_poa=True)), "title": _("Show metrics per project")}
     return render(request, "metrics/list_metrics_per_project.html", context)
 
 
-def get_metrics_and_aggregate_per_project():
+def get_metrics_and_aggregate_per_project(project_query=Q(active=True), metric_query=Q(), field=None):
     aggregated_metrics_and_results = {}
 
-    for project in Project.objects.filter(active=True):
+    for project in Project.objects.filter(project_query).order_by("-current_poa","-main_funding"):
         project_metrics = []
         for activity in Activity.objects.filter(area__project=project):
             activity_metrics = {}
             if activity.id != 1:
-                q_filter = Q(project=project, activity=activity)
+                q_filter = Q(project=project, activity=activity) & metric_query
             else:
-                q_filter = Q(project=project)
+                q_filter = Q(project=project) & metric_query
             for metric in Metric.objects.filter(q_filter):
                 goal, done = get_goal_and_done_for_metric(metric)
 
-                result_metrics = {key: {"goal": value, "done": done[key]} for key, value in goal.items() if value != 0}
-                activity_metrics[metric.id] = {
-                    "title": metric.text,
-                    "metrics": result_metrics if result_metrics else {"Other metric": {"goal": "-", "done": "-"}}
-                }
+                if field and goal[field] != 0:
+                    result_metrics = {field: {"goal": goal[field], "done": done[field]}}
+                else:
+                    result_metrics = {key: {"goal": value, "done": done[key]} for key, value in goal.items() if value != 0}
+
+                if not result_metrics:
+                    result_metrics = {"Other metric": {"goal": "-", "done": "-"}}
+
+                activity_metrics[metric.id] = {"title": metric.text, "metrics": result_metrics}
 
             if activity_metrics:
                 project_metrics.append({

@@ -25,6 +25,50 @@
             </ul>
         </div>
         <div class="w3-threequarter" style="background-color: var(--light-color); color:black;">
+            {% for project_key, project_value in poa_dataset.items %}
+                <h2 id="{{ project_key }}">{{ project_value.project }}</h2>
+                <table id="metrics_{{ project_key }}" class="table table-striped table-fixed table-sara metrics_table"
+                       data-mobile-responsive="true"
+                       data-check-on-init="true"
+                       data-filter-control="true">
+                    <thead>
+                    <tr>
+                        <th data-field="actions">{% trans "Actions" %}</th>
+                        <th data-field="id">{% trans "ID" %}</th>
+                        <th data-field="metric">{% trans "Metric" %}</th>
+                        <th data-field="done">{% trans "Done" %}</th>
+                        <th data-field="goal">{% trans "Goal" %}</th>
+                        <th data-field="status">{% trans "Status" %}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for activity in project_value.project_metrics|dictsort:"activity_id" %}
+                        <tr style="background-color: var(--dark-grey-color);"><td colspan="6" style="color: var(--light-color);">{{ activity.activity }}</td></tr>
+                        {% for metric_key, metric_value in activity.activity_metrics.items %}
+                            {% for numeric_key, numeric_value in metric_value.metrics.items %}
+                                <tr>
+                                    <th scope="row" style="text-align: center;"><a title="{% trans 'View' %}" href="{% url 'metrics:metrics_reports' metric_id=metric_key %}"><button title="{% trans 'View' %}" type="button" class="btn-circle btn-view"><i class="fa-solid fa-eye"></i></button></a></th>
+                                    <th scope="row">{{ metric_key }}</th>
+                                    <td>{{ metric_value.title }}<br><small>({% translate numeric_key %})</small></td>
+                                    <td>{{ numeric_value.done|bool_yesno }}</td>
+                                    <td>{{ numeric_value.goal|bool_yesno }}</td>
+                                    <td>
+                                        {% if numeric_value.done|is_yesno %}
+                                            -
+                                        {% else %}
+                                            <button type="button" class="btn-round btn-{{ numeric_value.done|categorize:numeric_value.goal }}">
+                                                {{ numeric_value.done|perc:numeric_value.goal }}
+                                            </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <br>
+            {% endfor %}
             {% for project_key, project_value in dataset.items %}
                 <h2 id="{{ project_key }}">{{ project_value.project }}</h2>
                 <table id="metrics_{{ project_key }}" class="table table-striped table-fixed table-sara metrics_table"

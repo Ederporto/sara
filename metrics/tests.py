@@ -9,7 +9,7 @@ from .views import get_metrics_and_aggregate_per_project
 from django.urls import reverse
 from django.contrib.auth.models import Permission
 from datetime import datetime, timedelta
-from metrics.templatetags.metricstags import categorize, perc, bool_yesno
+from metrics.templatetags.metricstags import categorize, perc, bool_yesno, is_yesno
 from django.utils.translation import gettext_lazy as _
 
 
@@ -85,10 +85,10 @@ class ProjectModelTests(TestCase):
 
 
 class MetricModelTests(TestCase):
-    def setUp(cls):
-        cls.area = Area.objects.create(text="Area")
-        cls.activity = Activity.objects.create(text="Activity", area=cls.area)
-        cls.metric = Metric.objects.create(text="Metric", activity=cls.activity)
+    def setUp(self):
+        self.area = Area.objects.create(text="Area")
+        self.activity = Activity.objects.create(text="Activity", area=self.area)
+        self.metric = Metric.objects.create(text="Metric", activity=self.activity)
 
     def test_metric_str_returns_metrics_text(self):
         self.assertEqual(str(self.metric), "Metric")
@@ -145,14 +145,36 @@ class MetricViewsTests(TestCase):
 
     def test_show_metrics_per_project(self):
         self.client.login(username=self.username, password=self.password)
-        project = Project.objects.create(text="Project")
+        Project.objects.create(text="Project", current_poa=True)
         url = reverse("metrics:per_project")
 
         response = self.client.get(url)
         self.assertIn("dataset", str(response.context))
 
+    def test_show_plan_of_activities_and_its_operational_metrics_if_they_exist(self):
+        self.client.login(username=self.username, password=self.password)
+        project = Project.objects.create(text="Plan of activities", current_poa=True)
+        area = Area.objects.create(text="Area")
+        area.project.add(project)
+        area.save()
+        activity = Activity.objects.create(text="Activity", area=area)
+        metric_1 = Metric.objects.create(text="Metric 1", boolean_type=True, activity=activity)
+        metric_1.project.add(project)
+        metric_1.save()
+        metric_2 = Metric.objects.create(text="Metric 2", is_operation=True, activity=activity)
+        metric_2.project.add(project)
+        metric_2.save()
+
+        url = reverse("metrics:per_project")
+        response = self.client.get(url)
+        self.assertIn("poa_dataset", str(response.context))
+        self.assertEqual(response.context["poa_dataset"][1]["project_metrics"][0]["activity_metrics"][1]["title"], str(metric_1))
+        self.assertEqual(response.context["poa_dataset"][1]["project_metrics"][1]["activity_metrics"][2]["title"], str(metric_2))
+
     def test_update_metrics(self):
         self.client.login(username=self.username, password=self.password)
+        Project.objects.create(text="Plan of Activities", current_poa=True)
+
         area = Area.objects.create(text="Area")
         activity = Activity.objects.create(text="Activity", area=area)
         project_1 = Project.objects.create(text="Wikimedia Community Fund", main_funding=True)
@@ -227,9 +249,14 @@ class MetricViewsTests(TestCase):
     def test_redirects_to_list_of_metrics_per_project_if_metric_id_does_not_exist(self):
         self.client.login(username=self.username, password=self.password)
 
+        project = Project.objects.create(text="Plan of Activities", current_poa=True)
         area = Area.objects.create(text="Area")
+        area.project.add(project)
+        area.save()
         activity = Activity.objects.create(text="Activity", area=area)
         metric = Metric.objects.create(text="Metric 1", activity=activity, number_of_editors=10)
+        metric.project.add(project)
+        metric.save()
         team_area = TeamArea.objects.create(text="Area")
         report_1 = Report.objects.create(
             created_by=self.user_profile,
@@ -482,3 +509,18 @@ class TagsTests(TestCase):
     def test_bool_yesno_returns_value_if_not_boolean(self):
         result = bool_yesno("Test")
         self.assertEqual(result, _("Test"))
+
+    def test_bool_is_yesno_returns_true_if_boolean(self):
+        result = is_yesno(True)
+        self.assertTrue(result)
+
+    def test_bool_is_yesno_returns_false_if_not_boolean(self):
+        result = is_yesno(2)
+        self.assertFalse(result)
+
+    def test_bool_is_yesno_returns_false_even_if_is_0_or_1(self):
+        result = is_yesno(0)
+        self.assertFalse(result)
+
+        result = is_yesno(1)
+        self.assertFalse(result)
