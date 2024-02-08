@@ -88,7 +88,7 @@ def get_metrics_and_aggregate_per_project(project_query=Q(active=True), metric_q
 def get_goal_and_done_for_metric(metric):
     reports = Report.objects.filter(metrics_related__in=[metric])
     goal = get_goal_for_metric(metric)
-    done = get_done_for_report(reports)
+    done = get_done_for_report(reports, metric)
 
     return goal, done
 
@@ -130,8 +130,8 @@ def get_goal_for_metric(metric):
     }
 
 
-def get_done_for_report(reports):
-    operation_reports = OperationReport.objects.filter(report__in=reports)
+def get_done_for_report(reports, metric):
+    operation_reports = OperationReport.objects.filter(report__in=reports, metric=metric)
     return {
         # Content metrics
         "Wikipedia": reports.aggregate(total=Sum(F("wikipedia_created") + F("wikipedia_edited")))["total"] or 0,
@@ -193,7 +193,7 @@ def metrics_reports(request, metric_id):
         for goal_key, goal_value in filtered_goals.items():
             report_values = []
             for report in reports:
-                done = get_done_for_report(Report.objects.filter(pk=report.id))
+                done = get_done_for_report(Report.objects.filter(pk=report.id), metric)
                 report_values.append({
                     "id": report.id,
                     "description": report.description,
