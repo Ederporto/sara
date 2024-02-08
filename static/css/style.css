@@ -207,6 +207,9 @@ canvas {
     border-width: 0 0.15em 0.15em 0;
     transform: rotate(45deg);
 }
+.radio-checkmark {
+    border-radius: 100%;
+}
 
 /* TAB */
 .tab {
