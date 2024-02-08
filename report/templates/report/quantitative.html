@@ -29,6 +29,16 @@
         </div>
     </div>
     <div class="w3-row">
+        <label class="w3-third formfieldtitle" for="partners_activated">{% translate "Partnerships activated" %}</label>
+        <div class="w3-twothird formfield">
+            <select class="select-with-text" id="partners_activated" name="partners_activated" multiple>
+                {% for partner in report_form.fields.partners_activated.queryset %}
+                    <option value="{{ partner.id }}" {% if partner in report_form.instance.partners_activated.all %}selected{% endif %}>{{ partner.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="w3-row">
         <label class="w3-third formfieldtitle" for="technologies_used">{% translate "Technologies used" %}</label>
         <div class="w3-twothird formfield">
             <select class="select-with-text" id="technologies_used" name="technologies_used" multiple>
