@@ -156,10 +156,10 @@ def list_reports(request):
 def detail_report(request, report_id):
     report = Report.objects.get(id=report_id)
     operations = OperationReport.objects.filter(report=report)
-    operations_with_value =operations.filter(Q(number_of_people_reached_through_social_media__gt=0) | Q(number_of_new_followers__gt=0) | Q(number_of_mentions__gt=0) | Q(number_of_community_communications__gt=0) | Q(number_of_events__gt=0) | Q(number_of_resources__gt=0) | Q(number_of_partnerships_activated__gt=0) | Q(number_of_new_partnerships__gt=0)).exists()
+    operations_with_value = operations.filter(Q(number_of_people_reached_through_social_media__gt=0) | Q(number_of_new_followers__gt=0) | Q(number_of_mentions__gt=0) | Q(number_of_community_communications__gt=0) | Q(number_of_events__gt=0) | Q(number_of_resources__gt=0) | Q(number_of_partnerships_activated__gt=0) | Q(number_of_new_partnerships__gt=0))
     context = {"data": report,
-               "operations": OperationReport.objects.filter(report=report),
-               "operations_with_value": operations_with_value,
+               "operations": operations_with_value,
+               "operations_with_value": operations_with_value.exists(),
                "title": _("View report %(report_id)s") % {"report_id": report_id}}
 
     return render(request, "report/detail_report.html", context)
