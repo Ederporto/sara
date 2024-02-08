@@ -19,6 +19,9 @@
     <div class="w3-row">
         <div class="w3-quarter index index-box">
             <ul>
+                {% for project_key, project_value in poa_dataset.items %}
+                    <li><a href="#{{ project_key }}" aria-label="{{ project_value.project }}">{{ project_value.project }}</a></li>
+                {% endfor %}
                 {% for project_key, project_value in dataset.items %}
                     <li><a href="#{{ project_key }}" aria-label="{{ project_value.project }}">{{ project_value.project }}</a></li>
                 {% endfor %}
