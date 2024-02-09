@@ -8,12 +8,13 @@
     background-color: var(--light-color);
     color: var(--dark-color);
     font-weight: normal;
-    padding: 0.5em 0.5em 0.5em 1em;
+    padding: 1em 0.5em 1em 1em;
     border-radius: 0.5em;
     overflow-y: auto;
     overflow-x: auto;
 }
-.formfieldtitle { font-family: var(--main-font); }
+.formfieldtitle { font-family: var(--main-font); font-weight: bold; }
+.form-legend { font-size: small; color: var(--grey-color); }
 .form-left { padding-right: 1em; }
 .form-right { padding-left: 1em; }
 .view-field {
@@ -155,7 +156,7 @@ fieldset input { background-color: var(--main-lighter-color) !important }
     background-color: var(--light-color) !important;
     color: var(--dark-color) !important;
     font-weight: normal !important;
-    padding: 0.5em 0.5em 0.5em 1em !important;
+    padding: 1em 0.5em 1em 1em !important;
     border-radius: 0.5em !important;
     overflow-y: auto !important;
     overflow-x: auto !important;

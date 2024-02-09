@@ -1,35 +1,55 @@
 {% load i18n %}
 <div class="w3-container">
     <div class="w3-row" id="metrics">
-        <label class="w3-third formfieldtitle" for="metrics_formfield">{% translate "Metrics" %}*</label>
+        <div class="w3-third">
+            <label class="formfieldtitle" for="metrics_formfield">{% translate "Metrics" %}*</label>
+            <p class="form-legend">{% translate "Which are the metrics associated with this report?" %}</p>
+        </div>
         <div class="w3-twothird formfield" id="metrics_to_select"></div>
     </div>
     <div class="w3-row">
-        <label class="w3-third formfieldtitle" for="number_of_participants">{% translate "Number of participants" %}</label>
+        <div class="w3-third">
+            <label class="formfieldtitle" for="number_of_participants">{% translate "Number of participants" %}</label>
+            <p class="form-legend">{% translate "Number of people attending remote or in-person events, participating in in-person meetings, programs, and trainings" %}</p>
+        </div>
         <div class="w3-twothird formfield">
             <input type="number" min="0" value="{{ report_form.instance.participants }}" id="number_of_participants" name="participants"/>
         </div>
     </div>
     <div class="w3-row">
-        <label class="w3-third formfieldtitle" for="number_of_feedbacks">{% translate "Number of feedbacks" %}</label>
+        <div class="w3-third">
+            <label class="formfieldtitle" for="number_of_feedbacks">{% translate "Number of feedbacks" %}</label>
+            <p class="form-legend">{% translate "Number of responses to community consultations or inquiries about activities" %}</p>
+        </div>
         <div class="w3-twothird formfield">
             <input type="number" min="0" value="{{ report_form.instance.feedbacks }}" id="number_of_feedbacks" name="feedbacks"/>
         </div>
     </div>
     <div class="w3-row">
-        <label class="w3-third formfieldtitle" for="editors">{% translate "Editors" %}</label>
+        <div class="w3-third">
+            <label class="formfieldtitle" for="editors">{% translate "Editors" %}</label>
+            <p class="form-legend">{% translate "List of usernames of people registered for an activity" %} <b>{% translate "One per line" %}</b></p>
+        </div>
         <div class="w3-twothird formfield">
-            <textarea id="editors" name="editors_string" rows="4">{% if report_form.instance.id %}{% for editor in report_form.instance.editors.all %}{{ editor.username }}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}{% endif %}</textarea>
+            <textarea id="editors" name="editors_string" rows="4" placeholder="Username 1
+Username 2">{% if report_form.instance.id %}{% for editor in report_form.instance.editors.all %}{{ editor.username }}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}{% endif %}</textarea>
         </div>
     </div>
     <div class="w3-row">
-        <label class="w3-third formfieldtitle" for="organizers">{% translate "Organizers" %}</label>
+        <div class="w3-third">
+            <label class="formfieldtitle" for="organizers">{% translate "Organizers" %}</label>
+            <p class="form-legend">{% translate "List of usernames (or full names if they don't have usernames) of people who organized the activity" %} <b>{% translate "One per line" %}</b></p>
+        </div>
         <div class="w3-twothird formfield">
-            <textarea id="organizers" name="organizers_string" rows="4">{% if report_form.instance.id %}{% for organizer in report_form.instance.organizers.all %}{{ organizer.name }}{% for institution in organizer.institution.all %};{{ institution.name }}{% endfor %}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}{% endif %}</textarea>
+            <textarea id="organizers" name="organizers_string" rows="4" placeholder="Username 1; Institution 1
+Username 2; Institution 2">{% if report_form.instance.id %}{% for organizer in report_form.instance.organizers.all %}{{ organizer.name }}{% for institution in organizer.institution.all %};{{ institution.name }}{% endfor %}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}{% endif %}</textarea>
         </div>
     </div>
     <div class="w3-row">
-        <label class="w3-third formfieldtitle" for="partners_activated">{% translate "Partnerships activated" %}</label>
+        <div class="w3-third">
+            <label class="formfieldtitle" for="partners_activated">{% translate "Partnerships activated" %}</label>
+            <p class="form-legend">{% translate "Which are the formal collaborative relationships activated in this activity?" %}</p>
+        </div>
         <div class="w3-twothird formfield">
             <select class="select-with-text" id="partners_activated" name="partners_activated" multiple>
                 {% for partner in report_form.fields.partners_activated.queryset %}
@@ -39,7 +59,10 @@
         </div>
     </div>
     <div class="w3-row">
-        <label class="w3-third formfieldtitle" for="technologies_used">{% translate "Technologies used" %}</label>
+        <div class="w3-third">
+            <label class="formfieldtitle" for="technologies_used">{% translate "Technologies used" %}</label>
+            <p class="form-legend">{% translate "Which are the technologies used in this activity?" %}</p>
+        </div>
         <div class="w3-twothird formfield">
             <select class="select-with-text" id="technologies_used" name="technologies_used" multiple>
                 {% for technology in report_form.fields.technologies_used.queryset %}
@@ -50,7 +73,10 @@
     </div>
     <div class="w3-container">
         <h3 id="Wikimedia projects">{% translate "Wikimedia projects" %}</h3>
-        <div class="w3-third formfieldtitle">{% translate "Which projects are you reporting?" %}</div>
+        <div class="w3-third">
+            <div class="formfieldtitle">{% translate "Which projects are you reporting?" %}</div>
+            <p class="form-legend">{% translate "Select only the ones that apply and you have records" %}</p>
+        </div>
         <div class="w3-twothird">
             <label class="w3-third formfield toggle" for="wikipedia">
                 <input class="toggle__input wiki" type="checkbox" id="wikipedia" onclick="toggle_field(this.id)"

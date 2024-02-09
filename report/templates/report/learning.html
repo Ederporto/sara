@@ -3,7 +3,10 @@
 <div class="w3-container">
     <h3 id="Theory of Change">{% translate "Theory of Change" %}</h3>
     <div class="w3-container formfield">
-        <h4 class="formfieldtitle">{% translate "Strategic learning questions related to the activity being reported" %}*</h4>
+        <div class="w3-row">
+            <h4 class="formfieldtitle">{% translate "Strategic learning questions related to the activity being reported" %}*</h4>
+            <p class="form-legend">{% translate "Which are the strategic learning questions this activity tries to answer?" %} <b>{% translate "Select a maximum of 3" %}</b></p>
+        </div>
         <fieldset id="strategic_questions_fieldset" class="subcontainer">
             <legend>{% translate "Strategic learning questions related to the activity being reported" %}</legend>
             {% for learning_area in report_form.fields.learning_questions_related.choices %}
@@ -26,7 +29,10 @@
         <fieldset class="selected-choices"></fieldset>
     </div>
     <div id="learning_container" class="w3-container formfield">
-        <label class="formfieldtitle" for="learning">{% translate "Learning" %}*</label>
+        <div class="w3-row">
+            <label class="formfieldtitle" for="learning">{% translate "Learning" %}*</label>
+            <p class="form-legend">{% translate "What did you learn from this activity?" %} <b>{% translate "Type at least 500 characters" %}</b></p>
+        </div>
         <textarea type="text" id="learning" name="learning" rows="10" placeholder="{% translate "Describe the learning with this activity and how it relates with the strategy axis and directions" %}" onkeyup="countCharacters()">{{ report_form.instance.learning }}</textarea>
         <span id="character_count" class="btn-round {% if report_form.instance.learning|length > 500 %}btn-view{% else %}btn-delete{% endif %}" style="float: right; color:black;">{{ report_form.instance.learning|length }}/500</span>
     </div>

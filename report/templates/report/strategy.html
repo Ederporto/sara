@@ -3,9 +3,14 @@
 <div class="w3-container">
     <h3 id="Strategy Axis">{% translate "Strategy Axes" %}</h3>
     <div class="w3-container formfield">
-        <h4 class="formfieldtitle">{% translate "Directions related to the activity being reported" %}*</h4>
+        <div class="w3-row">
+            <h4 class="formfieldtitle">{% translate "Directions related to the activity being reported" %}*</h4>
+            <p class="form-legend">{% translate "Which are the directions that guided this activity?" %}</p>
+        </div>
         <fieldset class="subcontainer" id="directions_fieldset">
-            <legend>{% translate "Directions related to the activity being reported" %}</legend>
+            <div class="w3-row">
+                <legend>{% translate "Directions related to the activity being reported" %}</legend>
+            </div>
             {% for strategic_axis in report_form.fields.directions_related.choices %}
                 <div class="w3-container formfieldtitle" style="color:var(--main-color);">{{ strategic_axis.0 }}</div>
                 {% for direction in strategic_axis.1 %}

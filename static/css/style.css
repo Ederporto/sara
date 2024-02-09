@@ -235,7 +235,7 @@ canvas {
 }
 .tabcontent { display: none; }
 .tabcontent.active { display: block; }
-.tablinks { color: var(--light-grey-color); }
+.tablinks { color: var(--light-color); }
 
 /* TABLE */
 .custom-table-header-el {
