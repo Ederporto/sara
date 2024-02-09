@@ -11,14 +11,14 @@
 {% block content %}
     <div class="w3-container userform">
         <div class="w3-row block-section">
-            <div class="w3-third dissapear">&nbsp;</div>
-            <div class="w3-third">
+            <div class="w3-quarter dissapear">&nbsp;</div>
+            <div class="w3-half">
                 <p>{% blocktrans %}<b>S.A.R.A.</b> is a web application for recording and analyzing qualitative and quantitative activity reports.{% endblocktrans %}</p>
             </div>
         </div>
         <div class="w3-row block-section">
-            <div class="w3-third dissapear">&nbsp;</div>
-            <div class="w3-third">
+            <div class="w3-quarter dissapear">&nbsp;</div>
+            <div class="w3-half">
                 {% if user.is_authenticated %}<div class="w3-half form-left"><a href="{% url 'report:add_report' %}"><button class="custombutton" type="button">{% translate "Add report" %}</button></a></div>{% endif %}
                 {% if user.is_authenticated %}<div class="w3-half form-right"><a href="{% url 'report:list_reports' %}"><button class="custombutton" type="button">{% translate "List reports" %}</button></a></div>{% endif %}
                 {% if user.is_authenticated %}<div class="w3-half form-left"><a href="{% url 'agenda:show_calendar' %}"><button class="custombutton" type="button">{% translate "Show calendar" %}</button></a></div>{% endif %}
@@ -30,8 +30,8 @@
             </div>
         </div>
         <div class="w3-row block-section">
-            <div class="w3-third dissapear">&nbsp;</div>
-            <div class="w3-third">
+            <div class="w3-quarter dissapear">&nbsp;</div>
+            <div class="w3-half">
                 <div><a href="{% url 'metrics:about' %}"><button class="custombutton" type="button">{% translate "About S.A.R.A." %}</button></a></div>
             </div>
         </div>
