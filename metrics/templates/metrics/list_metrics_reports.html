@@ -30,7 +30,6 @@
                             <th data-field="id" data-sortable="true">{% trans "ID" %}</th>
                             <th data-field="report" data-sortable="true">{% trans "Report" %}</th>
                             <th data-field="done" data-sortable="true">{% trans "Done" %}</th>
-                            <th data-field="goal" data-sortable="true">{% trans "Goal" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -39,7 +38,6 @@
                                 <th scope="row">{{ report.id }}</th>
                                 <td><a title="{% trans 'View' %}" href="{% url 'report:detail_report' report_id=report.id %}">{{ report.description }}</a><br><small>({{ report.initial_date }} - {{ report.end_date }})</small></td>
                                 <td>{{ report.done }}</td>
-                                <td>{{ report.done|perc:metric_goal.goal }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
