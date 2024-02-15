@@ -11,13 +11,14 @@ from django.utils.translation import gettext as _
 from django.contrib import messages
 from django.db.models import Q
 
-from metrics.models import Metric, Project, Area
-from report.models import LearningArea, EvaluationObjective, Editor, Organizer, Partner, \
+from metrics.models import Metric, Project
+from report.models import Editor, Organizer, Partner, \
     Funding, Technology, Report, AreaActivated, Activity, OperationReport
-from users.models import TeamArea, UserProfile
-from report.forms import NewReportForm, activities_associated_as_choices,\
-    AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm, OperationForm, OperationUpdateFormSet
-from django.db import models
+from users.models import UserProfile
+from report.forms import NewReportForm, AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm, OperationForm,\
+    OperationUpdateFormSet
+from metrics.views import get_goal_and_done_for_metric
+from collections import Counter
 
 
 # CREATE
@@ -34,9 +35,17 @@ def add_report(request):
         if report_form.is_valid() and operation_metrics.is_valid():
             report = report_form.save(user=request.user)
             instances = operation_metrics.save(commit=False)
+
+            operation_metrics_related = []
             for instance in instances:
                 instance.report = report
                 instance.save()
+                numbers = instance.number_of_people_reached_through_social_media + instance.number_of_new_followers + instance.number_of_mentions + instance.number_of_community_communications + instance.number_of_events + instance.number_of_resources + instance.number_of_partnerships_activated + instance.number_of_new_partnerships
+                if numbers > 0:
+                    operation_metrics_related.append(instance.metric)
+
+            report.metrics_related.add(*operation_metrics_related)
+            report.save()
 
             messages.success(request, _("Report registered successfully!"))
             return redirect(reverse("report:detail_report", kwargs={"report_id": report.id}))
@@ -64,6 +73,7 @@ def add_report(request):
                    "title": _("Add report")}
 
         return render(request, "report/add_report.html", context)
+
 
 def get_operation_formset():
     return inlineformset_factory(
@@ -177,11 +187,13 @@ def add_excel_file(report_id=None):
     writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
 
     export_report_instance(report_id).to_excel(writer, sheet_name='Report', index=False)
+    export_operation_report(report_id).to_excel(writer, sheet_name='Operation report', index=False)
     export_metrics(report_id).to_excel(writer, sheet_name='Metrics', index=False)
     export_user_profile(report_id).to_excel(writer, sheet_name='Users', index=False)
     export_area_activated(report_id).to_excel(writer, sheet_name='Areas', index=False)
     export_directions_related(report_id).to_excel(writer, sheet_name='Directions', index=False)
     export_editors(report_id).to_excel(writer, sheet_name='Editors', index=False)
+    export_funding(report_id).to_excel(writer, sheet_name='Fundings', index=False)
     export_learning_questions_related(report_id).to_excel(writer, sheet_name='Learning questions', index=False)
     export_organizers(report_id).to_excel(writer, sheet_name='Organizers', index=False)
     export_partners_activated(report_id).to_excel(writer, sheet_name='Partners', index=False)
@@ -208,12 +220,14 @@ def export_report(request, report_id=None):
 
         posfix = identifier + " - {}".format(datetime.datetime.today().strftime('%Y-%m-%d'))
         files = [[export_report_instance, sub_directory + 'Report' + posfix],
+                 [export_operation_report, sub_directory + 'Operation report' + posfix],
                  [export_metrics, sub_directory + 'Metrics' + posfix],
                  [export_user_profile, sub_directory + 'Users' + posfix],
                  [export_area_activated, sub_directory + 'Areas' + posfix],
                  [export_directions_related, sub_directory + 'Directions' + posfix],
-                 [export_editors, sub_directory + 'Editors' + posfix],
                  [export_learning_questions_related, sub_directory + 'Learning questions' + posfix],
+                 [export_funding, sub_directory + 'Fundings' + posfix],
+                 [export_editors, sub_directory + 'Editors' + posfix],
                  [export_organizers, sub_directory + 'Organizers' + posfix],
                  [export_partners_activated, sub_directory + 'Partners' + posfix],
                  [export_technologies_used, sub_directory + 'Technologies' + posfix]]
@@ -238,14 +252,21 @@ def export_report_instance(report_id=None):
               _('Name of the activity'), _('Area responsible'), _('Area activated'), _('Initial date'), _('End date'),
               _('Description'), _('Funding associated'), _('Links'), _('Public communication'),
               _('Number of participants'), _('Number of feedbacks'), _('Editors'), _('Organizers'),
-              _('Partnerships activated'), _('Technologies used'), _('# Wikipedia created'), _('# Wikipedia edited'),
-              _('# Commons created'), _('# Commons edited'), _('# Wikidata created'), _('# Wikidata edited'),
-              _('# Wikiversity created'), _('# Wikiversity edited'), _('# Wikibooks created'), _('# Wikibooks edited'),
-              _('# Wikisource created'), _('# Wikisource edited'), _('# Wikinews created'), _('# Wikinews edited'),
-              _('# Wikiquote created'), _('# Wikiquote edited'), _('# Wiktionary created'), _('# Wiktionary edited'),
-              _('# Wikivoyage created'), _('# Wikivoyage edited'), _('# Wikispecies created'),
-              _('# Wikispecies edited'), _('# Metawiki created'), _('# Metawiki edited'), _('# MediaWiki created'),
-              _('# MediaWiki edited'), _('Directions related'), _('Learning'), _('Learning questions related')]
+              _('Partnerships activated'), _('Technologies used'),
+              _('# Wikipedia created'), _('# Wikipedia edited'),
+              _('# Commons created'), _('# Commons edited'),
+              _('# Wikidata created'), _('# Wikidata edited'),
+              _('# Wikiversity created'), _('# Wikiversity edited'),
+              _('# Wikibooks created'), _('# Wikibooks edited'),
+              _('# Wikisource created'), _('# Wikisource edited'),
+              _('# Wikinews created'), _('# Wikinews edited'),
+              _('# Wikiquote created'), _('# Wikiquote edited'),
+              _('# Wiktionary created'), _('# Wiktionary edited'),
+              _('# Wikivoyage created'), _('# Wikivoyage edited'),
+              _('# Wikispecies created'), _('# Wikispecies edited'),
+              _('# Metawiki created'), _('# Metawiki edited'),
+              _('# MediaWiki created'), _('# MediaWiki edited'),
+              _('Directions related'), _('Learning'), _('Learning questions related'), _('Metrics related')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
@@ -341,6 +362,12 @@ def export_report_instance(report_id=None):
         else:
             learning_questions_related = ""
 
+        # Metrics
+        if report.metrics_related.exists():
+            metrics_related = "; ".join(map(str, report.metrics_related.values_list("id", flat=True)))
+        else:
+            metrics_related = ""
+
         rows.append([id_, created_by, created_at, modified_by, modified_at, activity_associated, activity_other,
                      area_responsible, area_activated, initial_date, end_date, description, funding_associated, links,
                      public_communication, participants, feedbacks, editors, organizers, partners_activated,
@@ -349,12 +376,43 @@ def export_report_instance(report_id=None):
                      wikibooks_edited, wikisource_created, wikisource_edited, wikinews_created, wikinews_edited,
                      wikiquote_created, wikiquote_edited, wiktionary_created, wiktionary_edited, wikivoyage_created,
                      wikivoyage_edited, wikispecies_created, wikispecies_edited, metawiki_created, metawiki_edited,
-                     mediawiki_created, mediawiki_edited, directions_related, learning, learning_questions_related])
+                     mediawiki_created, mediawiki_edited, directions_related, learning, learning_questions_related,
+                     metrics_related])
 
     df = pd.DataFrame(rows, columns=header).drop_duplicates()
 
     df[_('Created at')] = df[_('Created at')].dt.tz_localize(None)
     df[_('Modified at')] = df[_('Modified at')].dt.tz_localize(None)
+    return df
+
+
+def export_operation_report(report_id=None):
+    header = [_('ID'), _('Report ID'), _('Metric ID'), _('Metric'), _('Number of people reached through social media'),
+              _('Number of new followers'), _('Number of mentions'), _('Number of community communications'),
+              _('Number of events'), _('Number of resources'), _('Number of partnerships activated'),
+              _('Number of new partnerships')]
+
+    if report_id:
+        operation_reports = OperationReport.objects.filter(report_id=report_id)
+    else:
+        operation_reports = OperationReport.objects.all()
+
+    rows = []
+    for operation_report in operation_reports:
+        rows.append([operation_report.id,
+                     operation_report.report_id,
+                     operation_report.metric_id,
+                     operation_report.metric.text,
+                     operation_report.number_of_people_reached_through_social_media,
+                     operation_report.number_of_new_followers,
+                     operation_report.number_of_mentions,
+                     operation_report.number_of_community_communications,
+                     operation_report.number_of_events,
+                     operation_report.number_of_resources,
+                     operation_report.number_of_partnerships_activated,
+                     operation_report.number_of_new_partnerships])
+
+    df = pd.DataFrame(rows, columns=header).drop_duplicates()
     return df
 
 
@@ -426,6 +484,34 @@ def export_user_profile(report_id=None):
                          instance.lattes or "",
                          instance.orcid or "",
                          instance.google_scholar or ""])
+
+    df = pd.DataFrame(rows, columns=header).drop_duplicates()
+    return df
+
+
+def export_funding(report_id=None):
+    header = [_('ID'), _('Funding'), _('Value'), _('Project ID'), _('Project'), _('Active?'), _('Type of project')]
+
+    if report_id:
+        fundings = Funding.objects.filter(funding_associated=report_id)
+    else:
+        fundings = Funding.objects.all()
+
+    rows = []
+    for funding in fundings:
+        type_of_funding = _("Ordinary")
+        if funding.current_poa:
+            type_of_funding = _("Current Plan of Activities")
+        elif funding.main_funding:
+            type_of_funding = _("Main funding")
+        rows.append([funding.id,
+                     funding.name,
+                     funding.value,
+                     funding.project_id,
+                     funding.project.text,
+                     funding.project.active,
+                     funding.project.type_of_funding,
+                     type_of_funding])
 
     df = pd.DataFrame(rows, columns=header).drop_duplicates()
     return df
@@ -561,7 +647,18 @@ def update_report(request, report_id):
         if report_form.is_valid() and operation_metrics.is_valid():
             report_instance = report_form.save(commit=False)
 
-            operation_metrics.save()
+            # Metrics
+            instances = operation_metrics.save()
+
+            metrics_related = list(report_form.cleaned_data["metrics_related"])
+            for instance in instances:
+                instance.report = report_instance
+                instance.save()
+                numbers = instance.number_of_people_reached_through_social_media + instance.number_of_new_followers + instance.number_of_mentions + instance.number_of_community_communications + instance.number_of_events + instance.number_of_resources + instance.number_of_partnerships_activated + instance.number_of_new_partnerships
+                if numbers > 0:
+                    metrics_related.append(instance.metric)
+
+            report_instance.metrics_related.set(metrics_related)
 
             # Editors
             editors = get_or_create_editors(request.POST["editors_string"])
@@ -599,10 +696,6 @@ def update_report(request, report_id):
             # Learning Questions
             learning_questions_related = report_form.cleaned_data["learning_questions_related"]
             report_instance.learning_questions_related.set(learning_questions_related)
-
-            # Metrics
-            metrics_related = report_form.cleaned_data["metrics_related"]
-            report_instance.metrics_related.set(metrics_related)
 
             report_instance.save()
             return redirect(reverse("report:detail_report", kwargs={"report_id": report_id}))

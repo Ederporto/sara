@@ -784,7 +784,8 @@ class ReportExportViewTest(TestCase):
                            _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'),
                            _('# Wikispecies created'), _('# Wikispecies edited'), _('# Metawiki created'),
                            _('# Metawiki edited'), _('# MediaWiki created'), _('# MediaWiki edited'),
-                           _('Directions related'), _('Learning'), _('Learning questions related')]
+                           _('Directions related'), _('Learning'), _('Learning questions related'),
+                           _('Metrics related')]
 
         self.report_1.area_activated.add(self.area_activated)
         self.report_1.funding_associated.add(self.funding_associated)
@@ -845,7 +846,8 @@ class ReportExportViewTest(TestCase):
                         self.report_1.mediawiki_edited,
                         "; ".join(map(str, self.report_1.directions_related.values_list("id", flat=True))),
                         self.report_1.learning,
-                        "; ".join(map(str, self.report_1.learning_questions_related.values_list("id", flat=True)))]
+                        "; ".join(map(str, self.report_1.learning_questions_related.values_list("id", flat=True))),
+                        "; ".join(map(str, self.report_1.metrics_related.values_list("id", flat=True)))]
 
         result = export_report_instance(report_id=self.report_1.id)
 
@@ -866,7 +868,8 @@ class ReportExportViewTest(TestCase):
                            _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'),
                            _('# Wikispecies created'), _('# Wikispecies edited'), _('# Metawiki created'),
                            _('# Metawiki edited'), _('# MediaWiki created'), _('# MediaWiki edited'),
-                           _('Directions related'), _('Learning'), _('Learning questions related')]
+                           _('Directions related'), _('Learning'), _('Learning questions related'),
+                           _('Metrics related')]
 
         area_activated = [""]
         funding_associated = [""]
@@ -893,8 +896,10 @@ class ReportExportViewTest(TestCase):
             directions_related = self.report_1.directions_related.values_list("id", flat=True)
         if self.report_1.learning_questions_related:
             learning_questions_related = self.report_1.learning_questions_related.values_list("id", flat=True)
+        if self.report_1.metrics_related:
+            metrics_related = self.report_1.metrics_related.values_list("id", flat=True)
 
-        expected_row_1 = [self.report_1.id, self.report_1.created_by.id, pd.to_datetime(self.report_1.created_at).tz_localize(None), self.report_1.modified_by.id, pd.to_datetime(self.report_1.modified_at).tz_localize(None), self.report_1.activity_associated.id, self.report_1.activity_other, self.report_1.area_responsible.id, "; ".join(map(str, area_activated)), self.report_1.initial_date, self.report_1.end_date, self.report_1.description, "; ".join(map(str, funding_associated)), self.report_1.links, self.report_1.public_communication, self.report_1.participants, self.report_1.feedbacks, "; ".join(editors), "; ".join(organizers), "; ".join(partners_activated), "; ".join(technologies_used), self.report_1.wikipedia_created, self.report_1.wikipedia_edited, self.report_1.commons_created, self.report_1.commons_edited, self.report_1.wikidata_created, self.report_1.wikidata_edited, self.report_1.wikiversity_created, self.report_1.wikiversity_edited, self.report_1.wikibooks_created, self.report_1.wikibooks_edited, self.report_1.wikisource_created, self.report_1.wikisource_edited, self.report_1.wikinews_created, self.report_1.wikinews_edited, self.report_1.wikiquote_created, self.report_1.wikiquote_edited, self.report_1.wiktionary_created, self.report_1.wiktionary_edited, self.report_1.wikivoyage_created, self.report_1.wikivoyage_edited, self.report_1.wikispecies_created, self.report_1.wikispecies_edited, self.report_1.metawiki_created, self.report_1.metawiki_edited, self.report_1.mediawiki_created, self.report_1.mediawiki_edited, "; ".join(map(str, directions_related)), self.report_1.learning, "; ".join(map(str, learning_questions_related))]
+        expected_row_1 = [self.report_1.id, self.report_1.created_by.id, pd.to_datetime(self.report_1.created_at).tz_localize(None), self.report_1.modified_by.id, pd.to_datetime(self.report_1.modified_at).tz_localize(None), self.report_1.activity_associated.id, self.report_1.activity_other, self.report_1.area_responsible.id, "; ".join(map(str, area_activated)), self.report_1.initial_date, self.report_1.end_date, self.report_1.description, "; ".join(map(str, funding_associated)), self.report_1.links, self.report_1.public_communication, self.report_1.participants, self.report_1.feedbacks, "; ".join(editors), "; ".join(organizers), "; ".join(partners_activated), "; ".join(technologies_used), self.report_1.wikipedia_created, self.report_1.wikipedia_edited, self.report_1.commons_created, self.report_1.commons_edited, self.report_1.wikidata_created, self.report_1.wikidata_edited, self.report_1.wikiversity_created, self.report_1.wikiversity_edited, self.report_1.wikibooks_created, self.report_1.wikibooks_edited, self.report_1.wikisource_created, self.report_1.wikisource_edited, self.report_1.wikinews_created, self.report_1.wikinews_edited, self.report_1.wikiquote_created, self.report_1.wikiquote_edited, self.report_1.wiktionary_created, self.report_1.wiktionary_edited, self.report_1.wikivoyage_created, self.report_1.wikivoyage_edited, self.report_1.wikispecies_created, self.report_1.wikispecies_edited, self.report_1.metawiki_created, self.report_1.metawiki_edited, self.report_1.mediawiki_created, self.report_1.mediawiki_edited, "; ".join(map(str, directions_related)), self.report_1.learning, "; ".join(map(str, learning_questions_related)), "; ".join(map(str, metrics_related))]
 
         if self.report_2.area_activated:
             area_activated = self.report_2.area_activated.values_list("id", flat=True)
@@ -935,7 +940,8 @@ class ReportExportViewTest(TestCase):
                            _('# Wiktionary edited'), _('# Wikivoyage created'), _('# Wikivoyage edited'),
                            _('# Wikispecies created'), _('# Wikispecies edited'), _('# Metawiki created'),
                            _('# Metawiki edited'), _('# MediaWiki created'), _('# MediaWiki edited'),
-                           _('Directions related'), _('Learning'), _('Learning questions related')]
+                           _('Directions related'), _('Learning'), _('Learning questions related'),
+                           _('Metrics related')]
 
         expected_row = [self.report_1.id,
                         self.report_1.created_by.id,
@@ -986,6 +992,7 @@ class ReportExportViewTest(TestCase):
                         self.report_1.mediawiki_edited,
                         "",
                         self.report_1.learning,
+                        "",
                         ""]
 
         result = export_report_instance(report_id=self.report_1.id)
