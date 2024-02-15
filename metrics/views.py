@@ -85,8 +85,9 @@ def get_metrics_and_aggregate_per_project(project_query=Q(active=True), metric_q
     return aggregated_metrics_and_results
 
 
-def get_goal_and_done_for_metric(metric):
-    reports = Report.objects.filter(metrics_related__in=[metric])
+def get_goal_and_done_for_metric(metric, supplementary_query=Q()):
+    query = Q(metrics_related__in=[metric]) & supplementary_query
+    reports = Report.objects.filter(query)
     goal = get_goal_for_metric(metric)
     done = get_done_for_report(reports, metric)
 
@@ -153,7 +154,7 @@ def get_done_for_report(reports, metric):
         "Number of new editors": Editor.objects.filter(editors__in=reports, account_creation_date__gte=F('editors__initial_date')).count() or 0,
         "Number of participants": reports.aggregate(total=Sum("participants"))["total"] or 0,
         "Number of partnerships activated": Partner.objects.filter(partners__in=reports).distinct().count() or 0,
-        "Number of new partnerships": 0, # OPERATION REPORT
+        "Number of new partnerships": operation_reports.aggregate(total=Sum("number_of_new_partnerships"))["total"] or 0,
         "Number of organizers": Organizer.objects.filter(organizers__in=reports).distinct().count() or 0,
         "Number of organizers retained": Organizer.objects.filter(retained=True, organizers__in=reports).distinct().count() or 0,
         "Number of resources": operation_reports.aggregate(total=Sum("number_of_resources"))["total"] or 0,
