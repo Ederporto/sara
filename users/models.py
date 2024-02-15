@@ -10,6 +10,7 @@ from django.contrib.auth.models import Group
 class TeamArea(models.Model):
     text = models.CharField(max_length=420)
     code = models.CharField(max_length=105)
+    color_code = models.CharField(max_length=2)
 
     class Meta:
         verbose_name = _("Team area")

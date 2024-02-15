@@ -723,11 +723,13 @@ class ReportExportViewTest(TestCase):
         with zipfile.ZipFile(buffer) as zip_file:
             expected_files = [
                 'csv/Report 1 - {}.csv'.format(datetime.today().strftime('%Y-%m-%d')),
+                'csv/Operation report 1 - {}.csv'.format(datetime.today().strftime('%Y-%m-%d')),
                 'csv/Metrics 1 - {}.csv'.format(datetime.today().strftime('%Y-%m-%d')),
                 'csv/Users 1 - {}.csv'.format(datetime.today().strftime('%Y-%m-%d')),
                 'csv/Areas 1 - {}.csv'.format(datetime.today().strftime('%Y-%m-%d')),
                 'csv/Directions 1 - {}.csv'.format(datetime.today().strftime('%Y-%m-%d')),
                 'csv/Editors 1 - {}.csv'.format(datetime.today().strftime('%Y-%m-%d')),
+                'csv/Fundings 1 - {}.csv'.format(datetime.today().strftime('%Y-%m-%d')),
                 'csv/Learning questions 1 - {}.csv'.format(datetime.today().strftime('%Y-%m-%d')),
                 'csv/Organizers 1 - {}.csv'.format(datetime.today().strftime('%Y-%m-%d')),
                 'csv/Partners 1 - {}.csv'.format(datetime.today().strftime('%Y-%m-%d')),
@@ -754,11 +756,13 @@ class ReportExportViewTest(TestCase):
         with zipfile.ZipFile(buffer) as zip_file:
             expected_files = [
                 'csv/Report - {}.csv'.format(postfix),
+                'csv/Operation report - {}.csv'.format(postfix),
                 'csv/Metrics - {}.csv'.format(postfix),
                 'csv/Users - {}.csv'.format(postfix),
                 'csv/Areas - {}.csv'.format(postfix),
                 'csv/Directions - {}.csv'.format(postfix),
                 'csv/Editors - {}.csv'.format(postfix),
+                'csv/Fundings - {}.csv'.format(postfix),
                 'csv/Learning questions - {}.csv'.format(postfix),
                 'csv/Organizers - {}.csv'.format(postfix),
                 'csv/Partners - {}.csv'.format(postfix),
