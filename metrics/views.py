@@ -50,6 +50,18 @@ def show_metrics_per_project(request):
 
 
 @login_required
+@permission_required("admin.delete_logentry")
+def show_detailed_metrics_per_project(request):
+    context = {
+        "poa_dataset": {},
+        "dataset": get_metrics_and_aggregate_per_project(Q(active=True)),
+        "title": _("Show metrics per project")
+    }
+    return render(request, "metrics/list_metrics_per_project.html", context)
+
+
+
+@login_required
 @permission_required("metrics.view_metric")
 def metrics_reports(request, metric_id):
     try:

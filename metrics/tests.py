@@ -151,6 +151,28 @@ class MetricViewsTests(TestCase):
         response = self.client.get(url)
         self.assertIn("dataset", str(response.context))
 
+    def test_show_detailed_metrics_per_project_fails_if_user_doesnt_have_permission(self):
+        self.client.login(username=self.username, password=self.password)
+        Project.objects.create(text="Project", current_poa=True)
+        url = reverse("metrics:detailed_per_project")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f"{reverse('login')}?next={url}")
+
+    def test_show_detailed_metrics_per_project_succeds_if_user_have_permission(self):
+        permission = Permission.objects.get(codename="delete_logentry")
+        self.user.user_permissions.add(permission)
+        self.client.login(username=self.username, password=self.password)
+        Project.objects.create(text="Project", current_poa=True)
+        url = reverse("metrics:detailed_per_project")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "metrics/list_metrics_per_project.html")
+
     def test_show_plan_of_activities_and_its_operational_metrics_if_they_exist(self):
         self.client.login(username=self.username, password=self.password)
         project = Project.objects.create(text="Plan of activities", current_poa=True)

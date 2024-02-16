@@ -9,6 +9,7 @@ urlpatterns = [
     path('about', views.about, name='about'),
     path('activities_plan', views.show_activities_plan, name='show_activities'),
     path('metrics_per_project', views.show_metrics_per_project, name='per_project'),
+    path('detailed_metrics_per_project', views.show_detailed_metrics_per_project, name='detailed_per_project'),
     path('update_metrics', views.update_metrics_relations, name='update_metrics'),
     path('metrics_reports/<int:metric_id>', views.metrics_reports, name='metrics_reports'),
     path("trimester", views.export_trimester_report, name="export_reports_per_trimester"),
