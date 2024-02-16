@@ -1,13 +1,16 @@
 import calendar
-from django.shortcuts import render, redirect, reverse
+import datetime
+from django.shortcuts import render, redirect, reverse, HttpResponse
 from django.utils.translation import gettext as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, Sum, F
 from metrics.models import Activity, Metric
 from report.models import Report, Editor, Organizer, Partner, Project, OperationReport
+from users.models import TeamArea
 from django import template
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
+from io import StringIO
 
 register = template.Library()
 calendar.setfirstweekday(calendar.SUNDAY)
@@ -44,6 +47,131 @@ def show_metrics_per_project(request):
     }
     # context = {"dataset": get_metrics_and_aggregate_per_project(Q(active=True, current_poa=True)), "title": _("Show metrics per project")}
     return render(request, "metrics/list_metrics_per_project.html", context)
+
+
+@login_required
+@permission_required("metrics.view_metric")
+def metrics_reports(request, metric_id):
+    try:
+        metric = Metric.objects.get(pk=metric_id)
+        reports = Report.objects.filter(metrics_related=metric_id).order_by("pk")
+
+        goals = get_goal_for_metric(metric)
+        filtered_goals = {key: value for key, value in goals.items() if goals[key] > 0}
+
+        values = []
+        for goal_key, goal_value in filtered_goals.items():
+            report_values = []
+            for report in reports:
+                done = get_done_for_report(Report.objects.filter(pk=report.id), metric)
+                report_values.append({
+                    "id": report.id,
+                    "description": report.description,
+                    "initial_date": report.initial_date,
+                    "end_date": report.end_date,
+                    "done": done[goal_key],
+                })
+            values.append({
+                "text": goal_key,
+                "goal": goal_value,
+                "done": sum([report_aux["done"] for report_aux in report_values]),
+                "reports": report_values
+            })
+
+        context = {"metric": metric, "values": values}
+
+        return render(request, "metrics/list_metrics_reports.html", context)
+    except ObjectDoesNotExist:
+        return redirect(reverse('metrics:per_project'))
+
+
+@login_required
+@permission_required("metrics.view_metric")
+def export_trimester_report(request):
+    buffer = StringIO()
+
+    get_results_divided_by_trimester(buffer)
+
+    response = HttpResponse(buffer.getvalue())
+    response['Content-Type'] = 'text/plain; charset=UTF-8'
+    response['Content-Disposition'] = 'attachment; filename="trimester_report.txt"'
+
+    return response
+
+
+@login_required
+@permission_required("metrics.view_metric")
+def export_trimester_report_by_by_area_responsible(request):
+    buffer = StringIO()
+
+    for area in TeamArea.objects.all():
+        get_results_divided_by_trimester(buffer, area)
+
+    response = HttpResponse(buffer.getvalue())
+    response['Content-Type'] = 'text/plain; charset=UTF-8'
+    response['Content-Disposition'] = 'attachment; filename="trimester_report.txt"'
+
+    return response
+
+
+def get_results_divided_by_trimester(buffer, area=None):
+    timespan_array = [
+        (datetime.date(datetime.datetime.today().year, 1, 1), datetime.date(datetime.datetime.today().year, 3, 31)),
+        (datetime.date(datetime.datetime.today().year, 4, 1), datetime.date(datetime.datetime.today().year, 6, 30)),
+        (datetime.date(datetime.datetime.today().year, 7, 1), datetime.date(datetime.datetime.today().year, 9, 30)),
+        (datetime.date(datetime.datetime.today().year, 10, 1), datetime.date(datetime.datetime.today().year, 12, 31)),
+        (datetime.date(datetime.datetime.today().year, 1, 1), datetime.date(datetime.datetime.today().year, 12, 31))
+    ]
+    if area:
+        report_query = Q(area_responsible=area)
+        header = "==" + area.text + "==\n<div class='wmb_report_table_container bd-" + area.color_code + "'>\n{| class='wikitable wmb_report_table'\n! colspan='7' class='bg-" + area.color_code + " co-" + area.color_code + "' | <h5 id='Metrics'>Operational and General metrics</h5>\n|-\n"
+        footer = "|}\n</div>\n"
+    else:
+        report_query = Q()
+        header = "{| class='wikitable wmb_report_table'\n"
+        footer = "|}\n"
+
+    poa_results = get_results_for_timespan(timespan_array, Q(project=Project.objects.get(current_poa=True), is_operation=True), report_query)
+    main_results = get_results_for_timespan(timespan_array, Q(project=Project.objects.get(main_funding=True)), report_query)
+
+
+    poa_wikitext = construct_wikitext(poa_results, header + "!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total\n|-\n")
+    main_wikitext = construct_wikitext(main_results, "")
+
+    buffer.write(poa_wikitext)
+    buffer.write(main_wikitext)
+    buffer.write(footer)
+
+
+def get_results_for_timespan(timespan_array, metric_query=Q(), report_query=Q()):
+    results = []
+    for metric in Metric.objects.filter(metric_query).order_by("activity_id"):
+        done_row = []
+        for time_ini, time_end in timespan_array:
+            supplementary_query = Q(end_date__gte=time_ini) & Q(end_date__lte=time_end) & report_query
+            goal, done = get_goal_and_done_for_metric(metric, supplementary_query=supplementary_query)
+            for key, value in goal.items():
+                if value != 0:
+                    done_row.append(done[key]) if done[key] else done_row.append("-")
+        results.append({"activity": metric.activity.text, "metric": metric.text, "done": done_row})
+    return results
+
+
+def construct_wikitext(results, wikitext):
+    activities = list(dict.fromkeys(row['activity'] for row in results))
+    other_activity = Activity.objects.get(pk=1).text in activities
+    for activity in activities:
+        metrics = [row for row in results if row['activity'] == activity]
+        rowspan = len(metrics)
+        if not other_activity:
+            header = "| rowspan='{}' | {} |".format(rowspan, activity) if len(metrics)>1 else "| {} |".format(activity)
+        else:
+            header = "| rowspan='{}' | - |".format(rowspan) if len(metrics) > 1 else "| - |"
+
+        for metric in metrics:
+            wikitext += header + "| {} || {}\n|-\n".format(metric["metric"], " || ".join(map(str, metric["done"])))
+            header = ""
+    return wikitext
 
 
 def get_metrics_and_aggregate_per_project(project_query=Q(active=True), metric_query=Q(), field=None):
@@ -169,6 +297,7 @@ def get_done_for_report(reports, metric):
         "Occurence": reports.filter(metrics_related__boolean_type=True).exists() or False,
     }
 
+
 def update_metrics_relations(request):
     main_funding = Project.objects.get(main_funding=True)
     editors_metrics = Metric.objects.filter(project=main_funding).filter(Q(number_of_editors__gt=0) | Q(number_of_editors_retained__gt=0) | Q(number_of_new_editors__gt=0))
@@ -178,40 +307,3 @@ def update_metrics_relations(request):
         report.save()
 
     return redirect(reverse("metrics:per_project"))
-
-
-@login_required
-@permission_required("metrics.view_metric")
-def metrics_reports(request, metric_id):
-    try:
-        metric = Metric.objects.get(pk=metric_id)
-        reports = Report.objects.filter(metrics_related=metric_id).order_by("pk")
-
-        goals = get_goal_for_metric(metric)
-        filtered_goals = {key: value for key, value in goals.items() if goals[key] > 0}
-
-        values = []
-        for goal_key, goal_value in filtered_goals.items():
-            report_values = []
-            for report in reports:
-                done = get_done_for_report(Report.objects.filter(pk=report.id), metric)
-                report_values.append({
-                    "id": report.id,
-                    "description": report.description,
-                    "initial_date": report.initial_date,
-                    "end_date": report.end_date,
-                    "done": done[goal_key],
-                })
-            values.append({
-                "text": goal_key,
-                "goal": goal_value,
-                "done": sum([report_aux["done"] for report_aux in report_values]),
-                "reports": report_values
-            })
-
-        context = {"metric": metric, "values": values}
-
-        return render(request, "metrics/list_metrics_reports.html", context)
-    except ObjectDoesNotExist:
-        return redirect(reverse('metrics:per_project'))
-

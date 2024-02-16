@@ -24,6 +24,8 @@ class TeamArea(models.Model):
             raise ValidationError(_("You need to fill the text field"))
         if not self.code:
             raise ValidationError(_("You need to fill the code field"))
+        if not self.color_code:
+            raise ValidationError(_("You need to fill the color code field"))
 
 
 class Position(models.Model):

@@ -18,13 +18,14 @@ class TeamAreaModelTests(TestCase):
     def setUp(self):
         self.text = "Team Area"
         self.code = "team_area"
+        self.color_code = "t1"
         self.team_area = TeamArea.objects.create(text=self.text, code=self.code)
 
     def test_str_method(self):
         self.assertEqual(str(self.team_area), self.text)
 
     def test_clean_method(self):
-        team_area2 = TeamArea.objects.create(text="Team Area 2", code="team_area_2")
+        team_area2 = TeamArea.objects.create(text="Team Area 2", code="team_area_2", color_code="t2")
         team_area2.full_clean()
 
         with self.assertRaises(ValidationError):
@@ -34,6 +35,11 @@ class TeamAreaModelTests(TestCase):
         with self.assertRaises(ValidationError):
             team_area2.text = self.text
             team_area2.code = ""
+            team_area2.full_clean()
+
+        with self.assertRaises(ValidationError):
+            team_area2.code = self.code
+            team_area2.color_code = ""
             team_area2.full_clean()
 
     def test_trying_to_delete_team_area_that_are_responsible_for_events_fails(self):

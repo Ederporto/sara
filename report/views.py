@@ -3,7 +3,7 @@ import pandas as pd
 import zipfile
 
 from django.forms import inlineformset_factory
-from io import StringIO, BytesIO
+from io import BytesIO
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, reverse, HttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
@@ -14,10 +14,9 @@ from django.db.models import Q
 from metrics.models import Metric, Project
 from report.models import Editor, Organizer, Partner, \
     Funding, Technology, Report, AreaActivated, Activity, OperationReport
-from users.models import UserProfile, TeamArea
+from users.models import UserProfile
 from report.forms import NewReportForm, AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm, OperationForm,\
     OperationUpdateFormSet
-from metrics.views import get_goal_and_done_for_metric
 
 
 # CREATE
@@ -499,9 +498,9 @@ def export_funding(report_id=None):
     rows = []
     for funding in fundings:
         type_of_funding = _("Ordinary")
-        if funding.current_poa:
+        if funding.project.current_poa:
             type_of_funding = _("Current Plan of Activities")
-        elif funding.main_funding:
+        elif funding.project.main_funding:
             type_of_funding = _("Main funding")
         rows.append([funding.id,
                      funding.name,
@@ -509,7 +508,6 @@ def export_funding(report_id=None):
                      funding.project_id,
                      funding.project.text,
                      funding.project.active,
-                     funding.project.type_of_funding,
                      type_of_funding])
 
     df = pd.DataFrame(rows, columns=header).drop_duplicates()
@@ -635,90 +633,6 @@ def export_technologies_used(report_id=None):
     return df
 
 
-@login_required
-@permission_required("report.view_report")
-def export_trimester_report(request):
-    buffer = StringIO()
-
-    get_results_divided_by_trimester(buffer)
-
-    response = HttpResponse(buffer.getvalue())
-    response['Content-Type'] = 'text/plain; charset=UTF-8'
-
-    return response
-
-
-@login_required
-@permission_required("report.view_report")
-def export_trimester_report_by_by_area_responsible(request):
-    buffer = StringIO()
-
-    for area in TeamArea.objects.all():
-        get_results_divided_by_trimester(buffer, area)
-
-    response = HttpResponse(buffer.getvalue())
-    response['Content-Type'] = 'text/plain; charset=UTF-8'
-
-    return response
-
-
-def get_results_divided_by_trimester(buffer, area=None):
-    timespan_array = [
-        (datetime.date(datetime.datetime.today().year, 1, 1), datetime.date(datetime.datetime.today().year, 3, 31)),
-        (datetime.date(datetime.datetime.today().year, 4, 1), datetime.date(datetime.datetime.today().year, 6, 30)),
-        (datetime.date(datetime.datetime.today().year, 7, 1), datetime.date(datetime.datetime.today().year, 9, 30)),
-        (datetime.date(datetime.datetime.today().year, 10, 1), datetime.date(datetime.datetime.today().year, 12, 31)),
-        (datetime.date(datetime.datetime.today().year, 1, 1), datetime.date(datetime.datetime.today().year, 12, 31))
-    ]
-    if area:
-        report_query = Q(area_responsible=area)
-        header = "==" + area.text + "==\n<div class='wmb_report_table_container bd-" + area.color_code + "'>\n{| class='wikitable wmb_report_table'\n! colspan='7' class='bg-" + area.color_code + " co-" + area.color_code + "' | <h5 id='Metrics'>Operational and General metrics</h5>\n|-\n"
-        footer = "|}\n</div>\n"
-    else:
-        report_query = Q()
-        header = "{| class='wikitable wmb_report_table'\n"
-        footer = "|}\n"
-
-    poa_results = get_results_for_timespan(timespan_array, Q(project=Project.objects.get(current_poa=True), is_operation=True), report_query)
-    main_results = get_results_for_timespan(timespan_array, Q(project=Project.objects.get(main_funding=True)), report_query)
-
-
-    poa_wikitext = construct_wikitext(poa_results, header + "!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total\n|-\n")
-    main_wikitext = construct_wikitext(main_results, "")
-
-    buffer.write(poa_wikitext)
-    buffer.write(main_wikitext)
-    buffer.write(footer)
-
-def get_results_for_timespan(timespan_array, metric_query=Q(), report_query=Q()):
-    results = []
-    for metric in Metric.objects.filter(metric_query).order_by("activity_id"):
-        done_row = []
-        for time_ini, time_end in timespan_array:
-            supplementary_query = Q(end_date__gte=time_ini) & Q(end_date__lte=time_end) & report_query
-            goal, done = get_goal_and_done_for_metric(metric, supplementary_query=supplementary_query)
-            for key, value in goal.items():
-                if value != 0:
-                    done_row.append(done[key]) if done[key] else done_row.append("-")
-        results.append({"activity": metric.activity.text, "metric": metric.text, "done": done_row})
-    return results
-
-
-def construct_wikitext(results, wikitext):
-    activities = list(dict.fromkeys(row['activity'] for row in results))
-    other_activity = Activity.objects.get(pk=1).text in activities
-    for activity in activities:
-        metrics = [row for row in results if row['activity'] == activity]
-        rowspan = len(metrics)
-        if not other_activity:
-            header = "| rowspan='{}' | {} |".format(rowspan, activity) if len(metrics)>1 else "| {} |".format(activity)
-        else:
-            header = "| rowspan='{}' | - |".format(rowspan)
-
-        for metric in metrics:
-            wikitext += header + "| {} || {}\n|-\n".format(metric["metric"], " || ".join(map(str, metric["done"])))
-            header = ""
-    return wikitext
 
 # UPDATE
 @login_required

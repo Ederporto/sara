@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 from .models import Objective, Area, Metric, Activity, Project
-from report.models import Report, Editor
+from report.models import Report, Editor, OperationReport, Direction, LearningArea, StrategicLearningQuestion
 from users.models import User, UserProfile, TeamArea
 from strategy.models import StrategicAxis
 from .views import get_metrics_and_aggregate_per_project
@@ -524,3 +524,179 @@ class TagsTests(TestCase):
 
         result = is_yesno(1)
         self.assertFalse(result)
+
+
+class MetricsExportTests(TestCase):
+    def setUp(self):
+        self.username = "testuser"
+        self.password = "testpass"
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.user_profile = UserProfile.objects.get(user=self.user)
+        self.view_metrics_permission = Permission.objects.get(codename="view_metric")
+        self.change_metrics_permission = Permission.objects.get(codename="change_metric")
+        self.user.user_permissions.add(self.view_metrics_permission)
+        self.user.user_permissions.add(self.change_metrics_permission)
+        self.poa_project = Project.objects.create(text="POA", current_poa=True)
+        self.main_project = Project.objects.create(text="Main", main_funding=True)
+        self.other_activity = Activity.objects.create(text="Other activity")
+        self.activity = Activity.objects.create(text="Activity")
+
+    def test_export_trimester_report_succeds_if_user_is_authenticated(self):
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("metrics:export_reports_per_trimester")
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/plain; charset=UTF-8')
+        self.assertIn('Content-Disposition', response)
+        self.assertEqual(response['Content-Disposition'], 'attachment; filename="trimester_report.txt"')
+        self.assertNotEqual(response.content, b'')
+        expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total\n|-\n|}\n"
+        self.assertEqual(response.content, expected_content)
+
+    def test_export_trimester_report_fails_if_user_is_unauthenticated(self):
+        self.user.user_permissions.remove(self.view_metrics_permission)
+        self.client.login(username=self.username, password=self.password)
+
+        url = reverse("metrics:export_reports_per_trimester")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f"{reverse('login')}?next={url}")
+
+    def test_export_trimester_report_exports_activities_results_with_hifens_when_nothing_was_done(self):
+        self.client.login(username=self.username, password=self.password)
+        metric = Metric.objects.create(text="Metric", activity=self.activity, is_operation=True,
+                                       number_of_events=5)
+        metric.project.add(self.poa_project)
+        metric.save()
+
+        url = reverse("metrics:export_reports_per_trimester")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/plain; charset=UTF-8')
+        self.assertIn('Content-Disposition', response)
+        self.assertEqual(response['Content-Disposition'], 'attachment; filename="trimester_report.txt"')
+        self.assertNotEqual(response.content, b'')
+        expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total\n|-\n| Activity || Metric || - || - || - || - || -\n|-\n|}\n"
+        self.assertEqual(response.content, expected_content)
+
+    def test_export_trimester_report_exports_activities_results_with_number_when_something_was_done(self):
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("metrics:export_reports_per_trimester")
+        area_reponsible = TeamArea.objects.create(text="Area")
+        report = Report.objects.create(description="Report 1",
+                                       created_by=self.user_profile,
+                                       modified_by=self.user_profile,
+                                       initial_date=datetime.now().date(),
+                                       learning="Learnings!" * 51,
+                                       activity_associated=self.activity,
+                                       area_responsible=area_reponsible,
+                                       links="Links")
+        metric = Metric.objects.create(text="Metric", activity=self.activity, is_operation=True, number_of_events=5)
+        metric.project.add(self.poa_project)
+        metric.save()
+        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
+        directions_related = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
+        learning_area = LearningArea.objects.create(text="Learning area")
+        learning_questions_related = StrategicLearningQuestion.objects.create(text="Strategic Learning Question", learning_area=learning_area)
+
+        report.directions_related.add(directions_related)
+        report.learning_questions_related.add(learning_questions_related)
+        report.metrics_related.add(metric)
+        report.save()
+
+        operation_report = OperationReport.objects.create(metric=metric, report=report, number_of_events=3, number_of_resources=2)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/plain; charset=UTF-8')
+        self.assertIn('Content-Disposition', response)
+        self.assertEqual(response['Content-Disposition'], 'attachment; filename="trimester_report.txt"')
+        self.assertNotEqual(response.content, b'')
+        expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total\n|-\n| " + bytes(self.activity.text, 'utf-8') + b" || " + bytes(metric.text, 'utf-8') + b" || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report.number_of_events), 'utf-8') + b"\n|-\n|}\n"
+        self.assertEqual(response.content, expected_content)
+
+    def test_export_trimester_report_exports_activities_results_of_main_funding_project(self):
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("metrics:export_reports_per_trimester")
+        area_reponsible = TeamArea.objects.create(text="Area")
+        report = Report.objects.create(description="Report 1",
+                                       created_by=self.user_profile,
+                                       modified_by=self.user_profile,
+                                       initial_date=datetime.now().date(),
+                                       learning="Learnings!" * 51,
+                                       activity_associated=self.activity,
+                                       area_responsible=area_reponsible,
+                                       links="Links")
+        metric = Metric.objects.create(text="Metric", activity=self.other_activity, number_of_events=5)
+        metric.project.add(self.main_project)
+        metric.save()
+        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
+        directions_related = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
+        learning_area = LearningArea.objects.create(text="Learning area")
+        learning_questions_related = StrategicLearningQuestion.objects.create(text="Strategic Learning Question", learning_area=learning_area)
+
+        report.directions_related.add(directions_related)
+        report.learning_questions_related.add(learning_questions_related)
+        report.metrics_related.add(metric)
+        report.save()
+
+        operation_report = OperationReport.objects.create(metric=metric, report=report, number_of_events=6, number_of_resources=2)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/plain; charset=UTF-8')
+        self.assertIn('Content-Disposition', response)
+        self.assertEqual(response['Content-Disposition'], 'attachment; filename="trimester_report.txt"')
+        self.assertNotEqual(response.content, b'')
+        expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total\n|-\n| - || " + bytes(metric.text, 'utf-8') + b" || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report.number_of_events), 'utf-8') + b"\n|-\n|}\n"
+        self.assertEqual(response.content, expected_content)
+
+    def test_export_trimester_report_by_area_succeds_if_user_is_authenticated(self):
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("metrics:export_reports_per_area")
+
+        area_reponsible = TeamArea.objects.create(text="Area", code="area", color_code="ar")
+        report = Report.objects.create(description="Report 1",
+                                       created_by=self.user_profile,
+                                       modified_by=self.user_profile,
+                                       initial_date=datetime.now().date(),
+                                       learning="Learnings!" * 51,
+                                       activity_associated=self.activity,
+                                       area_responsible=area_reponsible,
+                                       links="Links")
+        metric = Metric.objects.create(text="Metric", activity=self.activity, is_operation=True, number_of_events=5)
+        metric.project.add(self.main_project)
+        metric.save()
+        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
+        directions_related = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
+        learning_area = LearningArea.objects.create(text="Learning area")
+        learning_questions_related = StrategicLearningQuestion.objects.create(text="Strategic Learning Question",
+                                                                              learning_area=learning_area)
+
+        report.directions_related.add(directions_related)
+        report.learning_questions_related.add(learning_questions_related)
+        report.metrics_related.add(metric)
+        report.save()
+
+        operation_report = OperationReport.objects.create(metric=metric, report=report, number_of_events=6, number_of_resources=2)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/plain; charset=UTF-8')
+        self.assertIn('Content-Disposition', response)
+        self.assertEqual(response['Content-Disposition'], 'attachment; filename="trimester_report.txt"')
+        self.assertNotEqual(response.content, b'')
+        expected_content = b"==" + bytes(area_reponsible.text, 'utf-8') + b"==\n<div class='wmb_report_table_container bd-" + bytes(area_reponsible.color_code, 'utf-8') + b"'>\n{| class='wikitable wmb_report_table'\n! colspan='7' class='bg-" + bytes(area_reponsible.color_code, 'utf-8') + b" co-" + bytes(area_reponsible.color_code, 'utf-8') + b"' | <h5 id='Metrics'>Operational and General metrics</h5>\n|-\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total\n|-\n| " + bytes(self.activity.text, 'utf-8') + b" || " + bytes(metric.text, 'utf-8') + b" || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report.number_of_events), 'utf-8') + b"\n|-\n|}\n</div>\n"
+        self.assertEqual(response.content, expected_content)
+
+    def test_export_trimester_report_by_area_fails_if_user_is_unauthenticated(self):
+        self.user.user_permissions.remove(self.view_metrics_permission)
+        self.client.login(username=self.username, password=self.password)
+
+        url = reverse("metrics:export_reports_per_trimester")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f"{reverse('login')}?next={url}")

@@ -5,18 +5,18 @@ from io import BytesIO
 from django.test import TestCase
 from django.http import JsonResponse
 from django.urls import reverse
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from django.utils.translation import gettext as _
-from .models import Funding, Partner, Technology, AreaActivated, StrategicLearningQuestion, Report, StrategicAxis,\
-    Editor, LearningArea, Organizer, Project
+from .models import Funding, Partner, Technology, AreaActivated, StrategicLearningQuestion, Report, Editor, \
+    LearningArea, Organizer, Project, OperationReport
 from metrics.models import Metric, StrategicAxis
 from users.models import TeamArea, UserProfile, User
 from metrics.models import Activity, Area
 from strategy.models import Direction
 from datetime import datetime
 from django.contrib.auth.models import Permission
-from .forms import NewReportForm, AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm, OperationForm, activities_associated_as_choices, learning_areas_as_choices
-from .views import export_report_instance, export_metrics, export_user_profile, export_area_activated, export_directions_related, export_editors, export_learning_questions_related, export_organizers, export_partners_activated, export_technologies_used, get_or_create_editors, get_or_create_organizers
+from .forms import NewReportForm, AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm, activities_associated_as_choices, learning_areas_as_choices
+from .views import export_report_instance, export_metrics, export_user_profile, export_area_activated, export_directions_related, export_editors, export_learning_questions_related, export_organizers, export_partners_activated, export_technologies_used, get_or_create_editors, get_or_create_organizers, export_operation_report, export_funding
 
 
 class ReportAddViewTest(TestCase):
@@ -393,11 +393,11 @@ class ReportAddViewTest(TestCase):
         self.assertIsNone(response.json()["objects"])
 
     def test_get_metrics_based_on_fundings_associated(self):
-        activities_plan = Project.objects.create(text="Activities plan")
+        Project.objects.create(text="Activities plan")
         project_1 = Project.objects.create(text="Project 1")
         project_2 = Project.objects.create(text="Project 2")
         funding_1 = Funding.objects.create(name="Funding 1", project=project_1)
-        funding_2 = Funding.objects.create(name="Funding 2", project=project_2)
+        Funding.objects.create(name="Funding 2", project=project_2)
         activity_1 = Activity.objects.create(text="Activity 1")
         activity_2 = Activity.objects.create(text="Activity 2")
         metric_1 = Metric.objects.create(activity=activity_1, text="Metric 1")
@@ -418,16 +418,16 @@ class ReportAddViewTest(TestCase):
         self.assertNotEqual(response.json()["objects"][0]["metrics"][0]["activity_id"], activity_2.id)
 
     def test_get_metrics_of_report_instance(self):
-        activities_plan = Project.objects.create(text="Activities plan")
-        project_1 = Project.objects.create(text="Project 1")
-        other_activity = Activity.objects.create(text="Other Activity")
+        Project.objects.create(text="Activities plan")
+        Project.objects.create(text="Project 1")
+        Activity.objects.create(text="Other Activity")
         activity = Activity.objects.create(text="Activity")
 
         area_reponsible = TeamArea.objects.create(text="Area")
         strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
-        directions_related = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
+        Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
         learning_area = LearningArea.objects.create(text="Learning area")
-        learning_questions_related = StrategicLearningQuestion.objects.create(text="Strategic Learning Question",
+        StrategicLearningQuestion.objects.create(text="Strategic Learning Question",
                                                                                    learning_area=learning_area)
         metric_1 = Metric.objects.create(text="Metric 1", activity=activity)
 
@@ -452,7 +452,7 @@ class ReportAddViewTest(TestCase):
         self.assertEqual(response.json()["objects"][0]["metrics"][0]["activity_id"], activity.id)
 
     def test_get_metrics_of_report_instance_with_other_metrics(self):
-        activities_plan = Project.objects.create(text="Activities plan")
+        Project.objects.create(text="Activities plan")
         project_1 = Project.objects.create(text="Project 1")
         other_activity = Activity.objects.create(text="Other Activity")
         area = Area.objects.create(text="Area")
@@ -462,10 +462,9 @@ class ReportAddViewTest(TestCase):
 
         area_reponsible = TeamArea.objects.create(text="Area")
         strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
-        directions_related = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
+        Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
         learning_area = LearningArea.objects.create(text="Learning area")
-        learning_questions_related = StrategicLearningQuestion.objects.create(text="Strategic Learning Question",
-                                                                                   learning_area=learning_area)
+        StrategicLearningQuestion.objects.create(text="Strategic Learning Question", learning_area=learning_area)
         metric_1 = Metric.objects.create(text="Metric 1", activity=activity)
         metric_2 = Metric.objects.create(text="Metric 2", activity=other_activity)
 
@@ -681,7 +680,7 @@ class ReportExportViewTest(TestCase):
 
         self.area_activated = AreaActivated.objects.create(text="Area activated")
         self.project = Project.objects.create(text="Project")
-        self.funding_associated = Funding.objects.create(name="Funding", project=self.project)
+        self.funding_associated = Funding.objects.create(name="Funding", project=self.project, value=12)
         self.editors = Editor.objects.create(username="Editor")
         self.organizers = Organizer.objects.create(name="Organizer")
         self.partners_activated = Partner.objects.create(name="Partner")
@@ -691,6 +690,7 @@ class ReportExportViewTest(TestCase):
         self.learning_area = LearningArea.objects.create(text="Learning area")
         self.learning_questions_related = StrategicLearningQuestion.objects.create(text="Strategic Learning Question",
                                                                                    learning_area=self.learning_area)
+        self.metrics_related = Metric.objects.create(text="Metric", activity=self.activity_associated)
 
     def test_export_report_is_only_possible_for_users_with_permissions(self):
         self.user.user_permissions.remove(self.view_permission)
@@ -799,6 +799,7 @@ class ReportExportViewTest(TestCase):
         self.report_1.technologies_used.add(self.technologies_used)
         self.report_1.directions_related.add(self.directions_related)
         self.report_1.learning_questions_related.add(self.learning_questions_related)
+        self.report_1.metrics_related.add(self.metrics_related)
         self.report_1.save()
 
         expected_row = [self.report_1.id,
@@ -883,6 +884,7 @@ class ReportExportViewTest(TestCase):
         technologies_used = [""]
         directions_related = [""]
         learning_questions_related = [""]
+        metrics_related = [""]
 
         if self.report_1.area_activated:
             area_activated = self.report_1.area_activated.values_list("id", flat=True)
@@ -1017,45 +1019,44 @@ class ReportExportViewTest(TestCase):
                            _('# Wikispecies edited'), _('# Metawiki created'), _('# Metawiki edited'),
                            _('# MediaWiki created'), _('# MediaWiki edited')]
 
-        metric = Metric.objects.create(text="Metric", activity=self.activity_associated)
-        expected_row = [metric.id,
-                        metric.text,
-                        metric.activity_id,
-                        metric.activity.text,
-                        metric.activity.code,
-                        metric.number_of_editors,
-                        metric.number_of_participants,
-                        metric.number_of_partnerships_activated,
-                        metric.number_of_feedbacks,
-                        metric.number_of_events,
-                        metric.other_type,
-                        metric.observation,
-                        metric.wikipedia_created,
-                        metric.wikipedia_edited,
-                        metric.commons_created,
-                        metric.commons_edited,
-                        metric.wikidata_created,
-                        metric.wikidata_edited,
-                        metric.wikiversity_created,
-                        metric.wikiversity_edited,
-                        metric.wikibooks_created,
-                        metric.wikibooks_edited,
-                        metric.wikisource_created,
-                        metric.wikisource_edited,
-                        metric.wikinews_created,
-                        metric.wikinews_edited,
-                        metric.wikiquote_created,
-                        metric.wikiquote_edited,
-                        metric.wiktionary_created,
-                        metric.wiktionary_edited,
-                        metric.wikivoyage_created,
-                        metric.wikivoyage_edited,
-                        metric.wikispecies_created,
-                        metric.wikispecies_edited,
-                        metric.metawiki_created,
-                        metric.metawiki_edited,
-                        metric.mediawiki_created,
-                        metric.mediawiki_edited]
+        expected_row = [self.metrics_related.id,
+                        self.metrics_related.text,
+                        self.metrics_related.activity_id,
+                        self.metrics_related.activity.text,
+                        self.metrics_related.activity.code,
+                        self.metrics_related.number_of_editors,
+                        self.metrics_related.number_of_participants,
+                        self.metrics_related.number_of_partnerships_activated,
+                        self.metrics_related.number_of_feedbacks,
+                        self.metrics_related.number_of_events,
+                        self.metrics_related.other_type,
+                        self.metrics_related.observation,
+                        self.metrics_related.wikipedia_created,
+                        self.metrics_related.wikipedia_edited,
+                        self.metrics_related.commons_created,
+                        self.metrics_related.commons_edited,
+                        self.metrics_related.wikidata_created,
+                        self.metrics_related.wikidata_edited,
+                        self.metrics_related.wikiversity_created,
+                        self.metrics_related.wikiversity_edited,
+                        self.metrics_related.wikibooks_created,
+                        self.metrics_related.wikibooks_edited,
+                        self.metrics_related.wikisource_created,
+                        self.metrics_related.wikisource_edited,
+                        self.metrics_related.wikinews_created,
+                        self.metrics_related.wikinews_edited,
+                        self.metrics_related.wikiquote_created,
+                        self.metrics_related.wikiquote_edited,
+                        self.metrics_related.wiktionary_created,
+                        self.metrics_related.wiktionary_edited,
+                        self.metrics_related.wikivoyage_created,
+                        self.metrics_related.wikivoyage_edited,
+                        self.metrics_related.wikispecies_created,
+                        self.metrics_related.wikispecies_edited,
+                        self.metrics_related.metawiki_created,
+                        self.metrics_related.metawiki_edited,
+                        self.metrics_related.mediawiki_created,
+                        self.metrics_related.mediawiki_edited]
 
         result = export_metrics(report_id=self.report_1.id)
 
@@ -1075,9 +1076,8 @@ class ReportExportViewTest(TestCase):
                            _('# Wikispecies edited'), _('# Metawiki created'), _('# Metawiki edited'),
                            _('# MediaWiki created'), _('# MediaWiki edited')]
 
-        metric_1 = Metric.objects.create(text="Metric 1", activity=self.activity_associated)
         metric_2 = Metric.objects.create(text="Metric 2", activity=self.activity_associated)
-        expected_row_1 = [metric_1.id, metric_1.text, metric_1.activity_id, metric_1.activity.text, metric_1.activity.code, metric_1.number_of_editors, metric_1.number_of_participants, metric_1.number_of_partnerships_activated, metric_1.number_of_feedbacks, metric_1.number_of_events, metric_1.other_type, metric_1.observation, metric_1.wikipedia_created, metric_1.wikipedia_edited, metric_1.commons_created, metric_1.commons_edited, metric_1.wikidata_created, metric_1.wikidata_edited, metric_1.wikiversity_created, metric_1.wikiversity_edited, metric_1.wikibooks_created, metric_1.wikibooks_edited, metric_1.wikisource_created, metric_1.wikisource_edited, metric_1.wikinews_created, metric_1.wikinews_edited, metric_1.wikiquote_created, metric_1.wikiquote_edited, metric_1.wiktionary_created, metric_1.wiktionary_edited, metric_1.wikivoyage_created, metric_1.wikivoyage_edited, metric_1.wikispecies_created, metric_1.wikispecies_edited, metric_1.metawiki_created, metric_1.metawiki_edited, metric_1.mediawiki_created, metric_1.mediawiki_edited]
+        expected_row_1 = [self.metrics_related.id, self.metrics_related.text, self.metrics_related.activity_id, self.metrics_related.activity.text, self.metrics_related.activity.code, self.metrics_related.number_of_editors, self.metrics_related.number_of_participants, self.metrics_related.number_of_partnerships_activated, self.metrics_related.number_of_feedbacks, self.metrics_related.number_of_events, self.metrics_related.other_type, self.metrics_related.observation, self.metrics_related.wikipedia_created, self.metrics_related.wikipedia_edited, self.metrics_related.commons_created, self.metrics_related.commons_edited, self.metrics_related.wikidata_created, self.metrics_related.wikidata_edited, self.metrics_related.wikiversity_created, self.metrics_related.wikiversity_edited, self.metrics_related.wikibooks_created, self.metrics_related.wikibooks_edited, self.metrics_related.wikisource_created, self.metrics_related.wikisource_edited, self.metrics_related.wikinews_created, self.metrics_related.wikinews_edited, self.metrics_related.wikiquote_created, self.metrics_related.wikiquote_edited, self.metrics_related.wiktionary_created, self.metrics_related.wiktionary_edited, self.metrics_related.wikivoyage_created, self.metrics_related.wikivoyage_edited, self.metrics_related.wikispecies_created, self.metrics_related.wikispecies_edited, self.metrics_related.metawiki_created, self.metrics_related.metawiki_edited, self.metrics_related.mediawiki_created, self.metrics_related.mediawiki_edited]
         expected_row_2 = [metric_2.id, metric_2.text, metric_2.activity_id, metric_2.activity.text, metric_2.activity.code, metric_2.number_of_editors, metric_2.number_of_participants, metric_2.number_of_partnerships_activated, metric_2.number_of_feedbacks, metric_2.number_of_events, metric_2.other_type, metric_2.observation, metric_2.wikipedia_created, metric_2.wikipedia_edited, metric_2.commons_created, metric_2.commons_edited, metric_2.wikidata_created, metric_2.wikidata_edited, metric_2.wikiversity_created, metric_2.wikiversity_edited, metric_2.wikibooks_created, metric_2.wikibooks_edited, metric_2.wikisource_created, metric_2.wikisource_edited, metric_2.wikinews_created, metric_2.wikinews_edited, metric_2.wikiquote_created, metric_2.wikiquote_edited, metric_2.wiktionary_created, metric_2.wiktionary_edited, metric_2.wikivoyage_created, metric_2.wikivoyage_edited, metric_2.wikispecies_created, metric_2.wikispecies_edited, metric_2.metawiki_created, metric_2.metawiki_edited, metric_2.mediawiki_created, metric_2.mediawiki_edited]
 
         expected_rows = [expected_row_1, expected_row_2]
@@ -1339,6 +1339,176 @@ class ReportExportViewTest(TestCase):
         result = export_technologies_used()
         self.assertTrue(result[result.isin(expected_df)].equals(expected_df))
 
+    def test_export_operation_reports(self):
+        expected_header = [_('ID'), _('Report ID'), _('Metric ID'), _('Metric'), _('Number of people reached through social media'),
+              _('Number of new followers'), _('Number of mentions'), _('Number of community communications'),
+              _('Number of events'), _('Number of resources'), _('Number of partnerships activated'),
+              _('Number of new partnerships')]
+
+        operation_report = OperationReport.objects.create(metric=self.metrics_related,
+                                                          report=self.report_1,
+                                                          number_of_events=1,
+                                                          number_of_mentions=2,
+                                                          number_of_resources=3,
+                                                          number_of_people_reached_through_social_media=4,
+                                                          number_of_new_followers=5,
+                                                          number_of_community_communications=6,
+                                                          number_of_new_partnerships=7,
+                                                          number_of_partnerships_activated=8)
+        expected_row = [operation_report.id,
+                        operation_report.report.id,
+                        operation_report.metric.id,
+                        operation_report.metric.text,
+                        operation_report.number_of_people_reached_through_social_media,
+                        operation_report.number_of_new_followers,
+                        operation_report.number_of_mentions,
+                        operation_report.number_of_community_communications,
+                        operation_report.number_of_events,
+                        operation_report.number_of_resources,
+                        operation_report.number_of_partnerships_activated,
+                        operation_report.number_of_new_partnerships]
+
+        result = export_operation_report(report_id=self.report_1.id)
+
+        self.assertTrue(result[result.isin(expected_row)].equals(pd.DataFrame([expected_row], columns=expected_header)))
+
+    def test_export_operation_report_without_report_id_returns_operation_reports_from_all_reports(self):
+        expected_header = [_('ID'), _('Report ID'), _('Metric ID'), _('Metric'),
+                           _('Number of people reached through social media'),
+                           _('Number of new followers'), _('Number of mentions'),
+                           _('Number of community communications'),
+                           _('Number of events'), _('Number of resources'), _('Number of partnerships activated'),
+                           _('Number of new partnerships')]
+
+        operation_report_1 = OperationReport.objects.create(metric=self.metrics_related,
+                                                            report=self.report_1,
+                                                            number_of_events=1,
+                                                            number_of_mentions=2,
+                                                            number_of_resources=3,
+                                                            number_of_people_reached_through_social_media=4,
+                                                            number_of_new_followers=5,
+                                                            number_of_community_communications=6,
+                                                            number_of_new_partnerships=7,
+                                                            number_of_partnerships_activated=8)
+        operation_report_2 = OperationReport.objects.create(metric=self.metrics_related,
+                                                            report=self.report_2,
+                                                            number_of_events=1,
+                                                            number_of_mentions=2,
+                                                            number_of_resources=3,
+                                                            number_of_people_reached_through_social_media=4,
+                                                            number_of_new_followers=5,
+                                                            number_of_community_communications=6,
+                                                            number_of_new_partnerships=7,
+                                                            number_of_partnerships_activated=8)
+        expected_row_1 = [operation_report_1.id,
+                          operation_report_1.report.id,
+                          operation_report_1.metric.id,
+                          operation_report_1.metric.text,
+                          operation_report_1.number_of_people_reached_through_social_media,
+                          operation_report_1.number_of_new_followers,
+                          operation_report_1.number_of_mentions,
+                          operation_report_1.number_of_community_communications,
+                          operation_report_1.number_of_events,
+                          operation_report_1.number_of_resources,
+                          operation_report_1.number_of_partnerships_activated,
+                          operation_report_1.number_of_new_partnerships]
+        expected_row_2 = [operation_report_2.id,
+                          operation_report_2.report.id,
+                          operation_report_2.metric.id,
+                          operation_report_2.metric.text,
+                          operation_report_2.number_of_people_reached_through_social_media,
+                          operation_report_2.number_of_new_followers,
+                          operation_report_2.number_of_mentions,
+                          operation_report_2.number_of_community_communications,
+                          operation_report_2.number_of_events,
+                          operation_report_2.number_of_resources,
+                          operation_report_2.number_of_partnerships_activated,
+                          operation_report_2.number_of_new_partnerships]
+
+        expected_rows = [expected_row_1, expected_row_2]
+        expected_df = pd.DataFrame(expected_rows, columns=expected_header)
+        result = export_operation_report()
+        self.assertTrue(result[result.isin(expected_df)].equals(expected_df))
+
+    def test_export_fundings_with_ordinary_project(self):
+        expected_header = [_('ID'), _('Funding'), _('Value'), _('Project ID'), _('Project'), _('Active?'), _('Type of project')]
+
+        self.report_1.funding_associated.add(self.funding_associated)
+        self.report_1.save()
+
+        expected_row = [self.funding_associated.id,
+                        self.funding_associated.name,
+                        float(self.funding_associated.value),
+                        self.funding_associated.project.id,
+                        self.funding_associated.project.text,
+                        self.funding_associated.project.active,
+                        _("Ordinary")]
+
+        result = export_funding(report_id=self.report_1.id)
+
+        self.assertTrue(result[result.isin(expected_row)].equals(pd.DataFrame([expected_row], columns=expected_header)))
+
+    def test_export_fundings_with_poa_project(self):
+        expected_header = [_('ID'), _('Funding'), _('Value'), _('Project ID'), _('Project'), _('Active?'), _('Type of project')]
+        poa_project = Project.objects.create(text="POA", current_poa=True)
+        funding = Funding.objects.create(name="Funding", project=poa_project, value=24)
+        self.report_1.funding_associated.add(funding)
+        self.report_1.save()
+
+        expected_row = [funding.id,
+                        funding.name,
+                        float(funding.value),
+                        funding.project.id,
+                        funding.project.text,
+                        funding.project.active,
+                        _("Current Plan of Activities")]
+
+        result = export_funding(report_id=self.report_1.id)
+
+        self.assertTrue(result[result.isin(expected_row)].equals(pd.DataFrame([expected_row], columns=expected_header)))
+
+    def test_export_fundings_with_main_funding_project(self):
+        expected_header = [_('ID'), _('Funding'), _('Value'), _('Project ID'), _('Project'), _('Active?'), _('Type of project')]
+        main_project = Project.objects.create(text="Main", main_funding=True)
+        funding = Funding.objects.create(name="Funding", project=main_project, value=24)
+        self.report_1.funding_associated.add(funding)
+        self.report_1.save()
+
+        expected_row = [funding.id,
+                        funding.name,
+                        float(funding.value),
+                        funding.project.id,
+                        funding.project.text,
+                        funding.project.active,
+                        _("Main funding")]
+
+        result = export_funding(report_id=self.report_1.id)
+
+        self.assertTrue(result[result.isin(expected_row)].equals(pd.DataFrame([expected_row], columns=expected_header)))
+
+    def test_export_fundings_without_report_id_returns_fundings_from_all_reports(self):
+        expected_header = [_('ID'), _('Funding'), _('Value'), _('Project ID'), _('Project'), _('Active?'), _('Type of project')]
+        main_project = Project.objects.create(text="Main", main_funding=True)
+        funding_2 = Funding.objects.create(name="Funding", project=main_project, value=48)
+        expected_row_1 = [self.funding_associated.id,
+                          self.funding_associated.name,
+                          float(self.funding_associated.value),
+                          self.funding_associated.project.id,
+                          self.funding_associated.project.text,
+                          self.funding_associated.project.active,
+                          _("Ordinary")]
+        expected_row_2 = [funding_2.id,
+                          funding_2.name,
+                          float(funding_2.value),
+                          funding_2.project.id,
+                          funding_2.project.text,
+                          funding_2.project.active,
+                          _("Main funding")]
+
+        expected_rows = [expected_row_1, expected_row_2]
+        expected_df = pd.DataFrame(expected_rows, columns=expected_header)
+        result = export_funding()
+        self.assertTrue(result[result.isin(expected_df)].equals(expected_df))
 
     def test_export_with_no_reports_redirects_to_list_of_reports(self):
         self.client.login(username=self.username, password=self.password)
@@ -1349,6 +1519,8 @@ class ReportExportViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response,f"{reverse('report:list_reports')}")
+
+
 
 
 class OtherViewsTest(TestCase):
@@ -1643,9 +1815,9 @@ class ReportFormTest(TestCase):
     def test_learning_areas_as_choices(self):
         learning_area_1 = LearningArea.objects.create(text="Learning area 1")
         learning_area_2 = LearningArea.objects.create(text="Learning area 2")
-        slq_1 = StrategicLearningQuestion.objects.create(text="SLQ 1", learning_area=learning_area_1)
-        slq_2 = StrategicLearningQuestion.objects.create(text="SLQ 2", learning_area=learning_area_1)
-        slq_3 = StrategicLearningQuestion.objects.create(text="SLQ 3", learning_area=learning_area_2)
+        StrategicLearningQuestion.objects.create(text="SLQ 1", learning_area=learning_area_1)
+        StrategicLearningQuestion.objects.create(text="SLQ 2", learning_area=learning_area_1)
+        StrategicLearningQuestion.objects.create(text="SLQ 3", learning_area=learning_area_2)
 
         expected_result = [["Learning area 1", [[1, "SLQ 1"], [2, "SLQ 2"]]],["Learning area 2", [[3, "SLQ 3"]]]]
         result = learning_areas_as_choices()
