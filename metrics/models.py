@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-from users.models import UserProfile
+from users.models import UserProfile, TeamArea
 from strategy.models import StrategicAxis
 
 
@@ -62,6 +62,7 @@ class Activity(models.Model):
     code = models.CharField(max_length=20, null=True)
     area = models.ForeignKey(Area, on_delete=models.RESTRICT, related_name='activities', null=True)
     is_main_activity = models.BooleanField(default=False)
+    area_responsible = models.ForeignKey(TeamArea, on_delete=models.RESTRICT, related_name='activity_manager', null=True, blank=True)
 
     class Meta:
         verbose_name = _("Activity")

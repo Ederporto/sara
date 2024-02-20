@@ -2,7 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from users.models import TeamArea
-from metrics.models import Metric
+from metrics.models import Metric, Activity
 
 
 # CALENDAR OF EVENTS
@@ -31,6 +31,7 @@ class Event(models.Model):
     area_responsible = models.ForeignKey(TeamArea, on_delete=models.RESTRICT, related_name="area_responsible")
     area_involved = models.ManyToManyField(TeamArea, related_name="area_involved", blank=True)
     metric_associated = models.ManyToManyField(Metric, related_name="event_metrics", blank=True)
+    activity_associated = models.ForeignKey(Activity, on_delete=models.RESTRICT, related_name="event_activity", null=True, blank=True)
 
     class Meta:
         verbose_name = _("Event")

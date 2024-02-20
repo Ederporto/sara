@@ -5,8 +5,13 @@ from django.contrib import messages
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import gettext as _
+from django.core.mail import EmailMessage
+from django.template.loader import get_template
+from django.db.models import Q
+from django.conf import settings
 from agenda.forms import EventForm
 from agenda.models import Event
+from users.models import TeamArea
 
 
 # MONTH CALENDAR
@@ -164,3 +169,102 @@ def update_event(request, event_id):
 
     context = {"eventform": event_form, "event_id": event_id, "title": _("Update event %(event_id)s") % {"event_id": event_id}}
     return render(request, "agenda/update_event.html", context)
+
+
+# SEND EMAIL ABOUT EVENT
+def send_email(request):
+    html_template_path = "agenda/email_template.html"
+
+    areas = TeamArea.objects.all()
+    for area in areas:
+        try:
+            manager = area.team_area_of_position.first().user_position.first()
+            manager_email = manager.user.email
+        except AttributeError:
+            manager = ""
+            manager_email = ""
+
+        if manager_email:
+            upcoming_reports = get_activities_soon_to_be_finished(area)
+            late_reports = get_activities_already_finished(area)
+            about_to_kickoff = get_activities_about_to_kickoff(area)
+
+            context_data = {
+                "late_reports": build_message_about_reports(late_reports),
+                "upcoming_reports": build_message_about_reports(upcoming_reports),
+                "about_to_kickoff": build_message_about_reports(about_to_kickoff),
+                "manager": manager,
+                "area": area
+            }
+
+            if upcoming_reports or late_reports or about_to_kickoff:
+                email_html_template = get_template(html_template_path).render(context_data)
+
+                email_msg = EmailMessage(
+                    subject = _("SARA Report- %(area)s") % {"area": area},
+                    body = email_html_template,
+                    from_email = settings.EMAIL_HOST_USER,
+                    to = [manager_email],
+                    reply_to = [settings.EMAIL_HOST_USER]
+                )
+                email_msg.content_subtype = "html"
+                email_msg.send(fail_silently=False)
+        else:
+            pass
+    return redirect(reverse("metrics:index"))
+
+
+def get_activities_soon_to_be_finished(area):
+    today = datetime.date.today()
+    interval = min(today + datetime.timedelta(14), datetime.date(today.year, 12, 31))
+    query = Q(end_date__lte=interval, # Before the interval
+              end_date__gte=today, # After today
+              area_responsible=area, # Under a specific manager responsability
+              )
+    events = Event.objects.filter(query)
+    return events
+
+
+def get_activities_already_finished(area):
+    today = datetime.date.today()
+    interval = max(today - datetime.timedelta(28), datetime.date(today.year, 1, 1))
+    query = Q(end_date__lte=today - datetime.timedelta(1), # Before today
+              end_date__gte=interval, # After the interval
+              area_responsible=area, # Under a specific manager responsability
+              activity_associated__report_activity__isnull=True, # Does not have any report about it
+              )
+    events = Event.objects.filter(query).distinct()
+    return events
+
+
+def get_activities_about_to_kickoff(area):
+    today = datetime.date.today()
+    interval = min(today + datetime.timedelta(14), datetime.date(today.year, 12, 31))
+    query = Q(initial_date__gte=today, # Begining after today
+              initial_date__lte=interval, # Begining before interval
+              area_responsible=area # Under a specific manager responsability
+              )
+    events = Event.objects.filter(query)
+    return events
+
+
+def build_message_about_reports(events):
+    message = ""
+
+    for event in events:
+        if event.end_date == event.initial_date:
+            date_string = event.initial_date.strftime("%d/%m")
+        else:
+            date_string = event.initial_date.strftime("%d/%m") + " - " + event.end_date.strftime("%d/%m")
+
+        message += _("<li><a href='https://sara-wmb.toolforge.org/calendar/%(year)s/%(month)s/%(day)s'>%(name)s (%(date_string)s)</a></li>") % {
+            "year": event.initial_date.year,
+            "month": event.initial_date.month,
+            "day": event.initial_date.day,
+            "name": event.name,
+            "date_string": date_string}
+
+    if message:
+        message = "<ul>\n" + message + "</ul>"
+
+    return message

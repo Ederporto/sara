@@ -1,10 +1,14 @@
 import datetime
 from django.test import TestCase
 from django.urls import reverse
+from django.conf import settings
 from django.core.exceptions import ValidationError
-
+from django.contrib.auth.models import Group
+from metrics.models import Metric, Activity
 from agenda.models import Event
-from users.models import User, UserProfile, TeamArea
+from users.models import User, UserProfile, TeamArea, Position
+from agenda.views import get_activities_soon_to_be_finished, get_activities_already_finished,\
+    get_activities_about_to_kickoff
 
 
 class EventModelTests(TestCase):
@@ -209,3 +213,129 @@ class EventViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertFalse(Event.objects.filter(name="").exists())
         self.assertTrue(Event.objects.filter(name=self.name).exists())
+
+
+class EventEmailTests(TestCase):
+    def setUp(self):
+        self.name = "Event"
+        self.initial_date = datetime.date.today()
+        self.end_date = self.initial_date + datetime.timedelta(7)
+        self.area_responsible = TeamArea.objects.create(text="Area responsible", code="Ar code", color_code="AR")
+        self.area_involved = TeamArea.objects.create(text="Area involved", code="Ai code", color_code="AI")
+        self.activity_associated = Activity.objects.create(text="Activity", area_responsible=self.area_responsible)
+        self.metric_associated = Metric.objects.create(text="Metric", activity=self.activity_associated)
+        self.event = Event.objects.create(
+            name=self.name,
+            initial_date=self.initial_date,
+            end_date=self.end_date,
+            area_responsible=self.area_responsible,
+            activity_associated=self.activity_associated)
+
+        self.event.metric_associated.add(self.metric_associated)
+        self.event.save()
+
+    def test_get_activities_soon_to_be_finished_returns_events_near_the_end(self):
+        events = get_activities_soon_to_be_finished(self.area_responsible)
+        self.assertQuerysetEqual(events, Event.objects.filter(pk=self.event.pk))
+
+    def test_if_events_are_too_far_away_get_activities_soon_to_be_finished_returns_empty_queryset(self):
+        self.event.end_date += datetime.timedelta(16)
+        self.event.save()
+        events = get_activities_soon_to_be_finished(self.area_responsible)
+        self.assertQuerysetEqual(events, Event.objects.none())
+
+    def test_if_get_activities_soon_to_be_finished_returns_empty_queryset_if_events_already_finished(self):
+        self.event.end_date = datetime.date.today() - datetime.timedelta(1)
+        self.event.save()
+        events = get_activities_soon_to_be_finished(self.area_responsible)
+        self.assertQuerysetEqual(events, Event.objects.none())
+
+    def test_get_activities_already_finished_returns_events_already_finished(self):
+        self.event.initial_date = datetime.date.today() - datetime.timedelta(3)
+        self.event.end_date = datetime.date.today() - datetime.timedelta(2)
+        self.event.save()
+        events = get_activities_already_finished(self.area_responsible)
+        self.assertQuerysetEqual(events, Event.objects.filter(pk=self.event.pk))
+
+    def test_if_events_are_too_far_away_get_activities_already_finished_returns_empty_queryset(self):
+        self.event.initial_date -= datetime.timedelta(60)
+        self.event.end_date -= datetime.timedelta(60)
+        self.event.save()
+        events = get_activities_already_finished(self.area_responsible)
+        self.assertQuerysetEqual(events, Event.objects.none())
+
+    def test_get_activities_already_finished_returns_empty_queryset_if_events_are_not_finished(self):
+        self.event.end_date = datetime.date.today()
+        self.event.save()
+        events = get_activities_already_finished(self.area_responsible)
+        self.assertQuerysetEqual(events, Event.objects.none())
+
+
+    def test_get_activities_about_to_kickoff_returns_events_with_start_in_near_future(self):
+        self.event.initial_date = datetime.date.today() + datetime.timedelta(1)
+        self.event.save()
+        events = get_activities_about_to_kickoff(self.area_responsible)
+        self.assertQuerysetEqual(events, Event.objects.filter(pk=self.event.pk))
+
+    def test_if_events_are_too_far_away_get_activities_about_to_kickoff_returns_empty_queryset(self):
+        self.event.initial_date += datetime.timedelta(60)
+        self.event.save()
+        events = get_activities_about_to_kickoff(self.area_responsible)
+        self.assertQuerysetEqual(events, Event.objects.none())
+
+    def test_get_activities_about_to_kickoff_returns_empty_queryset_if_events_started_before_today(self):
+        self.event.initial_date = datetime.date.today() - datetime.timedelta(1)
+        self.event.save()
+        events = get_activities_about_to_kickoff(self.area_responsible)
+        self.assertQuerysetEqual(events, Event.objects.none())
+
+    def test_trying_to_send_email_for_manager_without_email_doesnt_sends_the_email(self):
+        group = Group.objects.create(name="Group_name")
+        position = Position.objects.create(text="Position", type=group, area_associated=self.area_responsible)
+        user = User.objects.create_user(username="Username", password="Password")
+        user.userprofile.position = position
+        user.userprofile.save()
+
+        response = self.client.get(reverse('agenda:send_email'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_trying_to_send_email_for_manager_with_email_sends_the_email(self):
+        group = Group.objects.create(name="Group_name")
+        position = Position.objects.create(text="Position", type=group, area_associated=self.area_responsible)
+        user = User.objects.create_user(username="Username", password="Password")
+        user.userprofile.position = position
+        user.userprofile.save()
+        user.email = "to@example.com"
+        user.save()
+
+        response = self.client.get(reverse('agenda:send_email'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_trying_to_send_email_with_no_activities_doesnt_sends_the_email(self):
+        group = Group.objects.create(name="Group_name")
+        position = Position.objects.create(text="Position", type=group, area_associated=self.area_responsible)
+        user = User.objects.create_user(username="Username", password="Password")
+        user.userprofile.position = position
+        user.userprofile.save()
+        user.email = "to@example.com"
+        user.save()
+
+        self.event.delete()
+
+        response = self.client.get(reverse('agenda:send_email'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_trying_to_send_email_with_activities_of_one_day_sends_the_email_with_proper_representation(self):
+        group = Group.objects.create(name="Group_name")
+        position = Position.objects.create(text="Position", type=group, area_associated=self.area_responsible)
+        user = User.objects.create_user(username="Username", password="Password")
+        user.userprofile.position = position
+        user.userprofile.save()
+        user.email = "to@example.com"
+        user.save()
+
+        self.event.initial_date=self.event.end_date
+        self.event.save()
+
+        response = self.client.get(reverse('agenda:send_email'))
+        self.assertEqual(response.status_code, 302)

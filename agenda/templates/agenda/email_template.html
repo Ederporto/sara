@@ -1,0 +1,57 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ manager }}</title>
+</head>
+<body style="margin: 0; padding: 0;">
+<!-- Wrapper -->
+<table style="width: 100%; font:medium/1.5 Montserrat, sans-serif">
+    <tr>
+        <td style="text-align: center; padding: 1em; background-color: #3267FF; border-radius: 2em;">
+            <h1 style="color: #f8f8f8;">S.A.R.A.</h1>
+            <h2 style="color: #f8f8f8;">{{ area }}</h2>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 2em; background-color: #f8f8f8; border-radius: 2em; ">
+            {% blocktrans with manager=manager %}Dear {{ manager }},<br><br>This is a reminder of the reports and activities under your responsibility that must be reported into SARA.<br><br>Please, look into the following activities:{% endblocktrans %}
+            <table style="width: 100%;">
+                {% if late_reports %}
+                    <tr>
+                        <td>
+                            <h2 style="color: #FF3333; text-decoration: underline; ">{% trans "◂ Late reports" %}</h2>
+                            {% autoescape off %}{{ late_reports }}{% endautoescape %}
+                        </td>
+                    </tr>
+                {% endif %}
+                {% if upcoming_reports %}
+                    <tr>
+                        <td>
+                            <h2 style="color: #E07800; text-decoration: underline; ">{% trans "◂ Upcoming reports" %}</h2>
+                            {% autoescape off %}{{ upcoming_reports }}{% endautoescape %}
+                        </td>
+                    </tr>
+                {% endif %}
+                {% if about_to_kickoff %}
+                    <tr>
+                        <td>
+                            <h2 style="color: #3267FF; text-decoration: underline; ">{% trans "◂ About to kickoff" %}</h2>
+                            {% autoescape off %}{{ about_to_kickoff }}{% endautoescape %}
+                        </td>
+                    </tr>
+                {% endif %}
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: center; padding: 1em; background-color: #3267FF; color: #f8f8f8; font-size: 85%; border-radius: 1em">
+            {% trans "For any inquiries or assistance, please don't hesitate to reach out to our Products and Technology team." %}
+        </td>
+    </tr>
+</table>
+</body>
+</html>
