@@ -290,7 +290,7 @@ class EventEmailTests(TestCase):
         self.assertQuerysetEqual(events, Event.objects.none())
 
     def test_trying_to_send_email_for_manager_without_email_doesnt_sends_the_email(self):
-        group = Group.objects.create(name="Group_name")
+        group = Group.objects.create(name="Manager")
         position = Position.objects.create(text="Position", type=group, area_associated=self.area_responsible)
         user = User.objects.create_user(username="Username", password="Password")
         user.userprofile.position = position
@@ -300,7 +300,7 @@ class EventEmailTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_trying_to_send_email_for_manager_with_email_sends_the_email(self):
-        group = Group.objects.create(name="Group_name")
+        group = Group.objects.create(name="Manager")
         position = Position.objects.create(text="Position", type=group, area_associated=self.area_responsible)
         user = User.objects.create_user(username="Username", password="Password")
         user.userprofile.position = position
@@ -312,7 +312,7 @@ class EventEmailTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_trying_to_send_email_with_no_activities_doesnt_sends_the_email(self):
-        group = Group.objects.create(name="Group_name")
+        group = Group.objects.create(name="Manager")
         position = Position.objects.create(text="Position", type=group, area_associated=self.area_responsible)
         user = User.objects.create_user(username="Username", password="Password")
         user.userprofile.position = position
@@ -326,7 +326,7 @@ class EventEmailTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_trying_to_send_email_with_activities_of_one_day_sends_the_email_with_proper_representation(self):
-        group = Group.objects.create(name="Group_name")
+        group = Group.objects.create(name="Manager")
         position = Position.objects.create(text="Position", type=group, area_associated=self.area_responsible)
         user = User.objects.create_user(username="Username", password="Password")
         user.userprofile.position = position
@@ -336,6 +336,16 @@ class EventEmailTests(TestCase):
 
         self.event.initial_date=self.event.end_date
         self.event.save()
+
+        response = self.client.get(reverse('agenda:send_email'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_trying_to_send_email_when_manager_hasnt_email_fails(self):
+        group = Group.objects.create(name="Manager")
+        position = Position.objects.create(text="Position", type=group, area_associated=self.area_responsible)
+        user = User.objects.create_user(username="Username", password="Password")
+        user.userprofile.position = position
+        user.userprofile.save()
 
         response = self.client.get(reverse('agenda:send_email'))
         self.assertEqual(response.status_code, 302)

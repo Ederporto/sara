@@ -11,7 +11,7 @@ from django.db.models import Q
 from django.conf import settings
 from agenda.forms import EventForm
 from agenda.models import Event
-from users.models import TeamArea
+from users.models import TeamArea, UserProfile
 
 
 # MONTH CALENDAR
@@ -175,14 +175,10 @@ def update_event(request, event_id):
 def send_email(request):
     html_template_path = "agenda/email_template.html"
 
-    areas = TeamArea.objects.all()
+    areas = TeamArea.objects.filter(team_area_of_position__type__name="Manager")
     for area in areas:
-        try:
-            manager = area.team_area_of_position.first().user_position.first()
-            manager_email = manager.user.email
-        except AttributeError:
-            manager = ""
-            manager_email = ""
+        manager = UserProfile.objects.filter(user__is_active=True, position__area_associated=area).first()
+        manager_email = manager.user.email
 
         if manager_email:
             upcoming_reports = get_activities_soon_to_be_finished(area)
@@ -208,7 +204,8 @@ def send_email(request):
                     reply_to = [settings.EMAIL_HOST_USER]
                 )
                 email_msg.content_subtype = "html"
-                email_msg.send(fail_silently=False)
+                print(manager_email)
+                # email_msg.send(fail_silently=False)
         else:
             pass
     return redirect(reverse("metrics:index"))
