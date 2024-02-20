@@ -23,7 +23,8 @@
                 {% if late_reports %}
                     <tr>
                         <td>
-                            <h2 style="color: #FF3333; text-decoration: underline; ">{% trans "◂ Late reports" %}</h2>
+                            <h2 style="color: #FF3333; ">{% trans "◂ Late reports" %}</h2>
+                            <div style="font-size: small; font-style: italic; ">{% trans "Activities that have no report associated with them registered." %}</div>
                             {% autoescape off %}{{ late_reports }}{% endautoescape %}
                         </td>
                     </tr>
@@ -31,7 +32,8 @@
                 {% if upcoming_reports %}
                     <tr>
                         <td>
-                            <h2 style="color: #E07800; text-decoration: underline; ">{% trans "◂ Upcoming reports" %}</h2>
+                            <h2 style="color: #E07800; ">{% trans "◂ Upcoming reports" %}</h2>
+                            <div style="font-size: small; font-style: italic; ">{% trans "Activities that will end in the next two weeks." %}</div>
                             {% autoescape off %}{{ upcoming_reports }}{% endautoescape %}
                         </td>
                     </tr>
@@ -39,7 +41,8 @@
                 {% if about_to_kickoff %}
                     <tr>
                         <td>
-                            <h2 style="color: #3267FF; text-decoration: underline; ">{% trans "◂ About to kickoff" %}</h2>
+                            <h2 style="color: #3267FF; ">{% trans "◂ About to kickoff" %}</h2>
+                            <div style="font-size: small; font-style: italic; ">{% trans "Activities that will start in the next two weeks." %}</div>
                             {% autoescape off %}{{ about_to_kickoff }}{% endautoescape %}
                         </td>
                     </tr>
