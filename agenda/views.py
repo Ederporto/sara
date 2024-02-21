@@ -204,8 +204,7 @@ def send_email(request):
                     reply_to = [settings.EMAIL_HOST_USER]
                 )
                 email_msg.content_subtype = "html"
-                print(manager_email)
-                # email_msg.send(fail_silently=False)
+                email_msg.send(fail_silently=False)
         else:
             pass
     return redirect(reverse("metrics:index"))

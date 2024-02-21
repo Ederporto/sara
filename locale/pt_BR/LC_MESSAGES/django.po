@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-20 03:37-0300\n"
+"POT-Creation-Date: 2024-02-21 05:22-0300\n"
 "PO-Revision-Date: 2024-02-09 16:44-0300\n"
 "Last-Translator: Éder Porto <eder.porto@wmnobrasil.org>\n"
 "Language-Team: PT_BR <LL@li.org>\n"
@@ -254,13 +254,26 @@ msgstr "◂ Atividades prestes a começar"
 msgid "Activities that will start in the next two weeks."
 msgstr "Atividades que terão início nas próximas duas semanas."
 
-#: .\agenda\templates\agenda\email_template.html:55
+#: .\agenda\templates\agenda\email_template.html:54
 msgid ""
-"For any inquiries or assistance, please don't hesitate to reach out to our "
-"Products and Technology team."
+"The information in this message is based on the <a href=\"https://sara-wmb."
+"toolforge.org/calendar\" title=\"WMB calendar\" style=\"color:#FFFFFF;"
+"\">Wiki Movimento Brasil activity calendar</a>.<br>In case of a change in "
+"the activity planning, contact the Executive Director with a justification."
+"<br>Revisions to the calendar are the sole responsibility of the Products "
+"and Technology team, under the supervision of the Executive Director."
+"<br><br>For any other inquiries or assistance, please do not hesitate to "
+"reach out to our Products and Technology team."
 msgstr ""
-"Se tiver qualquer dúvida ou precisar de ajuda, não hesite em entrar em "
-"contato com nossa equipe de Produtos e Tecnologia."
+"As informações desta mensagem estão baseadas no <a href=\"https://sara-wmb."
+"toolforge.org/calendar\" title=\"WMB calendar\" style=\"color:#FFFFFF;"
+"\">calendário de atividades do Wiki Movimento Brasil</a>.<br>Em caso de "
+"alteração de planejamento de atividade, entre em contato com a Direção "
+"Executiva com uma justificativa.<br>Revisões no calendário são de "
+"responsabilidade exclusiva da equipe de Produtos e Tecnologia, sob a "
+"supervisão da Direção Executiva.<br><br>Se tiver qualquer dúvida ou precisar "
+"de ajuda, não hesite em entrar em contato com nossa equipe de Produtos e "
+"Tecnologia."
 
 #: .\agenda\templates\agenda\list_events.html:22 .\metrics\models.py:69
 #: .\metrics\templates\metrics\activities_plan.html:28
@@ -349,12 +362,12 @@ msgstr "Apagar evento %(event_id)s?"
 msgid "Update event %(event_id)s"
 msgstr "Editar evento %(event_id)s"
 
-#: .\agenda\views.py:204
+#: .\agenda\views.py:200
 #, python-format
 msgid "SARA Report- %(area)s"
 msgstr "Relatórios da SARA - %(area)s"
 
-#: .\agenda\views.py:260
+#: .\agenda\views.py:256
 #, python-format
 msgid ""
 "<li><a href='https://sara-wmb.toolforge.org/calendar/%(year)s/%(month)s/"
