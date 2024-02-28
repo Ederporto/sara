@@ -648,7 +648,7 @@ def update_report(request, report_id):
             # Metrics
             instances = operation_metrics.save()
 
-            metrics_related = list(report_form.cleaned_data["metrics_related"])
+            metrics_related = list(map(int, report_form.data.getlist('metrics_related', [])))
             for instance in instances:
                 instance.report = report_instance
                 instance.save()
@@ -688,11 +688,11 @@ def update_report(request, report_id):
             report_instance.technologies_used.set(technologies_used)
 
             # Directions
-            directions_related = report_form.cleaned_data["directions_related"]
+            directions_related = list(map(int, report_form.data.getlist('directions_related', [])))
             report_instance.directions_related.set(directions_related)
 
             # Learning Questions
-            learning_questions_related = report_form.cleaned_data["learning_questions_related"]
+            learning_questions_related = list(map(int, report_form.data.getlist('learning_questions_related', [])))
             report_instance.learning_questions_related.set(learning_questions_related)
 
             report_instance.save()
