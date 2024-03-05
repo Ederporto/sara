@@ -17,6 +17,8 @@ from django.forms import inlineformset_factory
 
 
 class NewReportForm(forms.ModelForm):
+    is_update = False
+
     class Meta:
         model = Report
         fields = "__all__"
@@ -66,7 +68,7 @@ class NewReportForm(forms.ModelForm):
         for organizer in organizers_list:
             organizer_name, institution_name = (organizer + ";").split(";", maxsplit=1)
             organizer_object, created = Organizer.objects.get_or_create(name=organizer_name.strip())
-            if not created:
+            if not created and not self.is_update:
                 organizer_object.retained = True
                 organizer_object.save()
             if institution_name:

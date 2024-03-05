@@ -31,7 +31,7 @@ def add_report(request):
     if request.method == "POST":
         operation_metrics = operation_formset(request.POST, prefix='Operation')
         if report_form.is_valid() and operation_metrics.is_valid():
-            report = report_form.save(user=request.user)
+            report = report_form.save(user=request.user, is_update=False)
             instances = operation_metrics.save(commit=False)
 
             operation_metrics_related = []
@@ -643,7 +643,7 @@ def update_report(request, report_id):
         report_form = NewReportForm(request.POST or None, instance=obj, user=request.user)
         operation_metrics = OperationUpdateFormSet(request.POST, instance=obj, prefix='Operation')
         if report_form.is_valid() and operation_metrics.is_valid():
-            report_instance = report_form.save(commit=False)
+            report_instance = report_form.save(commit=False, is_update=True)
 
             # Metrics
             instances = operation_metrics.save()
