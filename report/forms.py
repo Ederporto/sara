@@ -80,6 +80,20 @@ class NewReportForm(forms.ModelForm):
             organizers.append(organizer_object)
         return organizers
 
+    def clean_partners_activated(self):
+        organizers_string = self.data.get("organizers_string", "")
+        organizers_list = organizers_string.split("\r\n") if organizers_string else []
+
+        partners = self.data.getlist("partners_activated", []) if "partners_activated" in self.data else []
+        for organizer in organizers_list:
+            organizer_name, institution_name = (organizer + ";").split(";", maxsplit=1)
+            if institution_name:
+                for partner_name in institution_name.split(";"):
+                    if partner_name:
+                        partner, partner_created = Partner.objects.get_or_create(name=partner_name.strip())
+                        partners.append(partner.id)
+        return partners
+
     def clean_initial_date(self):
         initial_date = self.cleaned_data.get('initial_date')
         return initial_date

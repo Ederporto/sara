@@ -154,7 +154,8 @@ class ReportAddViewTest(TestCase):
             "activity_associated": activity_associated.id,
             "area_responsible": area_reponsible.id,
             "links": "Links",
-            "metrics_related": [metric.id]
+            "metrics_related": [metric.id],
+            "organizers_string": "Organizer 1;Institution 1;Institution 2"
         }
         form = NewReportForm(data, user=self.user)
         self.assertTrue(form.is_valid())

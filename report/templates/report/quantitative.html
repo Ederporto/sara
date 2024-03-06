@@ -42,7 +42,7 @@ Username 2">{% if report_form.instance.id %}{% for editor in report_form.instanc
         </div>
         <div class="w3-twothird formfield">
             <textarea id="organizers" name="organizers_string" rows="4" placeholder="Username 1; Institution 1
-Username 2; Institution 2">{% if report_form.instance.id %}{% for organizer in report_form.instance.organizers.all %}{{ organizer.name }}{% for institution in organizer.institution.all %};{{ institution.name }}{% endfor %}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}{% endif %}</textarea>
+Username 2; Institution 2">{% if report_form.instance.id %}{% for organizer in report_form.instance.organizers.all %}{{ organizer.name }}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}{% endif %}</textarea>
         </div>
     </div>
     <div class="w3-row">
