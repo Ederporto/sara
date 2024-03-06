@@ -201,7 +201,8 @@ def send_email(request):
                     body = email_html_template,
                     from_email = settings.EMAIL_HOST_USER,
                     to = [manager_email],
-                    reply_to = [settings.EMAIL_HOST_USER]
+                    reply_to = [settings.EMAIL_HOST_USER],
+                    bcc = [settings.EMAIL_COORDINATOR]
                 )
                 email_msg.content_subtype = "html"
                 email_msg.send(fail_silently=False)

@@ -23,8 +23,8 @@
                 {% if late_reports %}
                     <tr>
                         <td>
-                            <h2 style="color: #FF3333; ">{% trans "◂ Late reports" %}</h2>
-                            <div style="font-size: small; font-style: italic; ">{% trans "Activities that have no report associated with them registered." %}</div>
+                            <h2 style="color: #FF3333; ">{% trans "◂ Possible late reports" %}</h2>
+                            <div style="font-size: small; font-style: italic; ">{% trans "Activities that might not have a report associated with them registered." %}</div>
                             {% autoescape off %}{{ late_reports }}{% endautoescape %}
                         </td>
                     </tr>
