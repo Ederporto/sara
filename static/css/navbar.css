@@ -15,6 +15,7 @@
     margin: 0.6em auto;
     opacity: 0.25;
 }
+.nav_block { padding:0.25em; }
 .nav_icon {
     height: 1.5em;
     display: block;
