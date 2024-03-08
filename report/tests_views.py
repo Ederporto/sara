@@ -658,7 +658,7 @@ class ReportExportViewTest(TestCase):
         self.user.user_permissions.add(self.view_permission)
 
         self.activity_associated = Activity.objects.create(text="Activity")
-        area_reponsible = TeamArea.objects.create(text="Area")
+        self.area_reponsible = TeamArea.objects.create(text="Area")
 
         self.report_1 = Report.objects.create(description="Report 1",
                                               created_by=self.user_profile,
@@ -666,7 +666,7 @@ class ReportExportViewTest(TestCase):
                                               initial_date=datetime.now().date(),
                                               learning="Learnings!" * 51,
                                               activity_associated=self.activity_associated,
-                                              area_responsible=area_reponsible,
+                                              area_responsible=self.area_reponsible,
                                               links="Links")
         self.report_2 = Report.objects.create(description="Report 2",
                                               created_by=self.user_profile,
@@ -674,12 +674,11 @@ class ReportExportViewTest(TestCase):
                                               initial_date=datetime.now().date(),
                                               learning="Learnings!" * 51,
                                               activity_associated=self.activity_associated,
-                                              area_responsible=area_reponsible,
+                                              area_responsible=self.area_reponsible,
                                               links="Links")
         self.report_1.save()
         self.report_2.save()
 
-        self.area_activated = AreaActivated.objects.create(text="Area activated")
         self.project = Project.objects.create(text="Project")
         self.funding_associated = Funding.objects.create(name="Funding", project=self.project, value=12)
         self.editors = Editor.objects.create(username="Editor")
@@ -792,7 +791,8 @@ class ReportExportViewTest(TestCase):
                            _('Directions related'), _('Learning'), _('Learning questions related'),
                            _('Metrics related')]
 
-        self.report_1.area_activated.add(self.area_activated)
+        area_activated = AreaActivated.objects.create(text="Area activated")
+        self.report_1.area_activated.add(area_activated)
         self.report_1.funding_associated.add(self.funding_associated)
         self.report_1.editors.add(self.editors)
         self.report_1.organizers.add(self.organizers)
@@ -809,7 +809,7 @@ class ReportExportViewTest(TestCase):
                         self.report_1.modified_by.id,
                         pd.to_datetime(self.report_1.modified_at).tz_localize(None),
                         self.report_1.activity_associated.id,
-                        self.report_1.activity_other,
+                        self.report_1.activity_associated.text,
                         self.report_1.area_responsible.id,
                         "; ".join(map(str, self.report_1.area_activated.values_list("id", flat=True))),
                         self.report_1.initial_date,
@@ -906,7 +906,7 @@ class ReportExportViewTest(TestCase):
         if self.report_1.metrics_related:
             metrics_related = self.report_1.metrics_related.values_list("id", flat=True)
 
-        expected_row_1 = [self.report_1.id, self.report_1.created_by.id, pd.to_datetime(self.report_1.created_at).tz_localize(None), self.report_1.modified_by.id, pd.to_datetime(self.report_1.modified_at).tz_localize(None), self.report_1.activity_associated.id, self.report_1.activity_other, self.report_1.area_responsible.id, "; ".join(map(str, area_activated)), self.report_1.initial_date, self.report_1.end_date, self.report_1.description, "; ".join(map(str, funding_associated)), self.report_1.links, self.report_1.public_communication, self.report_1.participants, self.report_1.feedbacks, "; ".join(editors), "; ".join(organizers), "; ".join(partners_activated), "; ".join(technologies_used), self.report_1.wikipedia_created, self.report_1.wikipedia_edited, self.report_1.commons_created, self.report_1.commons_edited, self.report_1.wikidata_created, self.report_1.wikidata_edited, self.report_1.wikiversity_created, self.report_1.wikiversity_edited, self.report_1.wikibooks_created, self.report_1.wikibooks_edited, self.report_1.wikisource_created, self.report_1.wikisource_edited, self.report_1.wikinews_created, self.report_1.wikinews_edited, self.report_1.wikiquote_created, self.report_1.wikiquote_edited, self.report_1.wiktionary_created, self.report_1.wiktionary_edited, self.report_1.wikivoyage_created, self.report_1.wikivoyage_edited, self.report_1.wikispecies_created, self.report_1.wikispecies_edited, self.report_1.metawiki_created, self.report_1.metawiki_edited, self.report_1.mediawiki_created, self.report_1.mediawiki_edited, "; ".join(map(str, directions_related)), self.report_1.learning, "; ".join(map(str, learning_questions_related)), "; ".join(map(str, metrics_related))]
+        expected_row_1 = [self.report_1.id, self.report_1.created_by.id, pd.to_datetime(self.report_1.created_at).tz_localize(None), self.report_1.modified_by.id, pd.to_datetime(self.report_1.modified_at).tz_localize(None), self.report_1.activity_associated.id, self.report_1.activity_associated.text, self.report_1.area_responsible.id, "; ".join(map(str, area_activated)), self.report_1.initial_date, self.report_1.end_date, self.report_1.description, "; ".join(map(str, funding_associated)), self.report_1.links, self.report_1.public_communication, self.report_1.participants, self.report_1.feedbacks, "; ".join(editors), "; ".join(organizers), "; ".join(partners_activated), "; ".join(technologies_used), self.report_1.wikipedia_created, self.report_1.wikipedia_edited, self.report_1.commons_created, self.report_1.commons_edited, self.report_1.wikidata_created, self.report_1.wikidata_edited, self.report_1.wikiversity_created, self.report_1.wikiversity_edited, self.report_1.wikibooks_created, self.report_1.wikibooks_edited, self.report_1.wikisource_created, self.report_1.wikisource_edited, self.report_1.wikinews_created, self.report_1.wikinews_edited, self.report_1.wikiquote_created, self.report_1.wikiquote_edited, self.report_1.wiktionary_created, self.report_1.wiktionary_edited, self.report_1.wikivoyage_created, self.report_1.wikivoyage_edited, self.report_1.wikispecies_created, self.report_1.wikispecies_edited, self.report_1.metawiki_created, self.report_1.metawiki_edited, self.report_1.mediawiki_created, self.report_1.mediawiki_edited, "; ".join(map(str, directions_related)), self.report_1.learning, "; ".join(map(str, learning_questions_related)), "; ".join(map(str, metrics_related))]
 
         if self.report_2.area_activated:
             area_activated = self.report_2.area_activated.values_list("id", flat=True)
@@ -925,7 +925,7 @@ class ReportExportViewTest(TestCase):
         if self.report_2.learning_questions_related:
             learning_questions_related = self.report_2.learning_questions_related.values_list("id", flat=True)
 
-        expected_row_2 = [self.report_2.id, self.report_2.created_by.id, pd.to_datetime(self.report_2.created_at).tz_localize(None), self.report_2.modified_by.id, pd.to_datetime(self.report_2.modified_at).tz_localize(None), self.report_2.activity_associated.id, self.report_2.activity_other, self.report_2.area_responsible.id, "; ".join(map(str, area_activated)), self.report_2.initial_date, self.report_2.end_date, self.report_2.description, "; ".join(map(str, funding_associated)), self.report_2.links, self.report_2.public_communication, self.report_2.participants, self.report_2.feedbacks, "; ".join(editors), "; ".join(organizers), "; ".join(partners_activated), "; ".join(technologies_used), self.report_2.wikipedia_created, self.report_2.wikipedia_edited, self.report_2.commons_created, self.report_2.commons_edited, self.report_2.wikidata_created, self.report_2.wikidata_edited, self.report_2.wikiversity_created, self.report_2.wikiversity_edited, self.report_2.wikibooks_created, self.report_2.wikibooks_edited, self.report_2.wikisource_created, self.report_2.wikisource_edited, self.report_2.wikinews_created, self.report_2.wikinews_edited, self.report_2.wikiquote_created, self.report_2.wikiquote_edited, self.report_2.wiktionary_created, self.report_2.wiktionary_edited, self.report_2.wikivoyage_created, self.report_2.wikivoyage_edited, self.report_2.wikispecies_created, self.report_2.wikispecies_edited, self.report_2.metawiki_created, self.report_2.metawiki_edited, self.report_2.mediawiki_created, self.report_2.mediawiki_edited, "; ".join(map(str, directions_related)), self.report_2.learning, "; ".join(map(str, learning_questions_related))]
+        expected_row_2 = [self.report_2.id, self.report_2.created_by.id, pd.to_datetime(self.report_2.created_at).tz_localize(None), self.report_2.modified_by.id, pd.to_datetime(self.report_2.modified_at).tz_localize(None), self.report_2.activity_associated.id, self.report_2.activity_associated.text, self.report_2.area_responsible.id, "; ".join(map(str, area_activated)), self.report_2.initial_date, self.report_2.end_date, self.report_2.description, "; ".join(map(str, funding_associated)), self.report_2.links, self.report_2.public_communication, self.report_2.participants, self.report_2.feedbacks, "; ".join(editors), "; ".join(organizers), "; ".join(partners_activated), "; ".join(technologies_used), self.report_2.wikipedia_created, self.report_2.wikipedia_edited, self.report_2.commons_created, self.report_2.commons_edited, self.report_2.wikidata_created, self.report_2.wikidata_edited, self.report_2.wikiversity_created, self.report_2.wikiversity_edited, self.report_2.wikibooks_created, self.report_2.wikibooks_edited, self.report_2.wikisource_created, self.report_2.wikisource_edited, self.report_2.wikinews_created, self.report_2.wikinews_edited, self.report_2.wikiquote_created, self.report_2.wikiquote_edited, self.report_2.wiktionary_created, self.report_2.wiktionary_edited, self.report_2.wikivoyage_created, self.report_2.wikivoyage_edited, self.report_2.wikispecies_created, self.report_2.wikispecies_edited, self.report_2.metawiki_created, self.report_2.metawiki_edited, self.report_2.mediawiki_created, self.report_2.mediawiki_edited, "; ".join(map(str, directions_related)), self.report_2.learning, "; ".join(map(str, learning_questions_related))]
 
         expected_rows = [expected_row_1, expected_row_2]
         expected_df = pd.DataFrame(expected_rows, columns=expected_header)
@@ -956,7 +956,7 @@ class ReportExportViewTest(TestCase):
                         self.report_1.modified_by.id,
                         pd.to_datetime(self.report_1.modified_at).tz_localize(None),
                         self.report_1.activity_associated.id,
-                        self.report_1.activity_other,
+                        self.report_1.activity_associated.text,
                         self.report_1.area_responsible.id,
                         "",
                         self.report_1.initial_date,
@@ -1139,11 +1139,14 @@ class ReportExportViewTest(TestCase):
 
         area_activated = AreaActivated.objects.create(text="Area activated")
         self.report_1.area_activated.add(area_activated)
-        expected_row = [area_activated.id, area_activated.text, area_activated.contact]
+        expected_row_1 = [self.area_reponsible.id, self.area_reponsible.text, AreaActivated.objects.get(text=self.area_reponsible.text).contact]
+        expected_row_2 = [area_activated.id, area_activated.text, area_activated.contact]
 
+        expected_rows = [expected_row_1, expected_row_2]
+        expected_df = pd.DataFrame(expected_rows, columns=expected_header)
         result = export_area_activated(report_id=self.report_1.id)
 
-        self.assertTrue(result[result.isin(expected_row)].equals(pd.DataFrame([expected_row], columns=expected_header)))
+        self.assertTrue(result[result.isin(expected_df)].equals(expected_df))
 
     def test_export_area_activated_without_report_id_returns_areas_activated_from_all_reports(self):
         expected_header = [_('ID'), _('Area activated'), _('Contact')]
@@ -1154,13 +1157,14 @@ class ReportExportViewTest(TestCase):
         area_activated_2 = AreaActivated.objects.create(text="Area activated")
         self.report_2.area_activated.add(area_activated_2)
 
+        expected_row_0 = [self.area_reponsible.id, self.area_reponsible.text, AreaActivated.objects.get(text=self.area_reponsible.text).contact]
         expected_row_1 = [area_activated_1.id, area_activated_1.text, area_activated_1.contact]
         expected_row_2 = [area_activated_2.id, area_activated_2.text, area_activated_2.contact]
 
-        expected_rows = [expected_row_1, expected_row_2]
+        expected_rows = [expected_row_0, expected_row_1, expected_row_2]
         expected_df = pd.DataFrame(expected_rows, columns=expected_header)
         result = export_area_activated()
-        self.assertTrue(result[result.isin(expected_df)].equals(expected_df))
+        self.assertTrue(result.equals(expected_df))
 
     def test_export_directions_related(self):
         expected_header = [_('ID'), _('Direction related'), _('Strategic axis ID'), _('Strategic axis text')]
@@ -1196,26 +1200,27 @@ class ReportExportViewTest(TestCase):
         self.assertTrue(result[result.isin(expected_df)].equals(expected_df))
 
     def test_export_editors(self):
-        expected_header = [_('ID'), _('Username')]
+        expected_header = [_('ID'), _('Username'), _('Number of reports including this editor')]
 
         editor = Editor.objects.create(username="Editor")
         self.report_1.editors.add(editor)
         expected_row = [editor.id,
-                        editor.username]
+                        editor.username,
+                        editor.editors.count()]
 
         result = export_editors(report_id=self.report_1.id)
 
         self.assertTrue(result[result.isin(expected_row)].equals(pd.DataFrame([expected_row], columns=expected_header)))
 
     def test_export_editors_without_report_id_returns_editos_from_all_reports(self):
-        expected_header = [_('ID'), _('Username')]
+        expected_header = [_('ID'), _('Username'), _('Number of reports including this editor')]
 
         editor_1 = Editor.objects.create(username="Editor 1")
         editor_2 = Editor.objects.create(username="Editor 2")
         self.report_1.editors.add(editor_1)
         self.report_2.editors.add(editor_2)
-        expected_row_1 = [editor_1.id, editor_1.username]
-        expected_row_2 = [editor_2.id, editor_2.username]
+        expected_row_1 = [editor_1.id, editor_1.username, editor_1.editors.count()]
+        expected_row_2 = [editor_2.id, editor_2.username, editor_2.editors.count()]
 
         expected_rows = [expected_row_1, expected_row_2]
         expected_df = pd.DataFrame(expected_rows, columns=expected_header)
@@ -1255,7 +1260,7 @@ class ReportExportViewTest(TestCase):
         self.assertTrue(result[result.isin(expected_df)].equals(expected_df))
 
     def test_export_organizers(self):
-        expected_header = [_('ID'), _("Organizer's name"), _("Organizer's institution ID"), _("Organizer institution's name")]
+        expected_header = [_('ID'), _("Organizer's name"), _("Organizer's institution ID"), _("Organizer institution's name"), _('Number of reports including this organizer')]
 
         partner = Partner.objects.create(name="Partner")
         organizer = Organizer.objects.create(name="Organizer")
@@ -1264,14 +1269,15 @@ class ReportExportViewTest(TestCase):
         expected_row = [organizer.id,
                         organizer.name,
                         ";".join(map(str, organizer.institution.values_list("id", flat=True))),
-                        ";".join(map(str, organizer.institution.values_list("name", flat=True)))]
+                        ";".join(map(str, organizer.institution.values_list("name", flat=True))),
+                        organizer.organizers.count()]
 
         result = export_organizers(report_id=self.report_1.id)
 
         self.assertTrue(result[result.isin(expected_row)].equals(pd.DataFrame([expected_row], columns=expected_header)))
 
     def test_export_organizers_without_report_id_returns_organizers_from_all_reports(self):
-        expected_header = [_('ID'), _("Organizer's name"), _("Organizer's institution ID"), _("Organizer institution's name")]
+        expected_header = [_('ID'), _("Organizer's name"), _("Organizer's institution ID"), _("Organizer institution's name"), _('Number of reports including this organizer')]
 
         partner = Partner.objects.create(name="Partner")
         organizer_1 = Organizer.objects.create(name="Organizer")
@@ -1280,8 +1286,8 @@ class ReportExportViewTest(TestCase):
         organizer_2.institution.add(partner)
         self.report_1.organizers.add(organizer_1)
         self.report_2.organizers.add(organizer_2)
-        expected_row_1 = [organizer_1.id, organizer_1.name, ";".join(map(str, organizer_1.institution.values_list("id", flat=True))), ";".join(map(str, organizer_1.institution.values_list("name", flat=True)))]
-        expected_row_2 = [organizer_2.id, organizer_2.name, ";".join(map(str, organizer_2.institution.values_list("id", flat=True))), ";".join(map(str, organizer_2.institution.values_list("name", flat=True)))]
+        expected_row_1 = [organizer_1.id, organizer_1.name, ";".join(map(str, organizer_1.institution.values_list("id", flat=True))), ";".join(map(str, organizer_1.institution.values_list("name", flat=True))), organizer_1.organizers.count()]
+        expected_row_2 = [organizer_2.id, organizer_2.name, ";".join(map(str, organizer_2.institution.values_list("id", flat=True))), ";".join(map(str, organizer_2.institution.values_list("name", flat=True))), organizer_2.organizers.count()]
         expected_rows = [expected_row_1, expected_row_2]
 
         expected_df = pd.DataFrame(expected_rows, columns=expected_header)
@@ -1289,25 +1295,25 @@ class ReportExportViewTest(TestCase):
         self.assertTrue(result[result.isin(expected_df)].equals(expected_df))
 
     def test_partners_activated(self):
-        expected_header = [_('ID'), _("Partners"), _("Partner's website")]
+        expected_header = [_('ID'), _("Partners"), _("Partner's website"), _('Number of reports including this partner')]
 
         partner = Partner.objects.create(name="Partner")
         self.report_1.partners_activated.add(partner)
-        expected_row = [partner.id, partner.name, partner.website]
+        expected_row = [partner.id, partner.name, partner.website, partner.partners.count()]
 
         result = export_partners_activated(report_id=self.report_1.id)
 
         self.assertTrue(result[result.isin(expected_row)].equals(pd.DataFrame([expected_row], columns=expected_header)))
 
     def test_partners_activated_without_report_id_returns_partners_from_all_reports(self):
-        expected_header = [_('ID'), _("Partners"), _("Partner's website")]
+        expected_header = [_('ID'), _("Partners"), _("Partner's website"), _('Number of reports including this partner')]
 
         partner_1 = Partner.objects.create(name="Partner 1")
         partner_2 = Partner.objects.create(name="Partner 2")
         self.report_1.partners_activated.add(partner_1)
         self.report_2.partners_activated.add(partner_2)
-        expected_row_1 = [partner_1.id, partner_1.name, partner_1.website]
-        expected_row_2 = [partner_2.id, partner_2.name, partner_2.website]
+        expected_row_1 = [partner_1.id, partner_1.name, partner_1.website, partner_1.partners.count()]
+        expected_row_2 = [partner_2.id, partner_2.name, partner_2.website, partner_2.partners.count()]
         expected_rows = [expected_row_1, expected_row_2]
 
         expected_df = pd.DataFrame(expected_rows, columns=expected_header)
@@ -1315,25 +1321,25 @@ class ReportExportViewTest(TestCase):
         self.assertTrue(result[result.isin(expected_df)].equals(expected_df))
 
     def test_export_technologies_used(self):
-        expected_header = [_('ID'), _("Technology")]
+        expected_header = [_('ID'), _("Technology"), _('Number of reports including this technology')]
 
         technology_used = Technology.objects.create(name="Technology")
         self.report_1.technologies_used.add(technology_used)
-        expected_row = [technology_used.id, technology_used.name]
+        expected_row = [technology_used.id, technology_used.name, technology_used.tecnologies.count()]
 
         result = export_technologies_used(report_id=self.report_1.id)
 
         self.assertTrue(result[result.isin(expected_row)].equals(pd.DataFrame([expected_row], columns=expected_header)))
 
     def test_export_technologies_used_without_report_id_returns_technologies_from_all_reports(self):
-        expected_header = [_('ID'), _("Technology")]
+        expected_header = [_('ID'), _("Technology"), _('Number of reports including this technology')]
 
         technology_used_1 = Technology.objects.create(name="Technology 1")
         technology_used_2 = Technology.objects.create(name="Technology 2")
         self.report_1.technologies_used.add(technology_used_1)
         self.report_2.technologies_used.add(technology_used_2)
-        expected_row_1 = [technology_used_1.id, technology_used_1.name]
-        expected_row_2 = [technology_used_2.id, technology_used_2.name]
+        expected_row_1 = [technology_used_1.id, technology_used_1.name, technology_used_1.tecnologies.count()]
+        expected_row_2 = [technology_used_2.id, technology_used_2.name, technology_used_2.tecnologies.count()]
         expected_rows = [expected_row_1, expected_row_2]
 
         expected_df = pd.DataFrame(expected_rows, columns=expected_header)

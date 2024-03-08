@@ -282,7 +282,7 @@ def export_report_instance(report_id=None):
 
         # Administrative
         activity_associated = report.activity_associated.id
-        activity_other = report.activity_other or ""
+        activity_name = report.activity_associated.text or ""
         area_responsible = report.area_responsible.id
         if report.area_activated.exists():
             area_activated = "; ".join(map(str, report.area_activated.values_list("id", flat=True)))
@@ -366,7 +366,7 @@ def export_report_instance(report_id=None):
         else:
             metrics_related = ""
 
-        rows.append([id_, created_by, created_at, modified_by, modified_at, activity_associated, activity_other,
+        rows.append([id_, created_by, created_at, modified_by, modified_at, activity_associated, activity_name,
                      area_responsible, area_activated, initial_date, end_date, description, funding_associated, links,
                      public_communication, participants, feedbacks, editors, organizers, partners_activated,
                      technologies_used, wikipedia_created, wikipedia_edited, commons_created, commons_edited,
@@ -377,7 +377,7 @@ def export_report_instance(report_id=None):
                      mediawiki_created, mediawiki_edited, directions_related, learning, learning_questions_related,
                      metrics_related])
 
-    df = pd.DataFrame(rows, columns=header).drop_duplicates()
+    df = pd.DataFrame(rows, columns=header).drop_duplicates().reset_index(drop=True)
 
     df[_('Created at')] = df[_('Created at')].dt.tz_localize(None)
     df[_('Modified at')] = df[_('Modified at')].dt.tz_localize(None)
@@ -410,7 +410,7 @@ def export_operation_report(report_id=None):
                      operation_report.number_of_partnerships_activated,
                      operation_report.number_of_new_partnerships])
 
-    df = pd.DataFrame(rows, columns=header).drop_duplicates()
+    df = pd.DataFrame(rows, columns=header).drop_duplicates().reset_index(drop=True)
     return df
 
 
@@ -449,7 +449,7 @@ def export_metrics(report_id=None):
                              instance.wikispecies_edited, instance.metawiki_created, instance.metawiki_edited,
                              instance.mediawiki_created, instance.mediawiki_edited])
 
-    df = pd.DataFrame(rows, columns=header).drop_duplicates()
+    df = pd.DataFrame(rows, columns=header).drop_duplicates().reset_index(drop=True)
     return df
 
 
@@ -483,7 +483,7 @@ def export_user_profile(report_id=None):
                          instance.orcid or "",
                          instance.google_scholar or ""])
 
-    df = pd.DataFrame(rows, columns=header).drop_duplicates()
+    df = pd.DataFrame(rows, columns=header).drop_duplicates().reset_index(drop=True)
     return df
 
 
@@ -510,7 +510,7 @@ def export_funding(report_id=None):
                      funding.project.active,
                      type_of_funding])
 
-    df = pd.DataFrame(rows, columns=header).drop_duplicates()
+    df = pd.DataFrame(rows, columns=header).drop_duplicates().reset_index(drop=True)
     return df
 
 
@@ -524,10 +524,11 @@ def export_area_activated(report_id=None):
 
     rows = []
     for report in reports:
+        rows.append([report.area_responsible.id, report.area_responsible.text, AreaActivated.objects.get(text=report.area_responsible.text).contact])
         for instance in report.area_activated.all():
             rows.append([instance.id, instance.text, instance.contact])
 
-    df = pd.DataFrame(rows, columns=header).drop_duplicates()
+    df = pd.DataFrame(rows, columns=header).drop_duplicates().reset_index(drop=True)
     return df
 
 
@@ -544,12 +545,12 @@ def export_directions_related(report_id=None):
         for instance in report.directions_related.all():
             rows.append([instance.id, instance.text, instance.strategic_axis_id, instance.strategic_axis.text])
 
-    df = pd.DataFrame(rows, columns=header).drop_duplicates()
+    df = pd.DataFrame(rows, columns=header).drop_duplicates().reset_index(drop=True)
     return df
 
 
 def export_editors(report_id=None):
-    header = [_('ID'), _('Username')]
+    header = [_('ID'), _('Username'), _('Number of reports including this editor')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
@@ -559,9 +560,9 @@ def export_editors(report_id=None):
     rows = []
     for report in reports:
         for instance in report.editors.all():
-            rows.append([instance.id, instance.username])
+            rows.append([instance.id, instance.username, instance.editors.count()])
 
-    df = pd.DataFrame(rows, columns=header).drop_duplicates()
+    df = pd.DataFrame(rows, columns=header).drop_duplicates().reset_index(drop=True)
     return df
 
 
@@ -578,12 +579,12 @@ def export_learning_questions_related(report_id=None):
         for instance in report.learning_questions_related.all():
             rows.append([instance.id, instance.text, instance.learning_area_id, instance.learning_area.text])
 
-    df = pd.DataFrame(rows, columns=header).drop_duplicates()
+    df = pd.DataFrame(rows, columns=header).drop_duplicates().reset_index(drop=True)
     return df
 
 
 def export_organizers(report_id=None):
-    header = [_('ID'), _("Organizer's name"), _("Organizer's institution ID"), _("Organizer institution's name")]
+    header = [_('ID'), _("Organizer's name"), _("Organizer's institution ID"), _("Organizer institution's name"), _('Number of reports including this organizer')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
@@ -593,14 +594,14 @@ def export_organizers(report_id=None):
     rows = []
     for report in reports:
         for instance in report.organizers.all():
-            rows.append([instance.id, instance.name, ";".join(map(str, instance.institution.values_list("id", flat=True))), ";".join(map(str, instance.institution.values_list("name", flat=True)))])
+            rows.append([instance.id, instance.name, ";".join(map(str, instance.institution.values_list("id", flat=True))), ";".join(map(str, instance.institution.values_list("name", flat=True))),instance.organizers.count()])
 
-    df = pd.DataFrame(rows, columns=header).drop_duplicates()
+    df = pd.DataFrame(rows, columns=header).drop_duplicates().reset_index(drop=True)
     return df
 
 
 def export_partners_activated(report_id=None):
-    header = [_('ID'), _("Partners"), _("Partner's website")]
+    header = [_('ID'), _("Partners"), _("Partner's website"), _('Number of reports including this partner')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
@@ -610,14 +611,14 @@ def export_partners_activated(report_id=None):
     rows = []
     for report in reports:
         for instance in report.partners_activated.all():
-            rows.append([instance.id, instance.name, instance.website])
+            rows.append([instance.id, instance.name, instance.website, instance.partners.count()])
 
-    df = pd.DataFrame(rows, columns=header).drop_duplicates()
+    df = pd.DataFrame(rows, columns=header).drop_duplicates().reset_index(drop=True)
     return df
 
 
 def export_technologies_used(report_id=None):
-    header = [_('ID'), _("Technology")]
+    header = [_('ID'), _("Technology"), _('Number of reports including this technology')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
@@ -627,9 +628,9 @@ def export_technologies_used(report_id=None):
     rows = []
     for report in reports:
         for instance in report.technologies_used.all():
-            rows.append([instance.id, instance.name])
+            rows.append([instance.id, instance.name, instance.tecnologies.count()])
 
-    df = pd.DataFrame(rows, columns=header).drop_duplicates()
+    df = pd.DataFrame(rows, columns=header).drop_duplicates().reset_index(drop=True)
     return df
 
 
