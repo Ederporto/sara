@@ -138,7 +138,7 @@ def get_results_divided_by_trimester(buffer, area=None):
     ]
     if area:
         report_query = Q(area_responsible=area)
-        header = "==" + area.text + "==\n<div class='wmb_report_table_container bd-" + area.color_code + "'>\n{| class='wikitable wmb_report_table'\n! colspan='7' class='bg-" + area.color_code + " co-" + area.color_code + "' | <h5 id='Metrics'>Operational and General metrics</h5>\n|-\n"
+        header = "==" + area.text + "==\n<div class='wmb_report_table_container bd-" + area.color_code + "'>\n{| class='wikitable wmb_report_table'\n! colspan='8' class='bg-" + area.color_code + " co-" + area.color_code + "' | <h5 id='Metrics'>Operational and General metrics</h5>\n|-\n"
         footer = "|}\n</div>\n"
     else:
         report_query = Q()
@@ -147,7 +147,6 @@ def get_results_divided_by_trimester(buffer, area=None):
 
     poa_results = get_results_for_timespan(timespan_array, Q(project=Project.objects.get(current_poa=True), is_operation=True), report_query)
     main_results = get_results_for_timespan(timespan_array, Q(project=Project.objects.get(main_funding=True)), report_query)
-
 
     poa_wikitext = construct_wikitext(poa_results, header + "!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total !! References\n|-\n")
     main_wikitext = construct_wikitext(main_results, "")
@@ -161,14 +160,15 @@ def get_results_for_timespan(timespan_array, metric_query=Q(), report_query=Q())
     results = []
     for metric in Metric.objects.filter(metric_query).order_by("activity_id"):
         done_row = []
+        refs = []
         for time_ini, time_end in timespan_array:
             supplementary_query = Q(end_date__gte=time_ini) & Q(end_date__lte=time_end) & report_query
             goal, done = get_goal_and_done_for_metric(metric, supplementary_query=supplementary_query)
-            refs = build_wiki_ref_for_reports(metric, supplementary_query=supplementary_query)
             for key, value in goal.items():
                 if value != 0:
                     done_row.append(done[key]) if done[key] else done_row.append("-")
-            done_row.append(refs)
+        refs.append(build_wiki_ref_for_reports(metric, supplementary_query=supplementary_query))
+        done_row.append(" ".join(filter(None, refs)))
         results.append({"activity": metric.activity.text, "metric": metric.text, "done": done_row})
     return results
 
@@ -187,6 +187,7 @@ def construct_wikitext(results, wikitext):
         for metric in metrics:
             wikitext += header + "| {} || {}\n|-\n".format(metric["metric"], " || ".join(map(str, metric["done"])))
             header = ""
+
     return wikitext
 
 
@@ -304,6 +305,7 @@ def build_wiki_ref_for_reports(metric, supplementary_query=Q()):
 
 def get_done_for_report(reports, metric):
     operation_reports = OperationReport.objects.filter(report__in=reports, metric=metric)
+    strategy_alternative_operation_reports = OperationReport.objects.filter(report__in=reports)
     return {
         # Content metrics
         "Wikipedia": reports.aggregate(total=Sum(F("wikipedia_created") + F("wikipedia_edited")))["total"] or 0,
@@ -328,14 +330,14 @@ def get_done_for_report(reports, metric):
         "Number of new partnerships": operation_reports.aggregate(total=Sum("number_of_new_partnerships"))["total"] or 0,
         "Number of organizers": Organizer.objects.filter(organizers__in=reports).distinct().count() or 0,
         "Number of organizers retained": Organizer.objects.filter(retained=True, organizers__in=reports).distinct().count() or 0,
-        "Number of resources": operation_reports.aggregate(total=Sum("number_of_resources"))["total"] or 0,
+        "Number of resources": operation_reports.aggregate(total=Sum("number_of_resources"))["total"] or strategy_alternative_operation_reports.aggregate(total=Sum("number_of_resources"))["total"] or 0,
         "Number of feedbacks": reports.aggregate(total=Sum("feedbacks"))["total"] or 0,
-        "Number of events": operation_reports.aggregate(total=Sum("number_of_events"))["total"] or 0,
+        "Number of events": operation_reports.aggregate(total=Sum("number_of_events"))["total"] or strategy_alternative_operation_reports.aggregate(total=Sum("number_of_events"))["total"] or 0,
         # Communication metrics
-        "Number of new followers": operation_reports.aggregate(total=Sum("number_of_new_followers"))["total"] or 0,
-        "Number of mentions": operation_reports.aggregate(total=Sum("number_of_mentions"))["total"] or 0,
-        "Number of community communications": operation_reports.aggregate(total=Sum("number_of_community_communications"))["total"] or 0,
-        "Number of people reached through social media": operation_reports.aggregate(total=Sum("number_of_people_reached_through_social_media"))["total"] or 0,
+        "Number of new followers": operation_reports.aggregate(total=Sum("number_of_new_followers"))["total"] or strategy_alternative_operation_reports.aggregate(total=Sum("number_of_new_followers"))["total"] or 0,
+        "Number of mentions": operation_reports.aggregate(total=Sum("number_of_mentions"))["total"] or strategy_alternative_operation_reports.aggregate(total=Sum("number_of_mentions"))["total"] or 0,
+        "Number of community communications": operation_reports.aggregate(total=Sum("number_of_community_communications"))["total"] or strategy_alternative_operation_reports.aggregate(total=Sum("number_of_community_communications"))["total"] or 0,
+        "Number of people reached through social media": operation_reports.aggregate(total=Sum("number_of_people_reached_through_social_media"))["total"] or strategy_alternative_operation_reports.aggregate(total=Sum("number_of_people_reached_through_social_media"))["total"] or 0,
         # Other metrics
         "Occurence": reports.filter(metrics_related__boolean_type=True).exists() or False,
     }

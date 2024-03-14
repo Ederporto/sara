@@ -239,3 +239,6 @@ class OperationReport(models.Model):
     number_of_resources = models.IntegerField(blank=True, default=0)
     number_of_partnerships_activated = models.IntegerField(blank=True, default=0)
     number_of_new_partnerships = models.IntegerField(blank=True, default=0)
+
+    def __str__(self):
+        return self.report.description + " - " + self.metric.text
