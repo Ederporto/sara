@@ -26,6 +26,7 @@ class NewReportForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
+        self.is_update = kwargs.pop("is_update", False)
         super(NewReportForm, self).__init__(*args, **kwargs)
         self.fields["activity_associated"].choices = activities_associated_as_choices()
         self.fields["directions_related"].choices = directions_associated_as_choices()
@@ -52,12 +53,12 @@ class NewReportForm(forms.ModelForm):
                 user_creation_date = get_user_date_of_registration(editor)
                 if user_creation_date:
                     editor_object.account_creation_date = user_creation_date
-                    editor_object.save()
             # Which means that the user is already on the database and is returning = retained
             else:
-                editor_object.retained = 1
-                editor_object.save()
+                if not self.is_update:
+                    editor_object.retained = 1
 
+            editor_object.save()
             editors.append(editor_object)
         return editors
 
