@@ -641,7 +641,7 @@ def export_technologies_used(report_id=None):
 def update_report(request, report_id):
     obj = get_object_or_404(Report, id=report_id)
     if request.method == "POST":
-        report_form = NewReportForm(request.POST or None, instance=obj, user=request.user)
+        report_form = NewReportForm(request.POST or None, instance=obj, user=request.user, is_update=True)
         operation_metrics = OperationUpdateFormSet(request.POST, instance=obj, prefix='Operation')
         if report_form.is_valid() and operation_metrics.is_valid():
             report_instance = report_form.save(commit=False, is_update=True)
