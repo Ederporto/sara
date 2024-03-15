@@ -573,8 +573,8 @@ class MetricsExportTests(TestCase):
         self.assertIn('Content-Disposition', response)
         self.assertEqual(response['Content-Disposition'], 'attachment; filename="trimester_report.txt"')
         self.assertNotEqual(response.content, b'')
-        expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total\n|-\n|}\n"
-        self.assertEqual(response.content, expected_content)
+        expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total !! References\n|-\n|}\n"
+        self.assertEqual(response.content.decode('utf-8'), expected_content.decode('utf-8'))
 
     def test_export_trimester_report_fails_if_user_is_unauthenticated(self):
         self.user.user_permissions.remove(self.view_metrics_permission)
@@ -600,8 +600,8 @@ class MetricsExportTests(TestCase):
         self.assertIn('Content-Disposition', response)
         self.assertEqual(response['Content-Disposition'], 'attachment; filename="trimester_report.txt"')
         self.assertNotEqual(response.content, b'')
-        expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total\n|-\n| Activity || Metric || - || - || - || - || -\n|-\n|}\n"
-        self.assertEqual(response.content, expected_content)
+        expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total !! References\n|-\n| Activity || Metric || - || - || - || - || - || \n|-\n|}\n"
+        self.assertEqual(response.content.decode('utf-8'), expected_content.decode('utf-8'))
 
     def test_export_trimester_report_exports_activities_results_with_number_when_something_was_done(self):
         self.client.login(username=self.username, password=self.password)
@@ -636,8 +636,8 @@ class MetricsExportTests(TestCase):
         self.assertIn('Content-Disposition', response)
         self.assertEqual(response['Content-Disposition'], 'attachment; filename="trimester_report.txt"')
         self.assertNotEqual(response.content, b'')
-        expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total\n|-\n| " + bytes(self.activity.text, 'utf-8') + b" || " + bytes(metric.text, 'utf-8') + b" || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report.number_of_events), 'utf-8') + b"\n|-\n|}\n"
-        self.assertEqual(response.content, expected_content)
+        expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total !! References\n|-\n| " + bytes(self.activity.text, 'utf-8') + b" || " + bytes(metric.text, 'utf-8') + b" || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || <ref name=\"sara-" + bytes(str(report.id), 'utf-8') + b"\">[" + bytes(str(report.links), 'utf-8') + b"]</ref>\n|-\n|}\n"
+        self.assertEqual(response.content.decode('utf-8'), expected_content.decode('utf-8'))
 
     def test_export_trimester_report_exports_activities_results_of_main_funding_project(self):
         self.client.login(username=self.username, password=self.password)
@@ -672,8 +672,8 @@ class MetricsExportTests(TestCase):
         self.assertIn('Content-Disposition', response)
         self.assertEqual(response['Content-Disposition'], 'attachment; filename="trimester_report.txt"')
         self.assertNotEqual(response.content, b'')
-        expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total\n|-\n| - || " + bytes(metric.text, 'utf-8') + b" || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report.number_of_events), 'utf-8') + b"\n|-\n|}\n"
-        self.assertEqual(response.content, expected_content)
+        expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total !! References\n|-\n| - || " + bytes(metric.text, 'utf-8') + b" || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || <ref name=\"sara-" + bytes(str(report.id), 'utf-8') + b"\">[" + bytes(str(report.links), 'utf-8') + b"]</ref>\n|-\n|}\n"
+        self.assertEqual(response.content.decode('utf-8'), expected_content.decode('utf-8'))
 
     def test_export_trimester_report_by_area_succeds_if_user_is_authenticated(self):
         self.client.login(username=self.username, password=self.password)
@@ -710,8 +710,8 @@ class MetricsExportTests(TestCase):
         self.assertIn('Content-Disposition', response)
         self.assertEqual(response['Content-Disposition'], 'attachment; filename="trimester_report.txt"')
         self.assertNotEqual(response.content, b'')
-        expected_content = b"==" + bytes(area_reponsible.text, 'utf-8') + b"==\n<div class='wmb_report_table_container bd-" + bytes(area_reponsible.color_code, 'utf-8') + b"'>\n{| class='wikitable wmb_report_table'\n! colspan='7' class='bg-" + bytes(area_reponsible.color_code, 'utf-8') + b" co-" + bytes(area_reponsible.color_code, 'utf-8') + b"' | <h5 id='Metrics'>Operational and General metrics</h5>\n|-\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total\n|-\n| " + bytes(self.activity.text, 'utf-8') + b" || " + bytes(metric.text, 'utf-8') + b" || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report.number_of_events), 'utf-8') + b"\n|-\n|}\n</div>\n"
-        self.assertEqual(response.content, expected_content)
+        expected_content = b"==" + bytes(area_reponsible.text, 'utf-8') + b"==\n<div class='wmb_report_table_container bd-" + bytes(area_reponsible.color_code, 'utf-8') + b"'>\n{| class='wikitable wmb_report_table'\n! colspan='8' class='bg-" + bytes(area_reponsible.color_code, 'utf-8') + b" co-" + bytes(area_reponsible.color_code, 'utf-8') + b"' | <h5 id='Metrics'>Operational and General metrics</h5>\n|-\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total !! References\n|-\n| " + bytes(self.activity.text, 'utf-8') + b" || " + bytes(metric.text, 'utf-8') + b" || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || <ref name=\"sara-" + bytes(str(report.id), 'utf-8') + b"\">[" + bytes(str(report.links), 'utf-8') + b"]</ref>\n|-\n|}\n</div>\n"
+        self.assertEqual(response.content.decode('utf-8'), expected_content.decode('utf-8'))
 
     def test_export_trimester_report_by_area_fails_if_user_is_unauthenticated(self):
         self.user.user_permissions.remove(self.view_metrics_permission)
@@ -722,3 +722,92 @@ class MetricsExportTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, f"{reverse('login')}?next={url}")
+
+    def test_export_trimester_report_exports_wiki_links_as_wikitext(self):
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("metrics:export_reports_per_trimester")
+        area_reponsible = TeamArea.objects.create(text="Area")
+        report = Report.objects.create(description="Report 1",
+                                       created_by=self.user_profile,
+                                       modified_by=self.user_profile,
+                                       initial_date=datetime.now().date(),
+                                       learning="Learnings!" * 51,
+                                       activity_associated=self.activity,
+                                       area_responsible=area_reponsible,
+                                       links="https://sara-wmb.toolforge.org/calendar\r\nhttps://pt.wikipedia.org/wiki/Wikipedia:Pagina_inicial\r\nhttps://commons.wikimedia.org/wiki/Main_Page\r\nhttps://example.com")
+        metric = Metric.objects.create(text="Metric", activity=self.other_activity, number_of_events=5)
+        metric.project.add(self.main_project)
+        metric.save()
+        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
+        directions_related = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
+        learning_area = LearningArea.objects.create(text="Learning area")
+        learning_questions_related = StrategicLearningQuestion.objects.create(text="Strategic Learning Question", learning_area=learning_area)
+
+        report.directions_related.add(directions_related)
+        report.learning_questions_related.add(learning_questions_related)
+        report.metrics_related.add(metric)
+        report.save()
+
+        operation_report = OperationReport.objects.create(metric=metric, report=report, number_of_events=6, number_of_resources=2)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/plain; charset=UTF-8')
+        self.assertIn('Content-Disposition', response)
+        self.assertEqual(response['Content-Disposition'], 'attachment; filename="trimester_report.txt"')
+        self.assertNotEqual(response.content, b'')
+        expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total !! References\n|-\n| - || " + bytes(metric.text, 'utf-8') + b" || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || <ref name=\"sara-" + bytes(str(report.id), 'utf-8') + b"\">[[toolforge:sara-wmb/calendar|calendar]], [[w:pt:Wikipedia:Pagina_inicial|Wikipedia:Pagina inicial]], [[c:Main_Page|Main Page]], [https://example.com]</ref>\n|-\n|}\n"
+        self.assertEqual(response.content.decode('utf-8'), expected_content.decode('utf-8'))
+
+    def test_export_trimester_report_exports_wiki_links_as_wikitext_and_deals_with_duplicates(self):
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("metrics:export_reports_per_trimester")
+        area_reponsible = TeamArea.objects.create(text="Area")
+        report = Report.objects.create(description="Report 1",
+                                       created_by=self.user_profile,
+                                       modified_by=self.user_profile,
+                                       initial_date=datetime.now().date(),
+                                       learning="Learnings!" * 51,
+                                       activity_associated=self.activity,
+                                       area_responsible=area_reponsible,
+                                       links="https://sara-wmb.toolforge.org/calendar\r\nhttps://pt.wikipedia.org/wiki/Wikipedia:Pagina_inicial\r\nhttps://commons.wikimedia.org/wiki/Main_Page\r\nhttps://example.com")
+        report_2 = Report.objects.create(description="Report 2",
+                                       created_by=self.user_profile,
+                                       modified_by=self.user_profile,
+                                       initial_date=datetime.now().date(),
+                                       learning="Learnings!" * 51,
+                                       activity_associated=self.activity,
+                                       area_responsible=area_reponsible,
+                                       links="https://pt.wikipedia.org/wiki/Wikipedia:Pagina_inicial")
+        metric = Metric.objects.create(text="Metric", activity=self.other_activity, number_of_events=5)
+        metric.project.add(self.main_project)
+        metric.save()
+        metric_2 = Metric.objects.create(text="Metric 2", activity=self.other_activity, number_of_events=10)
+        metric_2.project.add(self.main_project)
+        metric_2.save()
+        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
+        directions_related = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
+        learning_area = LearningArea.objects.create(text="Learning area")
+        learning_questions_related = StrategicLearningQuestion.objects.create(text="Strategic Learning Question", learning_area=learning_area)
+
+        report.directions_related.add(directions_related)
+        report.learning_questions_related.add(learning_questions_related)
+        report.metrics_related.add(metric)
+        report.metrics_related.add(metric_2)
+        report.save()
+        report_2.directions_related.add(directions_related)
+        report_2.learning_questions_related.add(learning_questions_related)
+        report_2.metrics_related.add(metric_2)
+        report_2.save()
+
+        operation_report = OperationReport.objects.create(metric=metric, report=report, number_of_events=6, number_of_resources=2)
+        operation_report_2 = OperationReport.objects.create(metric=metric_2, report=report_2, number_of_events=2, number_of_resources=6)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/plain; charset=UTF-8')
+        self.assertIn('Content-Disposition', response)
+        self.assertEqual(response['Content-Disposition'], 'attachment; filename="trimester_report.txt"')
+        self.assertNotEqual(response.content, b'')
+        expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total !! References\n|-\n| rowspan='2' | - || " + bytes(metric.text, 'utf-8') + b" || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || <ref name=\"sara-" + bytes(str(report.id), 'utf-8') + b"\">[[toolforge:sara-wmb/calendar|calendar]], [[w:pt:Wikipedia:Pagina_inicial|Wikipedia:Pagina inicial]], [[c:Main_Page|Main Page]], [https://example.com]</ref>\n|-\n| " + bytes(metric_2.text, 'utf-8') + b" || " + bytes(str(operation_report_2.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report_2.number_of_events), 'utf-8') + b" || <ref name=\"sara-" + bytes(str(report.id), 'utf-8') + b"\"/><ref name=\"sara-" + bytes(str(report_2.id), 'utf-8') + b"\">[[w:pt:Wikipedia:Pagina_inicial|Wikipedia:Pagina inicial]]</ref>\n|-\n|}\n"
+        self.assertEqual(response.content.decode('utf-8'), expected_content.decode('utf-8'))

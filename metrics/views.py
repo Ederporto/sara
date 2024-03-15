@@ -12,11 +12,31 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from io import StringIO
 import re
-import urllib.parse
+import urllib.parse as ur
 
 register = template.Library()
 calendar.setfirstweekday(calendar.SUNDAY)
 
+PATTERNS = {
+    r"https://(.*).(toolforge).org/(.*)": "toolforge:",
+    r"https://(.*).wikibooks.org/wiki/(.*)": "b:",
+    r"https://(.*).wikinews.org/wiki/(.*)": "n:",
+    r"https://(.*).wikipedia.org/wiki/(.*)": "w:",
+    r"https://(.*).wikiquote.org/wiki/(.*)": "q:",
+    r"https://(.*).wikisource.org/wiki/(.*)": "s:",
+    r"https://(.*).wikiversity.org/wiki/(.*)": "v:",
+    r"https://(.*).wikivoyage.org/wiki/(.*)": "voy:",
+    r"https://(.*).wiktionary.org/wiki/(.*)": "wikt:",
+    r"https://commons.wikimedia.org/wiki/(.*)": "c",
+    r"https://outreach.wikimedia.org/wiki/(.*)": "outreach",
+    r"https://species.wikimedia.org/wiki/(.*)": "species",
+    r"https://wikitech.wikimedia.org/wiki/(.*)": "wikitech",
+    r"https://www.mediawiki.org/wiki/(.*)": "mw",
+    r"https://www.wikidata.org/wiki/(.*)": "d",
+    r"https://br.wikimedia.org/wiki/(.*)": "wmbr",
+    r"https://meta.wikimedia.org/wiki/(.*)": "",
+    r"https://phabricator.wikimedia.org/(.*)": "phab",
+}
 
 def index(request):
     context = {"title": _("Home")}
@@ -151,6 +171,9 @@ def get_results_divided_by_trimester(buffer, area=None):
     poa_wikitext = construct_wikitext(poa_results, header + "!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total !! References\n|-\n")
     main_wikitext = construct_wikitext(main_results, "")
 
+    poa_wikitext = shorten_duplicate_refs(poa_wikitext)
+    main_wikitext = shorten_duplicate_refs(main_wikitext)
+
     buffer.write(poa_wikitext)
     buffer.write(main_wikitext)
     buffer.write(footer)
@@ -168,9 +191,26 @@ def get_results_for_timespan(timespan_array, metric_query=Q(), report_query=Q())
                 if value != 0:
                     done_row.append(done[key]) if done[key] else done_row.append("-")
         refs.append(build_wiki_ref_for_reports(metric, supplementary_query=supplementary_query))
+        refs = list(dict.fromkeys(refs))
         done_row.append(" ".join(filter(None, refs)))
         results.append({"activity": metric.activity.text, "metric": metric.text, "done": done_row})
     return results
+
+
+def shorten_duplicate_refs(wikitext):
+    ref_counts = {}
+
+    def replace_ref(match):
+        ref_name = match.group(1)
+        if ref_name in ref_counts:
+            ref_counts[ref_name] += 1
+            return f'<ref name="{ref_name}"/>'
+        else:
+            ref_counts[ref_name] = 1
+            return match.group(0)
+
+    pattern = r'<ref name="([^\"]+)">[^<]+</ref>'
+    return re.sub(pattern, replace_ref, wikitext)
 
 
 def construct_wikitext(results, wikitext):
@@ -277,30 +317,44 @@ def get_goal_for_metric(metric):
 
 
 def wikifi_link(link):
-    pattern = r"^https?://([a-z]+\.)?(wikipedia|wiktionary|wikibooks|wikinews|wikiquote|wikisource|wikiversity|wikivoyage|wikimedia|wikidata|commons)\.org/wiki/.*$"
-    if re.match(pattern, link):
-        cleaned_link = urllib.parse.unquote(link)
-        match = re.search(r"/wiki/(.*)$", cleaned_link)
-        project = re.search(r"(wikipedia|wiktionary|wikibooks|wikinews|wikiquote|wikisource|wikiversity|wikivoyage|wikimedia|wikidata|commons)", link).group(1)
-        page_title = match.group(1).replace("_", " ")
+    for pattern, prefix in PATTERNS.items():
+        match = re.match(pattern, link)
+        if match:
+            number_of_groups = len(match.groups())
+            project = ""
+            lang = ""
+            if number_of_groups == 3:
+                project = match.group(1)
+                page = match.group(3)
+            elif number_of_groups == 2:
+                lang = match.group(1)
+                page = match.group(2)
+            else:
+                page = match.group(1)
 
-        return f"[[{project}:{page_title}|{page_title}]]"
-    else:
-        return f"[{link}]"
+            page = ur.unquote(page)
+            clean_page = page.replace("_", " ")
+            clean_page = clean_page[:-1] if clean_page.endswith("/") else clean_page
+
+            return f"[[{prefix}{project}/{page}|{clean_page}]]" if project else f"[[{prefix}{lang}:{page}|{clean_page}]]"
+    # The link is not a proper Wiki link
+    return f"[{link}]" if link != "-" else ""
+
 
 def build_wiki_ref_for_reports(metric, supplementary_query=Q()):
     query = Q(metrics_related__in=[metric]) & supplementary_query
     reports = Report.objects.filter(query)
     refs_set = []
     for report in reports:
-        links = report.links.split("\n")
+        links = report.links.replace("\\r\\n","\r\n").splitlines()
         formatted_links = []
         for link in links:
             formatted_links.append(wikifi_link(link))
 
-        ref_content = " ".join(formatted_links)
-        refs_set.append(f"<ref name=\"sara-{report.id}\">{ref_content}</ref>")
-    return " ".join(refs_set)
+        ref_content = ", ".join(formatted_links)
+        if ref_content:
+            refs_set.append(f"<ref name=\"sara-{report.id}\">{ref_content}</ref>")
+    return "".join(refs_set)
 
 
 def get_done_for_report(reports, metric):

@@ -1,9 +1,10 @@
 from django.test import TestCase
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from .models import Funding, Editor, Organizer, Partner, Technology, AreaActivated, LearningArea,\
-    StrategicLearningQuestion, EvaluationObjective, Report, StrategicAxis, Project
+    StrategicLearningQuestion, EvaluationObjective, Report, StrategicAxis, Project, OperationReport
 from users.models import TeamArea, UserProfile, User
-from metrics.models import Activity
+from metrics.models import Activity, Metric
 from strategy.models import Direction
 from datetime import datetime, timedelta
 
@@ -206,3 +207,36 @@ class ReportModelTest(TestCase):
         self.assertEqual(str(report), "Report")
 
 
+class OperationReportModelTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser", password="testpass")
+        self.user_profile = UserProfile.objects.get(user=self.user)
+        self.team_area = TeamArea.objects.create(text="Area")
+        self.activity = Activity.objects.create(text="Activity")
+        self.report = Report.objects.create(
+            created_by=self.user_profile,
+            modified_by=self.user_profile,
+            activity_associated=self.activity,
+            area_responsible=self.team_area,
+            initial_date=datetime.now().date(),
+            description="Report",
+            links="https://testlink.com",
+        )
+        self.metric = Metric.objects.create(text="Metric", activity=self.activity)
+
+    def test_operation_report_creation(self):
+        self.assertEqual(OperationReport.objects.count(), 0)
+        OperationReport.objects.create(report = self.report, metric = self.metric)
+        self.assertEqual(OperationReport.objects.count(), 1)
+
+    def test_operation_str_representation(self):
+        operation_report = OperationReport.objects.create(report = self.report, metric = self.metric)
+        self.assertEqual(str(operation_report), self.report.description + " - " + self.metric.text)
+
+    def test_operation_report_without_report_fails(self):
+        with self.assertRaises(IntegrityError):
+            OperationReport.objects.create(metric=self.metric)
+
+    def test_operation_report_without_metric_fails(self):
+        with self.assertRaises(IntegrityError):
+            OperationReport.objects.create(report = self.report)

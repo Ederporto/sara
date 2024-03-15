@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-08 17:51-0300\n"
+"POT-Creation-Date: 2024-03-15 18:40-0300\n"
 "PO-Revision-Date: 2024-02-09 16:44-0300\n"
 "Last-Translator: Éder Porto <eder.porto@wmnobrasil.org>\n"
 "Language-Team: PT_BR <LL@li.org>\n"
@@ -235,8 +235,10 @@ msgid "◂ Possible late reports"
 msgstr "◂ Relatórios possivelmente atrasados"
 
 #: .\agenda\templates\agenda\email_template.html:27
-msgid "Activities that might not have a report associated with them registered."
-msgstr "Atividades que talvez não possuam um relatório associado a elas registrado."
+msgid ""
+"Activities that might not have a report associated with them registered."
+msgstr ""
+"Atividades que talvez não possuam um relatório associado a elas registrado."
 
 #: .\agenda\templates\agenda\email_template.html:35
 msgid "◂ Upcoming reports"
@@ -1118,15 +1120,15 @@ msgstr "Não"
 msgid "Test"
 msgstr "Teste"
 
-#: .\metrics\views.py:22
+#: .\metrics\views.py:42
 msgid "Home"
 msgstr "Página inicial"
 
-#: .\metrics\views.py:27
+#: .\metrics\views.py:47
 msgid "About"
 msgstr "Sobre"
 
-#: .\metrics\views.py:48 .\metrics\views.py:60
+#: .\metrics\views.py:68 .\metrics\views.py:80
 msgid "Show metrics per project"
 msgstr "Acompanhar métricas por projeto"
 
