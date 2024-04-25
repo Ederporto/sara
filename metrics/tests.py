@@ -8,7 +8,7 @@ from strategy.models import StrategicAxis
 from .views import get_metrics_and_aggregate_per_project
 from django.urls import reverse
 from django.contrib.auth.models import Permission
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from metrics.templatetags.metricstags import categorize, perc, bool_yesno, is_yesno
 from django.utils.translation import gettext_lazy as _
 
@@ -610,7 +610,7 @@ class MetricsExportTests(TestCase):
         report = Report.objects.create(description="Report 1",
                                        created_by=self.user_profile,
                                        modified_by=self.user_profile,
-                                       initial_date=datetime.now().date(),
+                                       initial_date=date(2024, 2, 29),
                                        learning="Learnings!" * 51,
                                        activity_associated=self.activity,
                                        area_responsible=area_reponsible,
@@ -646,7 +646,7 @@ class MetricsExportTests(TestCase):
         report = Report.objects.create(description="Report 1",
                                        created_by=self.user_profile,
                                        modified_by=self.user_profile,
-                                       initial_date=datetime.now().date(),
+                                       initial_date=date(2024, 2, 29),
                                        learning="Learnings!" * 51,
                                        activity_associated=self.activity,
                                        area_responsible=area_reponsible,
@@ -683,7 +683,7 @@ class MetricsExportTests(TestCase):
         report = Report.objects.create(description="Report 1",
                                        created_by=self.user_profile,
                                        modified_by=self.user_profile,
-                                       initial_date=datetime.now().date(),
+                                       initial_date=date(2024, 2, 29),
                                        learning="Learnings!" * 51,
                                        activity_associated=self.activity,
                                        area_responsible=area_reponsible,
@@ -730,7 +730,7 @@ class MetricsExportTests(TestCase):
         report = Report.objects.create(description="Report 1",
                                        created_by=self.user_profile,
                                        modified_by=self.user_profile,
-                                       initial_date=datetime.now().date(),
+                                       initial_date=date(2024, 2, 29),
                                        learning="Learnings!" * 51,
                                        activity_associated=self.activity,
                                        area_responsible=area_reponsible,
@@ -766,7 +766,7 @@ class MetricsExportTests(TestCase):
         report = Report.objects.create(description="Report 1",
                                        created_by=self.user_profile,
                                        modified_by=self.user_profile,
-                                       initial_date=datetime.now().date(),
+                                       initial_date=date(2024, 2, 29),
                                        learning="Learnings!" * 51,
                                        activity_associated=self.activity,
                                        area_responsible=area_reponsible,
@@ -774,7 +774,7 @@ class MetricsExportTests(TestCase):
         report_2 = Report.objects.create(description="Report 2",
                                        created_by=self.user_profile,
                                        modified_by=self.user_profile,
-                                       initial_date=datetime.now().date(),
+                                       initial_date=date(2024, 2, 29),
                                        learning="Learnings!" * 51,
                                        activity_associated=self.activity,
                                        area_responsible=area_reponsible,
