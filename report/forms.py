@@ -191,7 +191,6 @@ class NewReportForm(forms.ModelForm):
             report.directions_related.set(self.cleaned_data['directions_related'])
             report.learning_questions_related.set(self.cleaned_data['learning_questions_related'])
             report.metrics_related.set(self.add_metrics_related_depending_on_values())
-            report.end_date = report.initial_date
         return report
 
 
