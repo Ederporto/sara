@@ -56,13 +56,9 @@
                                     <td>{{ numeric_value.done|bool_yesno }}</td>
                                     <td>{{ numeric_value.goal|bool_yesno }}</td>
                                     <td>
-                                        {% if numeric_value.done|is_yesno %}
-                                            -
-                                        {% else %}
-                                            <button type="button" class="btn-round btn-{{ numeric_value.done|categorize:numeric_value.goal }}">
-                                                {{ numeric_value.done|perc:numeric_value.goal }}
-                                            </button>
-                                        {% endif %}
+                                        <button type="button" class="btn-round btn-{{ numeric_value.done|categorize:numeric_value.goal }}">
+                                            {{ numeric_value.done|perc:numeric_value.goal }}
+                                        </button>
                                     </td>
                                 </tr>
                             {% endfor %}

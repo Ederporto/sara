@@ -6,6 +6,8 @@ register = template.Library()
 
 @register.filter
 def categorize(a, b):
+    if type(a) == bool and not a:
+        return "-"
     try:
         return min(int(a/(0.25*b)) + 1, 5)
     except:
@@ -14,6 +16,8 @@ def categorize(a, b):
 
 @register.filter
 def perc(a, b):
+    if type(a) == bool and not a:
+        return "-"
     try:
         return "{:.0f}%".format(100*a/b, 1)
     except:
