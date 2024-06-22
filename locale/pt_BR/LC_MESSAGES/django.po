@@ -1105,7 +1105,7 @@ msgid "Other metric"
 msgstr "Outra métrica"
 
 #: .\metrics\templates\metrics\translations.html:26
-msgid "Occurence"
+msgid "Occurrence"
 msgstr "Ocorrência"
 
 #: .\metrics\templatetags\metricstags.py:26 .\metrics\tests.py:525

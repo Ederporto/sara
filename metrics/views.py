@@ -58,7 +58,7 @@ def show_metrics_per_project(request):
     poa_project = Project.objects.get(current_poa=True)
     operational_dataset = get_metrics_and_aggregate_per_project(Q(current_poa=True), Q(is_operation=True))
 
-    poa_dataset = get_metrics_and_aggregate_per_project(Q(current_poa=True), Q(boolean_type=True), "Occurence")
+    poa_dataset = get_metrics_and_aggregate_per_project(Q(current_poa=True), Q(boolean_type=True), "Occurrence")
     if poa_dataset and operational_dataset:
         poa_dataset[poa_project.id]["project_metrics"] += operational_dataset[poa_project.id]["project_metrics"]
 
@@ -312,7 +312,7 @@ def get_goal_for_metric(metric):
         "Number of mentions": metric.number_of_mentions,
         "Number of community communications": metric.number_of_community_communications,
         "Number of people reached through social media": metric.number_of_people_reached_through_social_media,
-        "Occurence": metric.boolean_type,
+        "Occurrence": metric.boolean_type,
     }
 
 
@@ -393,7 +393,7 @@ def get_done_for_report(reports, metric):
         "Number of community communications": operation_reports.aggregate(total=Sum("number_of_community_communications"))["total"] or strategy_alternative_operation_reports.aggregate(total=Sum("number_of_community_communications"))["total"] or 0,
         "Number of people reached through social media": operation_reports.aggregate(total=Sum("number_of_people_reached_through_social_media"))["total"] or strategy_alternative_operation_reports.aggregate(total=Sum("number_of_people_reached_through_social_media"))["total"] or 0,
         # Other metrics
-        "Occurence": reports.filter(metrics_related__boolean_type=True).exists() or False,
+        "Occurrence": reports.filter(metrics_related__boolean_type=True).exists() or False,
     }
 
 
