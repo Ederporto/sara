@@ -84,19 +84,16 @@ h3, h4, h5 {
 h1 {
     font-size: 2.5em !important;
     width: 100%;
-    text-transform: uppercase;
     text-align: center;
 }
 h2 {
     font-size: 2em !important;
     color: var(--main-color);
-    text-transform: uppercase;
 }
 h3 {
     font-size: 1.5em !important;
     color: var(--dark-grey-color);
     background: var(--light-grey-color);
-    text-transform: uppercase;
     padding: 0 0.5em;
 }
 h4 {
