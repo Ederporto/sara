@@ -221,5 +221,9 @@
                 }
             });
         }
+
+        document.getElementById("report").addEventListener("submit", function (event) {
+            document.getElementById("submit_report").disabled = true;
+        });
     </script>
 {% endblock %}
