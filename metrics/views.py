@@ -38,6 +38,7 @@ PATTERNS = {
     r"https://phabricator.wikimedia.org/(.*)": "phab",
 }
 
+
 def index(request):
     context = {"title": _("Home")}
     return render(request, "metrics/home.html", context)
@@ -67,7 +68,7 @@ def show_metrics_per_project(request):
         "dataset": get_metrics_and_aggregate_per_project(Q(active=True, current_poa=False)),
         "title": _("Show metrics per project")
     }
-    # context = {"dataset": get_metrics_and_aggregate_per_project(Q(active=True, current_poa=True)), "title": _("Show metrics per project")}
+
     return render(request, "metrics/list_metrics_per_project.html", context)
 
 
@@ -80,7 +81,6 @@ def show_detailed_metrics_per_project(request):
         "title": _("Show metrics per project")
     }
     return render(request, "metrics/list_metrics_per_project.html", context)
-
 
 
 @login_required
@@ -158,17 +158,24 @@ def get_results_divided_by_trimester(buffer, area=None):
     ]
     if area:
         report_query = Q(area_responsible=area)
-        header = "==" + area.text + "==\n<div class='wmb_report_table_container bd-" + area.color_code + "'>\n{| class='wikitable wmb_report_table'\n! colspan='8' class='bg-" + area.color_code + " co-" + area.color_code + "' | <h5 id='Metrics'>Operational and General metrics</h5>\n|-\n"
+        header = ("==" + area.text + "==\n<div class='wmb_report_table_container bd-" + area.color_code +
+                  "'>\n{| class='wikitable wmb_report_table'\n! colspan='8' class='bg-" + area.color_code +
+                  " co-" + area.color_code + "' | <h5 id='Metrics'>Operational and General metrics</h5>\n|-\n")
         footer = "|}\n</div>\n"
     else:
         report_query = Q()
         header = "{| class='wikitable wmb_report_table'\n"
         footer = "|}\n"
 
-    poa_results = get_results_for_timespan(timespan_array, Q(project=Project.objects.get(current_poa=True), is_operation=True), report_query)
-    main_results = get_results_for_timespan(timespan_array, Q(project=Project.objects.get(main_funding=True)), report_query)
+    poa_results = get_results_for_timespan(timespan_array,
+                                           Q(project=Project.objects.get(current_poa=True), is_operation=True),
+                                           report_query)
+    main_results = get_results_for_timespan(timespan_array,
+                                            Q(project=Project.objects.get(main_funding=True)),
+                                            report_query)
 
-    poa_wikitext = construct_wikitext(poa_results, header + "!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total !! References\n|-\n")
+    poa_wikitext = construct_wikitext(poa_results, header +
+                                      "!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total !! References\n|-\n")
     main_wikitext = construct_wikitext(main_results, "")
 
     poa_wikitext = shorten_duplicate_refs(poa_wikitext)
@@ -220,7 +227,8 @@ def construct_wikitext(results, wikitext):
         metrics = [row for row in results if row['activity'] == activity]
         rowspan = len(metrics)
         if not other_activity:
-            header = "| rowspan='{}' | {} |".format(rowspan, activity) if len(metrics)>1 else "| {} |".format(activity)
+            header = "| rowspan='{}' | {} |".format(rowspan, activity) if len(metrics) > 1 else "| {} |".format(
+                activity)
         else:
             header = "| rowspan='{}' | - |".format(rowspan) if len(metrics) > 1 else "| - |"
 
@@ -234,7 +242,7 @@ def construct_wikitext(results, wikitext):
 def get_metrics_and_aggregate_per_project(project_query=Q(active=True), metric_query=Q(), field=None):
     aggregated_metrics_and_results = {}
 
-    for project in Project.objects.filter(project_query).order_by("-current_poa","-main_funding"):
+    for project in Project.objects.filter(project_query).order_by("-current_poa", "-main_funding"):
         project_metrics = []
         for activity in Activity.objects.filter(area__project=project):
             activity_metrics = {}
@@ -248,7 +256,8 @@ def get_metrics_and_aggregate_per_project(project_query=Q(active=True), metric_q
                 if field and goal[field] != 0:
                     result_metrics = {field: {"goal": goal[field], "done": done[field]}}
                 else:
-                    result_metrics = {key: {"goal": value, "done": done[key]} for key, value in goal.items() if value != 0}
+                    result_metrics = {key: {"goal": value, "done": done[key]} for key, value in goal.items() if
+                                      value != 0}
 
                 if not result_metrics:
                     result_metrics = {"Other metric": {"goal": "-", "done": "-"}}
@@ -336,7 +345,8 @@ def wikifi_link(link):
             clean_page = page.replace("_", " ")
             clean_page = clean_page[:-1] if clean_page.endswith("/") else clean_page
 
-            return f"[[{prefix}{project}/{page}|{clean_page}]]" if project else f"[[{prefix}{lang}:{page}|{clean_page}]]"
+            return f"[[{prefix}{project}/{page}|{clean_page}]]" if project\
+                else f"[[{prefix}{lang}:{page}|{clean_page}]]"
     # The link is not a proper Wiki link
     return f"[{link}]" if link != "-" else ""
 
@@ -346,7 +356,7 @@ def build_wiki_ref_for_reports(metric, supplementary_query=Q()):
     reports = Report.objects.filter(query)
     refs_set = []
     for report in reports:
-        links = report.links.replace("\\r\\n","\r\n").splitlines()
+        links = report.links.replace("\\r\\n", "\r\n").splitlines()
         formatted_links = []
         for link in links:
             formatted_links.append(wikifi_link(link))
@@ -359,7 +369,7 @@ def build_wiki_ref_for_reports(metric, supplementary_query=Q()):
 
 def get_done_for_report(reports, metric):
     operation_reports = OperationReport.objects.filter(report__in=reports, metric=metric)
-    strategy_alternative_operation_reports = OperationReport.objects.filter(report__in=reports)
+    alt_operation_reports = OperationReport.objects.filter(report__in=reports)
     return {
         # Content metrics
         "Wikipedia": reports.aggregate(total=Sum(F("wikipedia_created") + F("wikipedia_edited")))["total"] or 0,
@@ -378,20 +388,35 @@ def get_done_for_report(reports, metric):
         # Community metrics
         "Number of editors": Editor.objects.filter(editors__in=reports).distinct().count() or 0,
         "Number of editors retained": Editor.objects.filter(retained=True, editors__in=reports).distinct().count() or 0,
-        "Number of new editors": Editor.objects.filter(editors__in=reports, account_creation_date__gte=F('editors__initial_date')).count() or 0,
+        "Number of new editors": Editor.objects.filter(editors__in=reports, account_creation_date__gte=F(
+            'editors__initial_date')).count() or 0,
         "Number of participants": reports.aggregate(total=Sum("participants"))["total"] or 0,
         "Number of partnerships activated": Partner.objects.filter(partners__in=reports).distinct().count() or 0,
-        "Number of new partnerships": operation_reports.aggregate(total=Sum("number_of_new_partnerships"))["total"] or 0,
+        "Number of new partnerships": operation_reports.aggregate(total=Sum("number_of_new_partnerships"))[
+                                          "total"] or 0,
         "Number of organizers": Organizer.objects.filter(organizers__in=reports).distinct().count() or 0,
-        "Number of organizers retained": Organizer.objects.filter(retained=True, organizers__in=reports).distinct().count() or 0,
-        "Number of resources": operation_reports.aggregate(total=Sum("number_of_resources"))["total"] or strategy_alternative_operation_reports.aggregate(total=Sum("number_of_resources"))["total"] or 0,
+        "Number of organizers retained": Organizer.objects.filter(retained=True,
+                                                                  organizers__in=reports).distinct().count() or 0,
+        "Number of resources": operation_reports.aggregate(
+            total=Sum("number_of_resources"))["total"] or alt_operation_reports.aggregate(
+            total=Sum("number_of_resources"))["total"] or 0,
         "Number of feedbacks": reports.aggregate(total=Sum("feedbacks"))["total"] or 0,
-        "Number of events": operation_reports.aggregate(total=Sum("number_of_events"))["total"] or strategy_alternative_operation_reports.aggregate(total=Sum("number_of_events"))["total"] or 0,
+        "Number of events": operation_reports.aggregate(
+            total=Sum("number_of_events"))["total"] or alt_operation_reports.aggregate(
+            total=Sum("number_of_events"))["total"] or 0,
         # Communication metrics
-        "Number of new followers": operation_reports.aggregate(total=Sum("number_of_new_followers"))["total"] or strategy_alternative_operation_reports.aggregate(total=Sum("number_of_new_followers"))["total"] or 0,
-        "Number of mentions": operation_reports.aggregate(total=Sum("number_of_mentions"))["total"] or strategy_alternative_operation_reports.aggregate(total=Sum("number_of_mentions"))["total"] or 0,
-        "Number of community communications": operation_reports.aggregate(total=Sum("number_of_community_communications"))["total"] or strategy_alternative_operation_reports.aggregate(total=Sum("number_of_community_communications"))["total"] or 0,
-        "Number of people reached through social media": operation_reports.aggregate(total=Sum("number_of_people_reached_through_social_media"))["total"] or strategy_alternative_operation_reports.aggregate(total=Sum("number_of_people_reached_through_social_media"))["total"] or 0,
+        "Number of new followers": operation_reports.aggregate(
+            total=Sum("number_of_new_followers"))["total"] or alt_operation_reports.aggregate(
+            total=Sum("number_of_new_followers"))["total"] or 0,
+        "Number of mentions": operation_reports.aggregate(
+            total=Sum("number_of_mentions"))["total"] or alt_operation_reports.aggregate(
+            total=Sum("number_of_mentions"))["total"] or 0,
+        "Number of community communications": operation_reports.aggregate(
+            total=Sum("number_of_community_communications"))["total"] or alt_operation_reports.aggregate(
+            total=Sum("number_of_community_communications"))["total"] or 0,
+        "Number of people reached through social media": operation_reports.aggregate(
+            total=Sum("number_of_people_reached_through_social_media"))["total"] or alt_operation_reports.aggregate(
+            total=Sum("number_of_people_reached_through_social_media"))["total"] or 0,
         # Other metrics
         "Occurrence": reports.filter(metrics_related__boolean_type=True).exists() or False,
     }
@@ -399,7 +424,8 @@ def get_done_for_report(reports, metric):
 
 def update_metrics_relations(request):
     main_funding = Project.objects.get(main_funding=True)
-    editors_metrics = Metric.objects.filter(project=main_funding).filter(Q(number_of_editors__gt=0) | Q(number_of_editors_retained__gt=0) | Q(number_of_new_editors__gt=0))
+    editors_filter = Q(number_of_editors__gt=0) | Q(number_of_editors_retained__gt=0) | Q(number_of_new_editors__gt=0)
+    editors_metrics = Metric.objects.filter(project=main_funding).filter(editors_filter)
     reports = Report.objects.filter(Q(metrics_related__number_of_editors__gt=0))
     for report in reports:
         report.metrics_related.add(*editors_metrics)
