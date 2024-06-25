@@ -109,7 +109,7 @@ class BugViewsTests(TestCase):
             "title": "Title2",
             "description": "Description2",
             "type_of_bug": Bug.BugType.ERROR,
-            "status": Bug.Status.TODO
+            "status": Bug.Status.EVAL
         }
         response = self.client.post(url, data=data)
 
@@ -128,7 +128,7 @@ class BugViewsTests(TestCase):
             "title": "",
             "description": "Description2",
             "type_of_bug": Bug.BugType.ERROR,
-            "status": Bug.Status.TODO
+            "status": Bug.Status.EVAL
         }
         response = self.client.post(url, data=data, follow=True)
         self.assertEqual(response.status_code, 200)

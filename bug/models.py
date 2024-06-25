@@ -6,7 +6,8 @@ from django.core.exceptions import ValidationError
 
 class Bug(models.Model):
     class Status(models.TextChoices):
-        TODO = "1", _("To do")
+        TODO = "0", _("To do")
+        EVAL = "1", _("In evaluation")
         PROG = "2", _("In progress")
         TEST = "3", _("Testing")
         DONE = "4", _("Done")
@@ -21,7 +22,7 @@ class Bug(models.Model):
     title = models.CharField(_("Title"), max_length=140)
     description = models.TextField(_("Description"), max_length=500)
     type_of_bug = models.CharField(_("Type"), max_length=1, choices=BugType.choices, default=BugType.ERROR)
-    status = models.CharField(_("Status"), max_length=1, choices=Status.choices, default=Status.TODO)
+    status = models.CharField(_("Status"), max_length=1, choices=Status.choices, default=Status.EVAL)
     date_of_report = models.DateField(_("Date of report"), auto_now_add=True, editable=False)
     reporter = models.ForeignKey(UserProfile, on_delete=models.RESTRICT, related_name="reporter", editable=False)
     update_date = models.DateField(_("Update date"), auto_now=True)

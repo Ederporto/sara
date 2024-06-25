@@ -356,14 +356,17 @@ def build_wiki_ref_for_reports(metric, supplementary_query=Q()):
     reports = Report.objects.filter(query)
     refs_set = []
     for report in reports:
-        links = report.links.replace("\\r\\n", "\r\n").splitlines()
-        formatted_links = []
-        for link in links:
-            formatted_links.append(wikifi_link(link))
+        if not report.reference_text:
+            links = report.links.replace("\\r\\n", "\r\n").splitlines()
+            formatted_links = []
+            for link in links:
+                formatted_links.append(wikifi_link(link))
 
-        ref_content = ", ".join(formatted_links)
-        if ref_content:
-            refs_set.append(f"<ref name=\"sara-{report.id}\">{ref_content}</ref>")
+            ref_content = ", ".join(formatted_links)
+            if ref_content:
+                refs_set.append(f"<ref name=\"sara-{report.id}\">{ref_content}</ref>")
+        else:
+            refs_set.append(report.reference_text)
     return "".join(refs_set)
 
 

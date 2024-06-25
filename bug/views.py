@@ -34,7 +34,7 @@ def add_bug(request):
 
 @permission_required("bug.view_bug")
 def list_bugs(request):
-    bugs = Bug.objects.all()
+    bugs = Bug.objects.all().order_by("status")
     context = {"dataset": bugs}
     return render(request, "bug/list_bugs.html", context)
 
