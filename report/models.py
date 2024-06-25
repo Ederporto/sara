@@ -148,6 +148,7 @@ class Report(models.Model):
     modified_by = models.ForeignKey(UserProfile, on_delete=models.RESTRICT, related_name="user_modifying")
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now_add=True)
+    reference_text = models.TextField(max_length=10000, blank=True, null=True, default="")
 
     # Administrative fields
     activity_associated = models.ForeignKey(Activity, on_delete=models.RESTRICT, related_name="report_activity", null=True, blank=True)
