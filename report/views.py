@@ -1,7 +1,7 @@
 import datetime
 import pandas as pd
 import zipfile
-
+from django.utils import timezone
 from django.forms import inlineformset_factory
 from io import BytesIO
 from django.http import JsonResponse
@@ -29,7 +29,8 @@ def add_report(request):
     metrics_set = list(map(int, report_form.data.getlist('metrics_related', [])))
     operation_formset = get_operation_formset()
     if request.method == "POST":
-        report_exists = Report.objects.filter(created_by__user=request.user, description=report_form.data.get("description")).exists()
+        timediff = timezone.now() - datetime.timedelta(hours=24)
+        report_exists = Report.objects.filter(created_by__user=request.user, description=report_form.data.get("description"), created_at__lte=timediff).exists()
         operation_metrics = operation_formset(request.POST, prefix='Operation')
         if not report_exists:
             if report_form.is_valid() and operation_metrics.is_valid():
