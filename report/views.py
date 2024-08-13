@@ -30,7 +30,7 @@ def add_report(request):
     operation_formset = get_operation_formset()
     if request.method == "POST":
         timediff = timezone.now() - datetime.timedelta(hours=24)
-        report_exists = Report.objects.filter(created_by__user=request.user, description=report_form.data.get("description"), created_at__lte=timediff).exists()
+        report_exists = Report.objects.filter(created_by__user=request.user, description=report_form.data.get("description"), created_at__gte=timediff).exists()
         operation_metrics = operation_formset(request.POST, prefix='Operation')
         if not report_exists:
             if report_form.is_valid() and operation_metrics.is_valid():
@@ -56,6 +56,7 @@ def add_report(request):
                     messages.error(request, field + ": " + error[0])
         else:
             messages.error(request, _("It seems that you already submitted this report!"))
+            messages.error(request, str(request.user) + ":" + report_form.data.get("description") + ":" + str(timediff))
 
         context = {
             "directions_related_set": directions_related_set,
