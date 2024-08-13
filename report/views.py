@@ -29,38 +29,42 @@ def add_report(request):
     metrics_set = list(map(int, report_form.data.getlist('metrics_related', [])))
     operation_formset = get_operation_formset()
     if request.method == "POST":
+        report_exists = Report.objects.filter(created_by__user=request.user, description=report_form.data.get("description")).exists()
         operation_metrics = operation_formset(request.POST, prefix='Operation')
-        if report_form.is_valid() and operation_metrics.is_valid():
-            report = report_form.save(user=request.user, is_update=False)
-            instances = operation_metrics.save(commit=False)
+        if not report_exists:
+            if report_form.is_valid() and operation_metrics.is_valid():
+                report = report_form.save(user=request.user, is_update=False)
+                instances = operation_metrics.save(commit=False)
 
-            operation_metrics_related = []
-            for instance in instances:
-                instance.report = report
-                instance.save()
-                numbers = instance.number_of_people_reached_through_social_media + instance.number_of_new_followers + instance.number_of_mentions + instance.number_of_community_communications + instance.number_of_events + instance.number_of_resources + instance.number_of_partnerships_activated + instance.number_of_new_partnerships
-                if numbers > 0:
-                    operation_metrics_related.append(instance.metric)
+                operation_metrics_related = []
+                for instance in instances:
+                    instance.report = report
+                    instance.save()
+                    numbers = instance.number_of_people_reached_through_social_media + instance.number_of_new_followers + instance.number_of_mentions + instance.number_of_community_communications + instance.number_of_events + instance.number_of_resources + instance.number_of_partnerships_activated + instance.number_of_new_partnerships
+                    if numbers > 0:
+                        operation_metrics_related.append(instance.metric)
 
-            report.metrics_related.add(*operation_metrics_related)
-            report.save()
+                report.metrics_related.add(*operation_metrics_related)
+                report.save()
 
-            messages.success(request, _("Report registered successfully!"))
-            return redirect(reverse("report:detail_report", kwargs={"report_id": report.id}))
-
+                messages.success(request, _("Report registered successfully!"))
+                return redirect(reverse("report:detail_report", kwargs={"report_id": report.id}))
+            else:
+                messages.error(request, _("Something went wrong!"))
+                for field, error in report_form.errors.items():
+                    messages.error(request, field + ": " + error[0])
         else:
-            messages.error(request, _("Something went wrong!"))
-            for field, error in report_form.errors.items():
-                messages.error(request, field + ": " + error[0])
-            context = {
-                "directions_related_set": directions_related_set,
-                "learning_questions_related_set": learning_questions_related_set,
-                "metrics_set": metrics_set,
-                "operation_metrics": operation_metrics,
-                "report_form": report_form,
-                "title": _("Add report")
-            }
-            return render(request, "report/add_report.html", context)
+            messages.error(request, _("It seems that you already submitted this report!"))
+
+        context = {
+            "directions_related_set": directions_related_set,
+            "learning_questions_related_set": learning_questions_related_set,
+            "metrics_set": metrics_set,
+            "operation_metrics": operation_metrics,
+            "report_form": report_form,
+            "title": _("Add report")
+        }
+        return render(request, "report/add_report.html", context)
     else:
         operation_metrics = operation_formset(prefix="Operation", initial=[{"metric": metric_object} for metric_object in Metric.objects.filter(is_operation=True)])
         context = {"directions_related_set": directions_related_set,
