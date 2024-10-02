@@ -151,9 +151,9 @@ def export_trimester_report_by_by_area_responsible(request):
 def get_results_divided_by_trimester(buffer, area=None):
     timespan_array = [
         (datetime.date(datetime.datetime.today().year, 1, 1), datetime.date(datetime.datetime.today().year, 3, 31)),
-        (datetime.date(datetime.datetime.today().year, 4, 1), datetime.date(datetime.datetime.today().year, 6, 30)),
-        (datetime.date(datetime.datetime.today().year, 7, 1), datetime.date(datetime.datetime.today().year, 9, 30)),
-        (datetime.date(datetime.datetime.today().year, 10, 1), datetime.date(datetime.datetime.today().year, 12, 31)),
+        (datetime.date(datetime.datetime.today().year, 4, 1), datetime.date(datetime.datetime.today().year, 6, 18)),
+        (datetime.date(datetime.datetime.today().year, 6, 19), datetime.date(datetime.datetime.today().year, 9, 20)),
+        (datetime.date(datetime.datetime.today().year, 9, 21), datetime.date(datetime.datetime.today().year, 12, 31)),
         (datetime.date(datetime.datetime.today().year, 1, 1), datetime.date(datetime.datetime.today().year, 12, 31))
     ]
     if area:
@@ -188,7 +188,7 @@ def get_results_divided_by_trimester(buffer, area=None):
 
 def get_results_for_timespan(timespan_array, metric_query=Q(), report_query=Q()):
     results = []
-    for metric in Metric.objects.filter(metric_query).order_by("activity_id"):
+    for metric in Metric.objects.filter(metric_query).order_by("activity_id", "id"):
         done_row = []
         refs = []
         for time_ini, time_end in timespan_array:

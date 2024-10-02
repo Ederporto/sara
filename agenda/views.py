@@ -177,7 +177,7 @@ def send_email(request):
 
     areas = TeamArea.objects.filter(team_area_of_position__type__name="Manager")
     for area in areas:
-        manager = UserProfile.objects.filter(user__is_active=True, position__area_associated=area).first()
+        manager = UserProfile.objects.filter(user__is_active=True, position__area_associated=area, position__type__name="Manager").first()
         manager_email = manager.user.email
 
         if manager_email:
