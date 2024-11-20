@@ -5,6 +5,7 @@ from django.utils.translation import gettext as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, Sum, F
 from metrics.models import Activity, Metric
+from metrics.utils import render_to_pdf
 from report.models import Report, Editor, Organizer, Partner, Project, OperationReport
 from users.models import TeamArea
 from django import template
@@ -51,6 +52,134 @@ def about(request):
 
 def show_activities_plan(request):
     return redirect(settings.POA_URL)
+
+
+@login_required
+@permission_required("metrics.view_metric")
+def prepare_pdf(request, *args, **kwargs):
+    timespan_array = [
+        (datetime.date(datetime.datetime.today().year, 1, 1), datetime.date(datetime.datetime.today().year, 3, 31)),
+        (datetime.date(datetime.datetime.today().year, 4, 1), datetime.date(datetime.datetime.today().year, 6, 18)),
+        (datetime.date(datetime.datetime.today().year, 6, 19), datetime.date(datetime.datetime.today().year, 9, 20)),
+        (datetime.date(datetime.datetime.today().year, 9, 21), datetime.date(datetime.datetime.today().year, 12, 31)),
+        (datetime.date(datetime.datetime.today().year, 1, 1), datetime.date(datetime.datetime.today().year, 12, 31))
+    ]
+    main_project = Project.objects.get(main_funding=True)
+    main_results = get_results_for_timespan(timespan_array,
+                                            Q(project=main_project),
+                                            Q())
+
+    metrics = []
+    refs = []
+    for metric in main_results:
+        metrics.append({
+                           "metric": metric["metric"],
+                           "q1": metric["done"][0],
+                           "q2": metric["done"][1],
+                           "q3": metric["done"][2],
+                           "q4": metric["done"][3],
+                           "total": metric["done"][4],
+                           "refs_short": sorted(re.findall(r"sara-(\d+)", metric["done"][5])),
+                           "goal": metric["done"][6],
+                       })
+        refs += process_all_references(metric["done"][5])
+
+    refs = sorted(list(set(refs)))
+    context = {"project":str(main_project), "metrics": metrics, "references": refs}
+
+    return render_to_pdf('metrics/wmf_report.html', context)
+
+
+def process_all_references(input_string):
+    updated_references = []
+    re.sub(r'<ref name="sara-\d+">.*?</ref>',
+           lambda match: unwikify_link(match, updated_references),
+           input_string)
+    return updated_references
+
+
+def unwikify_link(match, updated_references):
+    link = match.group(0)
+
+    # Get the Reference ID
+    match_ref = re.search(r'<ref name="sara-(\d+)">(.*)</ref>', link)
+    if match_ref:
+        ref_id = match_ref.group(1)
+        ref_content = match_ref.group(2)
+        updated_content = replace_with_links(ref_content)
+        updated_link = f'<li id="sara-{ref_id}">{ref_id}. {updated_content}</li>'
+
+        updated_references.append(updated_link)
+        return updated_link
+    return link
+
+
+def replace_with_links(input_string):
+    def replace(match):
+        substring = match.group(0)
+        if substring.startswith('[[') and substring.endswith(']]'):
+            content = substring[2:-2]
+            if "|" in content:
+                link, friendly = content.split("|", 1)
+            else:
+                link = friendly = content
+
+            link = dewikify_url(link)
+            return f'<a target="_blank" href="{link}">{friendly}</a>'
+        elif substring.startswith('[') and substring.endswith(']'):
+            content = substring[1:-1]
+            if " " in content:
+                link, friendly = content.split(" ", 1)
+            else:
+                link = friendly = content
+            return f'<a target="_blank" href="{link}">{friendly}</a>'
+        return substring
+
+    result = re.sub(r'(\[\[.*?\]\]|\[.*?\])', replace, input_string)
+    return result
+
+
+INVERTED_PATTERNS = {
+    r"^toolforge:([^\/]+)\/(.+)": "https://$1.toolforge.org/$2",
+    r"^b:(.*):(.*)":    "https://$1.wikibooks.org/wiki/$2",
+    r"^n:(.*):(.*)":    "https://$1.wikinews.org/wiki/$2",
+    r"^w:(.*):(.*)":    "https://$1.wikipedia.org/wiki/$2",
+    r"^q:(.*):(.*)":    "https://$1.wikiquote.org/wiki/$2",
+    r"^s:(.*):(.*)":    "https://$1.wikisource.org/wiki/$2",
+    r"^v:(.*):(.*)":    "https://$1.wikiversity.org/wiki/$2",
+    r"^voy:(.*):(.*)":  "https://$1.wikivoyage.org/wiki/$2",
+    r"^wikt:(.*):(.*)": "https://$1.wiktionary.org/wiki/$2",
+    r"^c:(.*)":         "https://commons.wikimedia.org/wiki/$2",
+    r"^outreach:(.*)":  "https://outreach.wikimedia.org/wiki/$2",
+    r"^species:(.*)":   "https://species.wikimedia.org/wiki/$2",
+    r"^wikitech:(.*)":  "https://wikitech.wikimedia.org/wiki/$2",
+    r"^mw:(.*)":        "https://www.mediawiki.org/wiki/$2",
+    r"^d:(.*)":         "https://www.wikidata.org/wiki/$2",
+    r"^wmbr:(.*)":      "https://br.wikimedia.org/wiki/$2",
+    r"^phab:(.*)":      "https://phabricator.wikimedia.org/$2",
+}
+
+
+def dewikify_url(link):
+    for pattern, prefix in INVERTED_PATTERNS.items():
+        match = re.match(pattern, link)
+        if match:
+            number_of_groups = len(match.groups())
+            lang = ""
+            if number_of_groups == 2:
+                lang = match.group(1)
+                page = match.group(2)
+            else:
+                page = match.group(1)
+
+            page = ur.unquote(page)
+            clean_page = page.replace("_", " ")
+            clean_page = clean_page[:-1] if clean_page.endswith("/") else clean_page
+
+            return prefix.replace("$1",f"{lang}").replace("$2",f"{page}")
+
+    # The link is not a proper Wiki link
+    return f"{link}" if link != "-" else ""
 
 
 @login_required
@@ -191,15 +320,24 @@ def get_results_for_timespan(timespan_array, metric_query=Q(), report_query=Q())
     for metric in Metric.objects.filter(metric_query).order_by("activity_id", "id"):
         done_row = []
         refs = []
+        goal_value = 0
         for time_ini, time_end in timespan_array:
             supplementary_query = Q(end_date__gte=time_ini) & Q(end_date__lte=time_end) & report_query
             goal, done = get_goal_and_done_for_metric(metric, supplementary_query=supplementary_query)
             for key, value in goal.items():
                 if value != 0:
                     done_row.append(done[key]) if done[key] else done_row.append("-")
+                    goal_value = value
+
         refs.append(build_wiki_ref_for_reports(metric, supplementary_query=supplementary_query))
         refs = list(dict.fromkeys(refs))
         done_row.append(" ".join(filter(None, refs)))
+
+        # Get goal and attach to the array
+        if goal_value:
+            done_row.append(goal_value)
+        else:
+            done_row.append("?")
         results.append({"activity": metric.activity.text, "metric": metric.text, "done": done_row})
     return results
 
