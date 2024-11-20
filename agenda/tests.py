@@ -236,58 +236,58 @@ class EventEmailTests(TestCase):
 
     def test_get_activities_soon_to_be_finished_returns_events_near_the_end(self):
         events = get_activities_soon_to_be_finished(self.area_responsible)
-        self.assertQuerysetEqual(events, Event.objects.filter(pk=self.event.pk))
+        self.assertQuerySetEqual(events, Event.objects.filter(pk=self.event.pk))
 
     def test_if_events_are_too_far_away_get_activities_soon_to_be_finished_returns_empty_queryset(self):
         self.event.end_date += datetime.timedelta(16)
         self.event.save()
         events = get_activities_soon_to_be_finished(self.area_responsible)
-        self.assertQuerysetEqual(events, Event.objects.none())
+        self.assertQuerySetEqual(events, Event.objects.none())
 
     def test_if_get_activities_soon_to_be_finished_returns_empty_queryset_if_events_already_finished(self):
         self.event.end_date = datetime.date.today() - datetime.timedelta(1)
         self.event.save()
         events = get_activities_soon_to_be_finished(self.area_responsible)
-        self.assertQuerysetEqual(events, Event.objects.none())
+        self.assertQuerySetEqual(events, Event.objects.none())
 
     def test_get_activities_already_finished_returns_events_already_finished(self):
         self.event.initial_date = datetime.date.today() - datetime.timedelta(3)
         self.event.end_date = datetime.date.today() - datetime.timedelta(2)
         self.event.save()
         events = get_activities_already_finished(self.area_responsible)
-        self.assertQuerysetEqual(events, Event.objects.filter(pk=self.event.pk))
+        self.assertQuerySetEqual(events, Event.objects.filter(pk=self.event.pk))
 
     def test_if_events_are_too_far_away_get_activities_already_finished_returns_empty_queryset(self):
         self.event.initial_date -= datetime.timedelta(60)
         self.event.end_date -= datetime.timedelta(60)
         self.event.save()
         events = get_activities_already_finished(self.area_responsible)
-        self.assertQuerysetEqual(events, Event.objects.none())
+        self.assertQuerySetEqual(events, Event.objects.none())
 
     def test_get_activities_already_finished_returns_empty_queryset_if_events_are_not_finished(self):
         self.event.end_date = datetime.date.today()
         self.event.save()
         events = get_activities_already_finished(self.area_responsible)
-        self.assertQuerysetEqual(events, Event.objects.none())
+        self.assertQuerySetEqual(events, Event.objects.none())
 
 
     def test_get_activities_about_to_kickoff_returns_events_with_start_in_near_future(self):
         self.event.initial_date = datetime.date.today() + datetime.timedelta(1)
         self.event.save()
         events = get_activities_about_to_kickoff(self.area_responsible)
-        self.assertQuerysetEqual(events, Event.objects.filter(pk=self.event.pk))
+        self.assertQuerySetEqual(events, Event.objects.filter(pk=self.event.pk))
 
     def test_if_events_are_too_far_away_get_activities_about_to_kickoff_returns_empty_queryset(self):
         self.event.initial_date += datetime.timedelta(60)
         self.event.save()
         events = get_activities_about_to_kickoff(self.area_responsible)
-        self.assertQuerysetEqual(events, Event.objects.none())
+        self.assertQuerySetEqual(events, Event.objects.none())
 
     def test_get_activities_about_to_kickoff_returns_empty_queryset_if_events_started_before_today(self):
         self.event.initial_date = datetime.date.today() - datetime.timedelta(1)
         self.event.save()
         events = get_activities_about_to_kickoff(self.area_responsible)
-        self.assertQuerysetEqual(events, Event.objects.none())
+        self.assertQuerySetEqual(events, Event.objects.none())
 
     def test_trying_to_send_email_for_manager_without_email_doesnt_sends_the_email(self):
         group = Group.objects.create(name="Manager")

@@ -325,7 +325,7 @@ class ReportAddViewTest(TestCase):
         for organizer in result:
             expected_partners = expected_result.get(organizer.name)
             expected_queryset = Partner.objects.filter(name__in=expected_partners)
-            self.assertQuerysetEqual(organizer.institution.all(), expected_queryset, ordered=False)
+            self.assertQuerySetEqual(organizer.institution.all(), expected_queryset, ordered=False)
 
     def test_get_metrics_with_activities_plan_activity(self):
         project = Project.objects.create(text="Activities plan")
@@ -569,7 +569,7 @@ class ReportViewViewTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'report/list_reports.html')
-        self.assertQuerysetEqual(response.context['dataset'], Report.objects.order_by('-created_at'))
+        self.assertQuerySetEqual(response.context['dataset'], Report.objects.order_by('-created_at'))
 
     def test_detail_report_is_only_possible_for_users_with_permissions(self):
         self.user.user_permissions.remove(self.view_permission)

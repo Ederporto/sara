@@ -107,6 +107,11 @@ def unwikify_link(match, updated_references):
         ref_id = match_ref.group(1)
         ref_content = match_ref.group(2)
         updated_content = replace_with_links(ref_content)
+        if "bulleted list" in updated_content:
+            match = re.match(r"(.*)\{\{bulleted list\|(.*)\}\}(.*)", updated_content)
+            if match:
+                bullet_items = match.group(2).split("|")
+                updated_content = match.group(1) + "<ul>\n" + "\n".join(f"<li>{item}</li>" for item in bullet_items) + "\n</ul>" + match.group(3)
         updated_link = f'<li id="sara-{ref_id}">{ref_id}. {updated_content}</li>'
 
         updated_references.append(updated_link)
