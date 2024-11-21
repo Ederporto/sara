@@ -1323,10 +1323,8 @@ msgid "Which is the activity or project you are reporting?"
 msgstr "Qual a atividade ou projeto que você está reportando?"
 
 #: .\report\templates\report\administrative.html:24
-msgid ""
-"Mark here if this is a partial report (applicable only to Main Deliverables "
-"and Continuing Projects)"
-msgstr ""
+msgid "Mark here if this is a partial report (applicable only to Main Deliverables and Continuing Projects)"
+msgstr "Marque aqui se este é um relatório parcial (aplicável apenas a Grandes Entregas e Projetos Continuados)"
 
 #: .\report\templates\report\administrative.html:33
 msgid "Which is the management responsible for this activity?"
