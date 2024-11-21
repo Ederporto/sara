@@ -71,7 +71,7 @@
                 {% if data.area_activated.count %}
                     <div class="w3-row">
                         <div class="w3-third formfieldtitle">{% trans "Areas activated" %}</div>
-                        <div class="w3-twothird formfield view-field">{% for area in data.area_activated.all %}{{ area.text }}{% if not forloop.last %};{% endif %}{% endfor %}</div>
+                        <div class="w3-twothird formfield view-field">{% for area in data.area_activated.all %}{{ area.text }}{% if not forloop.last %}; {% endif %}{% endfor %}</div>
                     </div>
                 {% endif %}
                 <div class="w3-row">
@@ -94,7 +94,10 @@
                 {% endif %}
                 <div class="w3-row">
                     <div class="w3-third formfieldtitle">{% trans "Links" %}</div>
-                    <div class="w3-twothird formfield view-field">{{ data.links|linebreaksbr }}</div>
+                    <div class="w3-twothird formfield">
+                        <div class="view-field">{{ data.links|linebreaksbr }}</div>
+                        {% if data.private_links %}<div class="w3-row formfieldtitle">{% translate "At least one of the links is not public and/or should not be published on Meta" %}</div>{% endif %}
+                    </div>
                 </div>
             </div>
             {% if operations_with_value and operations %}
