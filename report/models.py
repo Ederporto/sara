@@ -160,6 +160,7 @@ class Report(models.Model):
     description = models.TextField(max_length=420)
     funding_associated = models.ManyToManyField(Funding, related_name="funding_associated", blank=True)
     links = models.TextField(max_length=10000, blank=False)
+    private_links = models.BooleanField(blank=True, default=False)
     public_communication = models.TextField(max_length=10000, null=True, blank=True, default="")
 
     # Content metrics

@@ -84,7 +84,17 @@
             <label class="formfieldtitle" for="links">{% translate "Links" %}*</label>
             <p class="form-legend">{% translate "Insert all relevant links to support this activity" %}</p>
         </div>
-        <div class="w3-twothird formfield"><textarea id="links" name="links" rows="3" required>{{ report_form.instance.links }}</textarea></div>
+        <div class="w3-twothird formfield">
+            <div class="w3-row formfield">
+                <textarea id="links" name="links" rows="3" required>{{ report_form.instance.links }}</textarea>
+            </div>
+            <div class="w3-row">
+                <label class="select-container" style="color:var(--light-grey-color);">{% translate "Mark here if any of these links are not public and/or should not be published on Meta" %}
+                    <input type="checkbox" name="private_links" {% if report_form.instance.private_links %}checked{% endif %}>
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+        </div>
     </div>
     <div class="w3-row">
         <div class="w3-third formfield">&nbsp;</div>
