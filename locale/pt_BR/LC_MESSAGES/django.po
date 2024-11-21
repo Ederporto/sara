@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-21 01:12-0300\n"
+"POT-Creation-Date: 2024-11-21 03:14-0300\n"
 "PO-Revision-Date: 2024-02-09 16:44-0300\n"
 "Last-Translator: Éder Porto <eder.porto@wmnobrasil.org>\n"
 "Language-Team: PT_BR <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgstr "Nome"
 #: .\agenda\templates\agenda\add_event.html:26
 #: .\agenda\templates\agenda\list_events.html:37
 #: .\agenda\templates\agenda\update_event.html:20
-#: .\report\templates\report\administrative.html:50
+#: .\report\templates\report\administrative.html:59
 #: .\report\templates\report\detail_report.html:78
 #: .\report\templates\report\list_reports.html:42 .\report\tests_views.py:849
 #: .\report\tests_views.py:935 .\report\tests_views.py:1008
@@ -53,7 +53,7 @@ msgstr "Data inicial"
 #: .\agenda\templates\agenda\add_event.html:30
 #: .\agenda\templates\agenda\list_events.html:38
 #: .\agenda\templates\agenda\update_event.html:24
-#: .\report\templates\report\administrative.html:57
+#: .\report\templates\report\administrative.html:66
 #: .\report\templates\report\detail_report.html:83
 #: .\report\templates\report\list_reports.html:43 .\report\tests_views.py:849
 #: .\report\tests_views.py:935 .\report\tests_views.py:1008
@@ -63,7 +63,7 @@ msgstr "Data final"
 
 #: .\agenda\templates\agenda\add_event.html:34
 #: .\agenda\templates\agenda\update_event.html:28
-#: .\report\templates\report\administrative.html:23
+#: .\report\templates\report\administrative.html:32
 #: .\report\templates\report\detail_report.html:68
 #: .\report\templates\report\list_reports.html:44 .\report\tests_views.py:848
 #: .\report\tests_views.py:934 .\report\tests_views.py:1007
@@ -297,7 +297,7 @@ msgstr "Buscar"
 #: .\agenda\templates\agenda\list_events.html:35
 #: .\bug\templates\bug\list_bugs.html:40 .\bug\views.py:50 .\bug\views.py:65
 #: .\metrics\templates\metrics\list_metrics_per_project.html:40
-#: .\metrics\templates\metrics\list_metrics_per_project.html:80
+#: .\metrics\templates\metrics\list_metrics_per_project.html:86
 #: .\metrics\templates\metrics\list_metrics_reports.html:30
 #: .\report\templates\area_activated\list_areas.html:33
 #: .\report\templates\funding\list_fundings.html:32
@@ -396,7 +396,7 @@ msgstr "Em teste"
 
 #: .\bug\models.py:13 .\metrics\templates\metrics\list_metrics.html:195
 #: .\metrics\templates\metrics\list_metrics_per_project.html:42
-#: .\metrics\templates\metrics\list_metrics_per_project.html:82
+#: .\metrics\templates\metrics\list_metrics_per_project.html:88
 #: .\metrics\templates\metrics\list_metrics_reports.html:32
 msgid "Done"
 msgstr "Feito"
@@ -427,7 +427,7 @@ msgid "Title"
 msgstr "Título"
 
 #: .\bug\models.py:23 .\bug\templates\bug\detail_bug.html:20 .\bug\views.py:50
-#: .\bug\views.py:65 .\report\templates\report\administrative.html:64
+#: .\bug\views.py:65 .\report\templates\report\administrative.html:73
 #: .\report\templates\report\detail_report.html:60
 #: .\report\templates\report\list_reports.html:40 .\report\tests_views.py:849
 #: .\report\tests_views.py:935 .\report\tests_views.py:1008
@@ -443,7 +443,7 @@ msgstr "Tipo"
 #: .\bug\models.py:25 .\bug\templates\bug\detail_bug.html:38
 #: .\bug\templates\bug\list_bugs.html:45 .\bug\views.py:50 .\bug\views.py:65
 #: .\metrics\templates\metrics\list_metrics_per_project.html:44
-#: .\metrics\templates\metrics\list_metrics_per_project.html:84
+#: .\metrics\templates\metrics\list_metrics_per_project.html:90
 msgid "Status"
 msgstr "Status"
 
@@ -566,7 +566,7 @@ msgstr "Atividade"
 
 #: .\metrics\models.py:139
 #: .\metrics\templates\metrics\list_metrics_per_project.html:41
-#: .\metrics\templates\metrics\list_metrics_per_project.html:81
+#: .\metrics\templates\metrics\list_metrics_per_project.html:87
 #: .\report\tests_views.py:1080 .\report\tests_views.py:1137
 #: .\report\tests_views.py:1420 .\report\tests_views.py:1453
 #: .\report\views.py:394 .\report\views.py:424
@@ -1051,18 +1051,18 @@ msgid "Number of pages"
 msgstr "Número de páginas"
 
 #: .\metrics\templates\metrics\list_metrics_per_project.html:39
-#: .\metrics\templates\metrics\list_metrics_per_project.html:79
+#: .\metrics\templates\metrics\list_metrics_per_project.html:85
 #: .\report\templates\report\list_reports.html:41
 msgid "Actions"
 msgstr "Ações"
 
 #: .\metrics\templates\metrics\list_metrics_per_project.html:43
-#: .\metrics\templates\metrics\list_metrics_per_project.html:83
+#: .\metrics\templates\metrics\list_metrics_per_project.html:89
 msgid "Goal"
 msgstr "Meta"
 
 #: .\metrics\templates\metrics\list_metrics_per_project.html:53
-#: .\metrics\templates\metrics\list_metrics_per_project.html:93
+#: .\metrics\templates\metrics\list_metrics_per_project.html:99
 #: .\metrics\templates\metrics\list_metrics_reports.html:39
 #: .\report\templates\report\list_reports.html:53
 msgid "View"
@@ -1072,6 +1072,13 @@ msgstr "Visualizar"
 #: .\report\models.py:218 .\report\views.py:219
 msgid "Report"
 msgstr "Relatório"
+
+#: .\metrics\templates\metrics\list_metrics_reports.html:39
+#: .\report\templates\report\delete_report.html:9
+#: .\report\templates\report\detail_report.html:56
+#: .\report\templates\report\list_reports.html:51
+msgid "(Partial)"
+msgstr "(Parcial)"
 
 #: .\metrics\templates\metrics\strategy.html:23
 msgid "Strategic Axes:"
@@ -1112,13 +1119,19 @@ msgstr "Outra métrica"
 msgid "Occurrence"
 msgstr "Ocorrência"
 
-#: .\metrics\templatetags\metricstags.py:30 .\metrics\tests.py:549
-msgid "Yes"
-msgstr "Sim"
+#: .\metrics\templatetags\metricstags.py:31
+msgid "Part."
+msgstr "Parc."
 
-#: .\metrics\templatetags\metricstags.py:30 .\metrics\tests.py:553
+#: .\metrics\templatetags\metricstags.py:31
+#: .\metrics\templatetags\metricstags.py:41 .\metrics\tests.py:553
 msgid "No"
 msgstr "Não"
+
+#: .\metrics\templatetags\metricstags.py:33
+#: .\metrics\templatetags\metricstags.py:41 .\metrics\tests.py:549
+msgid "Yes"
+msgstr "Sim"
 
 #: .\metrics\tests.py:557
 msgid "Test"
@@ -1186,7 +1199,7 @@ msgid "Area activated"
 msgstr "Gestão ativada"
 
 #: .\report\models.py:81 .\report\templates\area_activated\list_areas.html:22
-#: .\report\templates\report\administrative.html:37
+#: .\report\templates\report\administrative.html:46
 #: .\report\templates\report\detail_report.html:73
 msgid "Areas activated"
 msgstr "Gestões ativadas"
@@ -1310,65 +1323,72 @@ msgid "Which is the activity or project you are reporting?"
 msgstr "Qual a atividade ou projeto que você está reportando?"
 
 #: .\report\templates\report\administrative.html:24
+msgid ""
+"Mark here if this is a partial report (applicable only to Main Deliverables "
+"and Continuing Projects)"
+msgstr ""
+
+#: .\report\templates\report\administrative.html:33
 msgid "Which is the management responsible for this activity?"
 msgstr "Qual a gestão responsável por essa atividade?"
 
-#: .\report\templates\report\administrative.html:38
+#: .\report\templates\report\administrative.html:47
 msgid ""
 "Which other management participated in the organization or execution of this "
 "activity?"
 msgstr ""
 "Quais outras gestões participaram na organização ou execução dessa atividade?"
 
-#: .\report\templates\report\administrative.html:51
+#: .\report\templates\report\administrative.html:60
 msgid "Date the activity started"
 msgstr "Data em que a atividade começou"
 
-#: .\report\templates\report\administrative.html:58
+#: .\report\templates\report\administrative.html:67
 msgid "Date the activity ended"
 msgstr "Data em que a atividade se encerrou"
 
-#: .\report\templates\report\administrative.html:65
+#: .\report\templates\report\administrative.html:74
 msgid "Concise title for the report"
 msgstr "Título conciso para o relatório"
 
-#: .\report\templates\report\administrative.html:71
+#: .\report\templates\report\administrative.html:80
 #: .\report\templates\report\detail_report.html:89 .\report\tests_views.py:850
 #: .\report\tests_views.py:936 .\report\tests_views.py:1009
 #: .\report\views.py:257
 msgid "Funding associated"
 msgstr "Financiamento associado"
 
-#: .\report\templates\report\administrative.html:72
+#: .\report\templates\report\administrative.html:81
 msgid "Is this activity associated with a specific fund?"
 msgstr "Essa atividade está associada com algum financiamento específico?"
 
-#: .\report\templates\report\administrative.html:84
+#: .\report\templates\report\administrative.html:93
 #: .\report\templates\report\detail_report.html:96 .\report\tests_views.py:850
 #: .\report\tests_views.py:936 .\report\tests_views.py:1009
 #: .\report\views.py:257
 msgid "Links"
 msgstr "<i>Links</i>"
 
-#: .\report\templates\report\administrative.html:85
+#: .\report\templates\report\administrative.html:94
 msgid "Insert all relevant links to support this activity"
 msgstr "Insira todos os links relevantes dessa atividade"
 
-#: .\report\templates\report\administrative.html:92
+#: .\report\templates\report\administrative.html:101
 msgid ""
 "Mark here if any of these links are not public and/or should not be "
 "published on Meta"
 msgstr ""
-"Marque aqui se algum desses links não é público e/ou não deve ser "
-"publicado no Meta"
+"Marque aqui se algum desses links não é público e/ou não deve ser publicado "
+"no Meta"
 
-#: .\report\templates\report\administrative.html:101
+#: .\report\templates\report\administrative.html:110
 msgid "Fill operational report"
 msgstr "Preencher relatório operacional"
 
 #: .\report\templates\report\delete_report.html:9
-#, python-format
-msgid "Delete Report nº \"%(id_)s\"?"
+#, fuzzy, python-format
+#| msgid "Delete Report nº \"%(id_)s\"?"
+msgid "Delete Report nº \"%(id_)s\""
 msgstr "Excluir relatório nº \"%(id_)s\"?"
 
 #: .\report\templates\report\delete_report.html:11
@@ -1402,8 +1422,11 @@ msgid "Report nº %(id_)s"
 msgstr "Relatório nº %(id_)s"
 
 #: .\report\templates\report\detail_report.html:99
-msgid "At least one of the links is not public and/or should not be published on Meta"
-msgstr "Ao menos um dos links não é público e/ou não deve ser publicado no Meta"
+msgid ""
+"At least one of the links is not public and/or should not be published on "
+"Meta"
+msgstr ""
+"Ao menos um dos links não é público e/ou não deve ser publicado no Meta"
 
 #: .\report\templates\report\detail_report.html:126
 #: .\report\templates\report\operations.html:79

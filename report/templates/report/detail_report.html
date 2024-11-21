@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="w3-threequarter userform">
-            <div class="w3-row"><h2>{% blocktrans with id_=data.id %}Report nº {{ id_ }}{% endblocktrans %}</h2></div>
+            <div class="w3-row"><h2>{% blocktrans with id_=data.id %}Report nº {{ id_ }}{% endblocktrans %}{% if data.partial_report %} {% translate "(Partial)" %}{% endif %}</h2></div>
             <div class="w3-container">
                 <h3 id="Administrative">{% trans "Administrative" %}</h3>
                 <div class="w3-row">

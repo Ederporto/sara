@@ -46,9 +46,9 @@
                 </thead>
                 <tbody>
                 {% for data in dataset %}
-                    <tr class="{% if data.learning %}has-learning{% else %}hasnt-learning{% endif %}">
+                    <tr>
                         <th scope="row">{{ data.id }}</th>
-                        <td>{{ data.description }}</td>
+                        <td>{{ data.description }}{% if data.partial_report %} {% translate "(Partial)" %}{% endif %}</td>
                         <td style="white-space: nowrap;">
                             <a title="{% trans 'View' %}" href="{% url 'report:detail_report' report_id=data.id %}"><button title="{% trans 'View' %}" type="button" class="btn-circle btn-view"><i class="fa-solid fa-eye"></i></button></a>
                             <a title="{% trans 'Update' %}" href="{% url 'report:update_report' report_id=data.id %}"><button title="{% trans 'Update' %}" type="button" class="btn-circle btn-update"><i class="fa-solid fa-pen"></i></button></a>

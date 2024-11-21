@@ -6,7 +6,7 @@
 
 {% block content %}
     <div class="w3-container userform">
-        <h2>{% blocktrans with id_=report.id %}Delete Report nº "{{ id_ }}"?{% endblocktrans %}</h2>
+        <h2>{% blocktrans with id_=report.id %}Delete Report nº "{{ id_ }}"{% endblocktrans %}{% if data.partial_report %} {% translate "(Partial)" %}{% endif %}?</h2>
         <div style="font-size: 1.5em; line-height: 1.5em;">
             {% blocktrans with description=report.description %}<i>"{{ description }}"</i>{% endblocktrans %}
             <br><br>

@@ -53,11 +53,17 @@
                                     <th scope="row" style="text-align: center;"><a title="{% trans 'View' %}" href="{% url 'metrics:metrics_reports' metric_id=metric_key %}"><button title="{% trans 'View' %}" type="button" class="btn-circle btn-view"><i class="fa-solid fa-eye"></i></button></a></th>
                                     <th scope="row">{{ metric_key }}</th>
                                     <td>{{ metric_value.title }}<br><small>({% translate numeric_key %})</small></td>
-                                    <td>{{ numeric_value.done|bool_yesno }}</td>
+                                    <td>{{ numeric_value.done|bool_yesnopartial:numeric_value.final }}</td>
                                     <td>{{ numeric_value.goal|bool_yesno }}</td>
                                     <td>
                                         <button type="button" class="btn-round btn-{{ numeric_value.done|categorize:numeric_value.goal }}">
-                                            {{ numeric_value.done|perc:numeric_value.goal }}
+                                            {% if not numeric_value.goal|is_yesno %}
+                                                {{ numeric_value.done|perc:numeric_value.goal }}
+                                            {% elif numeric_value.final %}
+                                                {{ numeric_value.done|perc:numeric_value.goal }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
                                         </button>
                                     </td>
                                 </tr>

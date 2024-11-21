@@ -25,6 +25,17 @@ def perc(a, b):
 
 
 @register.filter
+def bool_yesnopartial(a, b=False):
+    if type(a) == bool:
+        if not b:
+            return _("Part.") if a else _("No")
+        else:
+            return _("Yes")
+    else:
+        return a
+
+
+@register.filter
 def bool_yesno(a):
     if type(a) == bool:
         return _("Yes") if a else _("No")

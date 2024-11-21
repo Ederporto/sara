@@ -36,7 +36,7 @@
                         {% for report in metric_goal.reports %}
                             <tr>
                                 <th scope="row">{{ report.id }}</th>
-                                <td><a title="{% trans 'View' %}" href="{% url 'report:detail_report' report_id=report.id %}">{{ report.description }}</a><br><small>({{ report.initial_date }} - {{ report.end_date }})</small></td>
+                                <td><a title="{% trans 'View' %}" href="{% url 'report:detail_report' report_id=report.id %}">{{ report.description }}{% if report.partial %} {% translate "(Partial)" %}{% endif %}</a><br><small>({{ report.initial_date }} - {{ report.end_date }})</small></td>
                                 <td>{{ report.done }}</td>
                             </tr>
                         {% endfor %}

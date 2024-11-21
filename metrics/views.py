@@ -239,6 +239,7 @@ def metrics_reports(request, metric_id):
                     "initial_date": report.initial_date,
                     "end_date": report.end_date,
                     "done": done[goal_key],
+                    "partial": report.partial_report
                 })
             values.append({
                 "text": goal_key,
@@ -331,7 +332,7 @@ def get_results_for_timespan(timespan_array, metric_query=Q(), report_query=Q(),
         goal_value = 0
         for time_ini, time_end in timespan_array:
             supplementary_query = Q(end_date__gte=time_ini) & Q(end_date__lte=time_end) & report_query
-            goal, done = get_goal_and_done_for_metric(metric, supplementary_query=supplementary_query)
+            goal, done, final = get_goal_and_done_for_metric(metric, supplementary_query=supplementary_query)
             for key, value in goal.items():
                 if value != 0:
                     done_row.append(done[key]) if done[key] else done_row.append("-")
@@ -398,16 +399,16 @@ def get_metrics_and_aggregate_per_project(project_query=Q(active=True), metric_q
             else:
                 q_filter = Q(project=project) & metric_query
             for metric in Metric.objects.filter(q_filter):
-                goal, done = get_goal_and_done_for_metric(metric)
+                goal, done, final = get_goal_and_done_for_metric(metric)
 
                 if field and goal[field] != 0:
-                    result_metrics = {field: {"goal": goal[field], "done": done[field]}}
+                    result_metrics = {field: {"goal": goal[field], "done": done[field], "final": final}}
                 else:
-                    result_metrics = {key: {"goal": value, "done": done[key]} for key, value in goal.items() if
+                    result_metrics = {key: {"goal": value, "done": done[key], "final": final} for key, value in goal.items() if
                                       value != 0}
 
                 if not result_metrics:
-                    result_metrics = {"Other metric": {"goal": "-", "done": "-"}}
+                    result_metrics = {"Other metric": {"goal": "-", "done": "-", "final": final}}
 
                 activity_metrics[metric.id] = {"title": metric.text, "metrics": result_metrics}
 
@@ -431,8 +432,9 @@ def get_goal_and_done_for_metric(metric, supplementary_query=Q()):
     reports = Report.objects.filter(query)
     goal = get_goal_for_metric(metric)
     done = get_done_for_report(reports, metric)
+    final = is_there_a_final_report(reports)
 
-    return goal, done
+    return goal, done, final
 
 
 def get_goal_for_metric(metric):
@@ -515,6 +517,10 @@ def build_wiki_ref_for_reports(metric, supplementary_query=Q()):
         else:
             refs_set.append(report.reference_text)
     return "".join(refs_set)
+
+
+def is_there_a_final_report(reports):
+    return reports.filter(metrics_related__boolean_type=True, partial_report=False).exists() or False
 
 
 def get_done_for_report(reports, metric):

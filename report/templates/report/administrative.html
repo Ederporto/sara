@@ -19,6 +19,15 @@
         </div>
     </div>
     <div class="w3-row">
+        <div class="w3-third">&nbsp;</div>
+        <div class="w3-twothird formfield">
+            <label class="select-container" style="color:var(--light-grey-color);">{% translate "Mark here if this is a partial report (applicable only to Main Deliverables and Continuing Projects)" %}
+                <input type="checkbox" name="partial_report" {% if report_form.instance.partial_report %}checked{% endif %}>
+                <span class="checkmark"></span>
+            </label>
+        </div>
+    </div>
+    <div class="w3-row">
         <div class="w3-third">
             <label class="formfieldtitle" for="area_responsible">{% translate "Area responsible" %}*</label>
             <p class="form-legend">{% translate "Which is the management responsible for this activity?" %}</p>

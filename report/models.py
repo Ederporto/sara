@@ -152,6 +152,7 @@ class Report(models.Model):
 
     # Administrative fields
     activity_associated = models.ForeignKey(Activity, on_delete=models.RESTRICT, related_name="report_activity", null=True, blank=True)
+    partial_report = models.BooleanField(blank=True, default=False)
     activity_other = models.TextField(max_length=420, blank=True, default="")
     area_responsible = models.ForeignKey(TeamArea, on_delete=models.RESTRICT, related_name="responsible")
     area_activated = models.ManyToManyField(AreaActivated, related_name="area_activated", blank=True)
