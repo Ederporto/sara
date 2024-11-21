@@ -50,7 +50,6 @@ class BugModelTests(TestCase):
     def test_create_bug_without_reporter_fails(self):
         with self.assertRaises(IntegrityError):
             bug = Bug.objects.create(title=self.title, description=self.description)
-            bug.full_clean()
 
     def test_create_bug_with_minimal_requirements_succeeds(self):
         bug = Bug.objects.create(title=self.title, description=self.description, reporter=self.reporter)

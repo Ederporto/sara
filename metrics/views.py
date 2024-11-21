@@ -67,7 +67,8 @@ def prepare_pdf(request, *args, **kwargs):
     main_project = Project.objects.get(main_funding=True)
     main_results = get_results_for_timespan(timespan_array,
                                             Q(project=main_project),
-                                            Q())
+                                            Q(),
+                                            True)
 
     metrics = []
     refs = []
@@ -181,7 +182,7 @@ def dewikify_url(link):
             clean_page = page.replace("_", " ")
             clean_page = clean_page[:-1] if clean_page.endswith("/") else clean_page
 
-            return prefix.replace("$1",f"{lang}").replace("$2",f"{page}")
+            return prefix.replace("$1",f"{lang}").replace("$2",f"{clean_page}")
 
     # The link is not a proper Wiki link
     return f"{link}" if link != "-" else ""
@@ -258,7 +259,7 @@ def metrics_reports(request, metric_id):
 def export_trimester_report(request):
     buffer = StringIO()
 
-    get_results_divided_by_trimester(buffer)
+    get_results_divided_by_trimester(buffer, None, False)
 
     response = HttpResponse(buffer.getvalue())
     response['Content-Type'] = 'text/plain; charset=UTF-8'
@@ -273,7 +274,7 @@ def export_trimester_report_by_by_area_responsible(request):
     buffer = StringIO()
 
     for area in TeamArea.objects.all():
-        get_results_divided_by_trimester(buffer, area)
+        get_results_divided_by_trimester(buffer, area, False)
 
     response = HttpResponse(buffer.getvalue())
     response['Content-Type'] = 'text/plain; charset=UTF-8'
@@ -282,7 +283,7 @@ def export_trimester_report_by_by_area_responsible(request):
     return response
 
 
-def get_results_divided_by_trimester(buffer, area=None):
+def get_results_divided_by_trimester(buffer, area=None, with_goal=False):
     timespan_array = [
         (datetime.date(datetime.datetime.today().year, 1, 1), datetime.date(datetime.datetime.today().year, 3, 31)),
         (datetime.date(datetime.datetime.today().year, 4, 1), datetime.date(datetime.datetime.today().year, 6, 18)),
@@ -303,10 +304,12 @@ def get_results_divided_by_trimester(buffer, area=None):
 
     poa_results = get_results_for_timespan(timespan_array,
                                            Q(project=Project.objects.get(current_poa=True), is_operation=True),
-                                           report_query)
+                                           report_query,
+                                           with_goal)
     main_results = get_results_for_timespan(timespan_array,
                                             Q(project=Project.objects.get(main_funding=True)),
-                                            report_query)
+                                            report_query,
+                                            with_goal)
 
     poa_wikitext = construct_wikitext(poa_results, header +
                                       "!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total !! References\n|-\n")
@@ -320,7 +323,7 @@ def get_results_divided_by_trimester(buffer, area=None):
     buffer.write(footer)
 
 
-def get_results_for_timespan(timespan_array, metric_query=Q(), report_query=Q()):
+def get_results_for_timespan(timespan_array, metric_query=Q(), report_query=Q(), with_goal=False):
     results = []
     for metric in Metric.objects.filter(metric_query).order_by("activity_id", "id"):
         done_row = []
@@ -339,10 +342,11 @@ def get_results_for_timespan(timespan_array, metric_query=Q(), report_query=Q())
         done_row.append(" ".join(filter(None, refs)))
 
         # Get goal and attach to the array
-        if goal_value:
-            done_row.append(goal_value)
-        else:
-            done_row.append("?")
+        if with_goal:
+            if goal_value:
+                done_row.append(goal_value)
+            else:
+                done_row.append("?")
         results.append({"activity": metric.activity.text, "metric": metric.text, "done": done_row})
     return results
 

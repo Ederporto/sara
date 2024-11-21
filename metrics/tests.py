@@ -5,7 +5,7 @@ from .models import Objective, Area, Metric, Activity, Project
 from report.models import Report, Editor, OperationReport, Direction, LearningArea, StrategicLearningQuestion
 from users.models import User, UserProfile, TeamArea
 from strategy.models import StrategicAxis
-from .views import get_metrics_and_aggregate_per_project
+from .views import get_metrics_and_aggregate_per_project, build_wiki_ref_for_reports, dewikify_url
 from django.urls import reverse
 from django.contrib.auth.models import Permission
 from datetime import datetime, timedelta, date
@@ -446,6 +446,30 @@ class MetricFunctionsTests(TestCase):
         aggregated_metrics = get_metrics_and_aggregate_per_project()
         self.assertEqual(aggregated_metrics, {})
 
+    def test_get_references_for_report_with_external_reference_formats_it(self):
+        self.report_1.metrics_related.add(self.metric_1)
+        self.report_1.save()
+
+        response = build_wiki_ref_for_reports(self.metric_1)
+        self.assertEqual(response, "<ref name=\"sara-"+str(self.report_1.id)+"\">[https://testlink.com]</ref>")
+
+    def test_get_references_for_report_with_internal_references_formats_it(self):
+        self.report_1.metrics_related.add(self.metric_1)
+        self.report_1.links = "https://pt.wikipedia.org/wiki/Página_inicial"
+        self.report_1.save()
+
+        response = build_wiki_ref_for_reports(self.metric_1)
+        self.assertEqual(response, "<ref name=\"sara-"+str(self.report_1.id)+"\">[[w:pt:Página_inicial|Página inicial]]</ref>")
+
+    def test_get_references_for_report_with_reference_text_field(self):
+        self.report_1.metrics_related.add(self.metric_1)
+        reference_text = "Formatted reference"
+        self.report_1.reference_text = reference_text
+        self.report_1.save()
+
+        response = build_wiki_ref_for_reports(self.metric_1)
+        self.assertEqual(response, reference_text)
+
 
 class TagsTests(TestCase):
     def test_categorize_for_0(self):
@@ -811,3 +835,25 @@ class MetricsExportTests(TestCase):
         self.assertNotEqual(response.content, b'')
         expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total !! References\n|-\n| rowspan='2' | - || " + bytes(metric.text, 'utf-8') + b" || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || <ref name=\"sara-" + bytes(str(report.id), 'utf-8') + b"\">[[toolforge:sara-wmb/calendar|calendar]], [[w:pt:Wikipedia:Pagina_inicial|Wikipedia:Pagina inicial]], [[c:Main_Page|Main Page]], [https://example.com]</ref>\n|-\n| " + bytes(metric_2.text, 'utf-8') + b" || " + bytes(str(operation_report_2.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report_2.number_of_events), 'utf-8') + b" || <ref name=\"sara-" + bytes(str(report.id), 'utf-8') + b"\"/><ref name=\"sara-" + bytes(str(report_2.id), 'utf-8') + b"\">[[w:pt:Wikipedia:Pagina_inicial|Wikipedia:Pagina inicial]]</ref>\n|-\n|}\n"
         self.assertEqual(response.content.decode('utf-8'), expected_content.decode('utf-8'))
+
+    def test_dewikify_url_with_language_wiki_link(self):
+        link = "w:pt:Página_inicial"
+        dewikified_url = "https://pt.wikipedia.org/wiki/Página inicial"
+        response = dewikify_url(link)
+        self.assertEqual(response, dewikified_url)
+
+    def test_dewikify_url_with_international_wiki_link(self):
+        link = "c:Category:SARA-WMB"
+        dewikified_url = "https://commons.wikimedia.org/wiki/Category:SARA-WMB"
+        response = dewikify_url(link)
+        self.assertEqual(response, dewikified_url)
+
+    def test_dewikify_url_with_non_wiki_link(self):
+        link = dewikified_url = "Teste"
+        response = dewikify_url(link)
+        self.assertEqual(response, dewikified_url)
+
+    def test_dewikify_url_with_hiphen_link(self):
+        link = dewikified_url = "-"
+        response = dewikify_url(link)
+        self.assertEqual(response, "")

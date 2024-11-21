@@ -1,5 +1,7 @@
 import json
 import zipfile
+from wsgiref.validate import assert_
+
 import pandas as pd
 from io import BytesIO
 from django.test import TestCase
@@ -17,6 +19,7 @@ from datetime import datetime
 from django.contrib.auth.models import Permission
 from .forms import NewReportForm, AreaActivatedForm, FundingForm, PartnerForm, TechnologyForm, activities_associated_as_choices, learning_areas_as_choices
 from .views import export_report_instance, export_metrics, export_user_profile, export_area_activated, export_directions_related, export_editors, export_learning_questions_related, export_organizers, export_partners_activated, export_technologies_used, get_or_create_editors, get_or_create_organizers, export_operation_report, export_funding
+from django.core.exceptions import ValidationError
 
 
 class ReportAddViewTest(TestCase):
@@ -209,6 +212,73 @@ class ReportAddViewTest(TestCase):
         self.assertFalse(form.is_valid())
         self.client.post(url, data=data)
         self.assertFalse(Report.objects.filter(description=data["description"]).exists())
+
+    def test_add_report_fails_if_it_is_a_duplicate(self):
+        self.client.login(username=self.username, password=self.password)
+        url = reverse("report:add_report")
+
+        Project.objects.create(text="Wikimedia Community Fund", main_funding=True)
+        strategic_axis = StrategicAxis.objects.create(text="Strategic Axis")
+        direction = Direction.objects.create(text="Direction", strategic_axis=strategic_axis)
+        learning_area = LearningArea.objects.create(text="Learning area")
+        slq = StrategicLearningQuestion.objects.create(text="SLQ", learning_area=learning_area)
+        activity_associated = Activity.objects.create(text="Activity")
+        area_reponsible = TeamArea.objects.create(text="Area")
+        metric = Metric.objects.create(text="Metric", activity=activity_associated, number_of_editors=10, is_operation=True)
+
+        data = {
+            "wikipedia_created": 0, "wikipedia_edited": 0,
+            "commons_created": 0, "commons_edited": 0,
+            "wikidata_created": 0, "wikidata_edited": 0,
+            "wikiversity_created": 0, "wikiversity_edited": 0,
+            "wikibooks_created": 0, "wikibooks_edited": 0,
+            "wikisource_created": 0, "wikisource_edited": 0,
+            "wikinews_created": 0, "wikinews_edited": 0,
+            "wikiquote_created": 0, "wikiquote_edited": 0,
+            "wiktionary_created": 0, "wiktionary_edited": 0,
+            "wikivoyage_created": 0, "wikivoyage_edited": 0,
+            "wikispecies_created": 0, "wikispecies_edited": 0,
+            "metawiki_created": 0, "metawiki_edited": 0,
+            "mediawiki_created": 0, "mediawiki_edited": 0,
+            "participants": 0, "resources": 0, "feedbacks": 0,
+            "number_of_people_reached_through_social_media": 0,
+            "description": "Report",
+            "initial_date": datetime.now().date().strftime("%Y-%m-%d"),
+            "directions_related": [direction.id],
+            "learning": "Learnings!" * 51,
+            "learning_questions_related": [slq.id],
+            "activity_associated": activity_associated.id,
+            "area_responsible": area_reponsible.id,
+            "links": "Links",
+            "metrics_related": [metric.id],
+            "organizers_string": "Organizer 1;Institution 1;Institution 2"
+        }
+        form = NewReportForm(data, user=self.user)
+        self.assertTrue(form.is_valid())
+
+        operation_data = {
+            "Operation-TOTAL_FORMS": 1,
+            "Operation-INITIAL_FORMS": 0,
+            "Operation-MIN_NUM_FORMS": 0,
+            "Operation-MAX_NUM_FORMS": 1000,
+            "Operation-0-metric": metric.id,
+            "Operation-0-number_of_people_reached_through_social_media": 1,
+            "Operation-0-number_of_new_followers": 2,
+            "Operation-0-number_of_mentions": 3,
+            "Operation-0-number_of_community_communications": 0,
+            "Operation-0-number_of_events": 4,
+            "Operation-0-number_of_resources": 5,
+            "Operation-0-number_of_partnerships_activated": 6,
+            "Operation-0-number_of_new_partnerships": 0
+        }
+
+        data.update(operation_data)
+        response_1 = self.client.post(url, data=data)
+        self.assertEqual(Report.objects.count(), 1)
+        response_2 = self.client.post(url, data=data)
+        self.assertEqual(Report.objects.count(), 1)
+        self.assertIn(_("It seems that you already submitted this report!"), response_2.content.decode('utf-8'))
+
 
     def test_delete_report_fails_if_user_doesnt_have_permission(self):
         activity_associated = Activity.objects.create(text="Activity")
