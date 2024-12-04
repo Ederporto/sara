@@ -78,6 +78,7 @@ class Activity(models.Model):
 
 class Metric(models.Model):
     text = models.CharField(max_length=420)
+    text_en = models.CharField(max_length=420, default="", blank=True)
 
     # Content metrics
     wikipedia_created = models.IntegerField(null=True, default=0)
