@@ -68,7 +68,8 @@ def prepare_pdf(request, *args, **kwargs):
     main_results = get_results_for_timespan(timespan_array,
                                             Q(project=main_project),
                                             Q(),
-                                            True)
+                                            True,
+                                            "en")
 
     metrics = []
     refs = []
@@ -130,7 +131,7 @@ def replace_with_links(input_string):
             else:
                 link = friendly = content
 
-            link = dewikify_url(link)
+            link = ur.quote(dewikify_url(link), safe=":/")
             return f'<a target="_blank" href="{link}">{friendly}</a>'
         elif substring.startswith('[') and substring.endswith(']'):
             content = substring[1:-1]
@@ -324,7 +325,7 @@ def get_results_divided_by_trimester(buffer, area=None, with_goal=False):
     buffer.write(footer)
 
 
-def get_results_for_timespan(timespan_array, metric_query=Q(), report_query=Q(), with_goal=False):
+def get_results_for_timespan(timespan_array, metric_query=Q(), report_query=Q(), with_goal=False, lang="pt"):
     results = []
     for metric in Metric.objects.filter(metric_query).order_by("activity_id", "id"):
         done_row = []
@@ -348,7 +349,11 @@ def get_results_for_timespan(timespan_array, metric_query=Q(), report_query=Q(),
                 done_row.append(goal_value)
             else:
                 done_row.append("?")
-        results.append({"activity": metric.activity.text, "metric": metric.text, "done": done_row})
+
+        if lang == "pt":
+            results.append({"activity": metric.activity.text, "metric": metric.text, "done": done_row})
+        else:
+            results.append({"activity": metric.activity.text, "metric": metric.text_en, "done": done_row})
     return results
 
 
