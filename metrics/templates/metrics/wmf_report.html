@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <title>{% if pdf_title %}{{ pdf_title }}{% else %}PDF{% endif %}</title>
-    <style>
+    <style type="text/css">
         @page {
             size: A4 portrait;
             margin: 3cm 2cm 2cm 3cm;
@@ -15,7 +15,7 @@
 
         body {
             font-weight: 200;
-            font-size: 1em;
+            font-size: 14px;
             font-family: "Montserrat", sans-serif;
             line-height: 1.5;
         }
@@ -26,7 +26,9 @@
 
         a {
             color: #007cae;
+            word-wrap: break-word;
             word-break: break-word;
+            hyphens: auto;
             overflow-wrap: break-word;
         }
     </style>
@@ -53,13 +55,13 @@
             <tbody>
             {% for metric in metrics %}
                 <tr>
-                    <td style="padding:0.25em; border:1px solid black;" {% if metric.refs_short %}rowspan="2"{% endif %}>{{ metric.metric }}</td>
-                    <td style="text-align:center; padding:0.25em; border:1px solid black;width: 11%">{{ metric.q1|bool_yesno }}</td>
-                    <td style="text-align:center; padding:0.25em; border:1px solid black;width: 11%">{{ metric.q2|bool_yesno }}</td>
-                    <td style="text-align:center; padding:0.25em; border:1px solid black;width: 11%">{{ metric.q3|bool_yesno }}</td>
-                    <td style="text-align:center; padding:0.25em; border:1px solid black;width: 11%">{{ metric.q4|bool_yesno }}</td>
-                    <td style="text-align:center; padding:0.25em; border:1px solid black;width: 11%">{{ metric.total|bool_yesno }}</td>
-                    <td style="text-align:center; padding:0.25em; border:1px solid black;width: 11%">{{ metric.goal|bool_yesno }}</td>
+                    <td style="padding:0.25em; border:1px solid black; width:34%" {% if metric.refs_short %}rowspan="2"{% endif %}>{{ metric.metric }}</td>
+                    <td style="text-align:center; padding:0.25em; border:1px solid black; width: 11%">{{ metric.q1|bool_yesno }}</td>
+                    <td style="text-align:center; padding:0.25em; border:1px solid black; width: 11%">{{ metric.q2|bool_yesno }}</td>
+                    <td style="text-align:center; padding:0.25em; border:1px solid black; width: 11%">{{ metric.q3|bool_yesno }}</td>
+                    <td style="text-align:center; padding:0.25em; border:1px solid black; width: 11%">{{ metric.q4|bool_yesno }}</td>
+                    <td style="text-align:center; padding:0.25em; border:1px solid black; width: 11%">{{ metric.total|bool_yesno }}</td>
+                    <td style="text-align:center; padding:0.25em; border:1px solid black; width: 11%">{{ metric.goal|bool_yesno }}</td>
                 </tr>
                 {% if metric.refs_short %}
                     <tr>
@@ -69,14 +71,13 @@
             {% endfor %}
             </tbody>
         </table>
-        <div style="page-break-before: always;">
-            <h2>References</h2>
-            <ul style="max-width: 100%;">
-                {% for ref in references %}
-                    {{ ref|safe }}
-                {% endfor %}
-            </ul>
-        </div>
+    <pdf:nextpage/>
+        <h2>References</h2>
+        <ul style="max-width: 100%;">
+            {% for ref in references %}
+                {{ ref|safe }}
+            {% endfor %}
+        </ul>
     </div>
 </div>
 </body>
