@@ -126,12 +126,15 @@ def replace_with_links(input_string):
         substring = match.group(0)
         if substring.startswith('[[') and substring.endswith(']]'):
             content = substring[2:-2]
+            meta = False
             if "|" in content:
                 link, friendly = content.split("|", 1)
+                if ":" not in link:
+                    meta = True
             else:
                 link = friendly = content
 
-            link = ur.quote(dewikify_url(link), safe=":/")
+            link = ur.quote(dewikify_url(link, meta), safe=":/")
             return f'<a target="_blank" href="{link}">{friendly}</a>'
         elif substring.startswith('[') and substring.endswith(']'):
             content = substring[1:-1]
@@ -167,7 +170,7 @@ INVERTED_PATTERNS = {
 }
 
 
-def dewikify_url(link):
+def dewikify_url(link, meta=False):
     for pattern, prefix in INVERTED_PATTERNS.items():
         match = re.match(pattern, link)
         if match:
@@ -185,8 +188,11 @@ def dewikify_url(link):
 
             return prefix.replace("$1",f"{lang}").replace("$2",f"{clean_page}")
 
-    # The link is not a proper Wiki link
-    return f"{link}" if link != "-" else ""
+    # The link is a meta link, so no prefix
+    if meta:
+        return f"https://meta.wikimedia.org/wiki/{link}"
+    else: # The link is not a proper Wiki link
+        return f"{link}" if link != "-" else ""
 
 
 @login_required
