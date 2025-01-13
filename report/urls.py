@@ -6,6 +6,7 @@ app_name = "report"
 urlpatterns = [
     path("add", views.add_report, name="add_report"),
     path("list", views.list_reports, name="list_reports"),
+    path("list/<int:year>", views.list_reports_of_year, name="list_reports_of_year"),
     path("<int:report_id>/view", views.detail_report, name="detail_report"),
     path("<int:report_id>/export", views.export_report, name="export_report"),
     path("all/export", views.export_report, name="export_all_reports"),

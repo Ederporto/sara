@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.translation import gettext as _
 from django.contrib import messages
 from django.db.models import Q
+from django.utils.timezone import now
 
 from metrics.models import Metric, Project
 from report.models import Editor, Organizer, Partner, \
@@ -160,7 +161,15 @@ def add_technology(request):
 @login_required
 @permission_required("report.view_report")
 def list_reports(request):
-    context = {"dataset": Report.objects.order_by('-created_at'), "mine": False, "title": _("List reports")}
+    current_year = now().year
+
+    return list_reports_of_year(request, current_year)
+
+@login_required
+@permission_required("report.view_report")
+def list_reports_of_year(request, year):
+    custom_filter = Q(initial_date__year=year) | Q(end_date__year=year)
+    context = {"dataset": Report.objects.filter(custom_filter).order_by('-created_at'), "mine": False, "title": _("List reports of %(year)s") % {"year": year}}
 
     return render(request, "report/list_reports.html", context)
 
