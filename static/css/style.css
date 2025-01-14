@@ -32,8 +32,8 @@
     --rainbow-color-14: rgba(224, 42, 42, 1);
     --rainbow-color-15: rgba(236, 128, 181, 1);
     --rainbow-color-16: rgba(197, 45, 124, 1);
-    --rainbow-color-17: rgba(67, 207, 133, 1);
-    --rainbow-color-18: rgba(11, 128, 67, 1);
+    --rainbow-color-17: rgb(42, 165, 90);
+    --rainbow-color-18: rgb(1, 94, 47);
 
     --bs-body-color: var(--dark-grey-color);
 
