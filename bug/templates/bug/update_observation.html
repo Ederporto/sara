@@ -10,7 +10,7 @@
                 <form method="post">
                     {% csrf_token %}
                     <div class="w3-row">
-                        <div class="w3-quarter dissapear">&nbsp;</div>
+                        <div class="w3-quarter disappear">&nbsp;</div>
                         <div class="w3-half">
                             {% for field in obsform %}
                                 <label class="w3-third formfieldtitle" for="id_{{ field.name }}">
@@ -23,7 +23,7 @@
                         </div>
                     </div>
                     <div class="w3-row">
-                        <div class="w3-quarter dissapear">&nbsp;</div>
+                        <div class="w3-quarter disappear">&nbsp;</div>
                         <div class="w3-half">
                             <div class="w3-third note formfieldtitle">
                                 {% translate "* Required fields" %}
