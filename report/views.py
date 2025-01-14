@@ -69,7 +69,7 @@ def add_report(request):
         }
         return render(request, "report/add_report.html", context)
     else:
-        operation_metrics = operation_formset(prefix="Operation", initial=[{"metric": metric_object} for metric_object in Metric.objects.filter(is_operation=True, activity__area__project__active=True)])
+        operation_metrics = operation_formset(prefix="Operation", initial=[{"metric": metric_object} for metric_object in Metric.objects.filter(is_operation=True, activity__area__project__current_poa=True)])
         context = {"directions_related_set": directions_related_set,
                    "learning_questions_related_set": learning_questions_related_set,
                    "metrics_set": metrics_set,
