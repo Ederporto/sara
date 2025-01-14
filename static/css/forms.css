@@ -166,4 +166,4 @@ fieldset input { background-color: var(--main-lighter-color) !important }
 .select2-results__option--highlighted[aria-selected] { background-color:var(--main-color) !important; color: white; }
 .select2-selection__arrow { height: 100% !important; position: absolute; top: 0 !important; right: 0.5em !important; width: 1em; }
 .select2-selection__arrow b { border-color: var(--dark-color) transparent transparent transparent !important; }
-.select2-results__options { max-height: 400px !important; }
+.select2-results__options { max-height: 500px !important; }
