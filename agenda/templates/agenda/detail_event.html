@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
+    <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+{% endblock %}
+{% block scripts %}
+    <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
+
+{% block banner %}{% endblock %}
+{% block content %}
+    <div class="w3-container userform">
+        <h1 style="margin-bottom: 1em;">{{ event.name }}</h1>
+        <div class="w3-row">
+            <div class="w3-third">
+                <label class="formfieldtitle" for="links">{% translate "Initial date" %}</label>
+            </div>
+            <div class="w3-twothird formfield">
+                <input class="w3-row formfield" value="{{ event.initial_date|date:'Y-m-d' }}" readonly>
+            </div>
+        </div>
+        <div class="w3-row">
+            <div class="w3-third">
+                <label class="formfieldtitle" for="links">{% translate "End date" %}</label>
+            </div>
+            <div class="w3-twothird formfield">
+                <input class="w3-row formfield" value="{{ event.end_date|date:'Y-m-d' }}" readonly>
+            </div>
+        </div>
+    </div>
+{% endblock %}

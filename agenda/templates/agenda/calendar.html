@@ -89,7 +89,7 @@
                                 {% for activity in activities %}
                                     <tr class="activity-{{ activity.area_responsible.code }}">
                                         <td class="disappear">
-                                            <a href="{% url 'agenda:edit_event' event_id=activity.id %}" title="{{ activity.name }}">
+                                            <a href="{% if user.is_auhenticated %}{% url 'agenda:edit_event' event_id=activity.id %}{% else %}{% url 'agenda:detail_event' event_id=activity.id %}{% endif %}" title="{{ activity.name }}">
                                                 {{ activity.name }}
                                             </a>
                                         </td>

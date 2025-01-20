@@ -15,7 +15,6 @@ from users.models import TeamArea, UserProfile
 
 
 # MONTH CALENDAR
-@login_required
 def show_calendar(request):
     """
     Redirects to the calendar view for the current month and year.
@@ -29,7 +28,6 @@ def show_calendar(request):
     return redirect('agenda:show_specific_calendar', year=year, month=month)
 
 
-@login_required
 def show_specific_calendar(request, year, month):
     """
     Shows calendar for specific month and year.
@@ -39,18 +37,14 @@ def show_specific_calendar(request, year, month):
     :param month: Month of the calendar.
     :return: HttpResponse: Renders a calendar spreadsheet
     """
-    user = request.user
-    username = user.first_name if user else "None"
-
     days_month = days_of_the_month(int(year), int(month))
     month_name = _(calendar.month_name[int(month)])
 
-    context = {"username": username, "calendar": days_month, "month": month, "month_name": month_name, "year": year, "title": _("Calendar %(month_name)s/%(year)s") % {"month_name": month_name, "year": year}}
+    context = {"calendar": days_month, "month": month, "month_name": month_name, "year": year, "title": _("Calendar %(month_name)s/%(year)s") % {"month_name": month_name, "year": year}}
     return render(request, "agenda/calendar.html", context)
 
 
 # DAY CALENDAR
-@login_required
 def show_calendar_day(request):
     """
     Shows calendar for specific month and year.
@@ -65,7 +59,6 @@ def show_calendar_day(request):
     return redirect("agenda:show_specific_calendar_day", year=year, month=month, day=day)
 
 
-@login_required
 def show_specific_calendar_day(request, year, month, day):
     """
     Shows calendar for specific day, month and year.
@@ -125,9 +118,15 @@ def add_event(request):
 @login_required
 @transaction.atomic
 def list_events(request):
-    events = Event.objects.all()
+    events = Event.objects.all().order_by("-year")
     context = {"dataset": events, "title": _("List events")}
     return render(request, "agenda/list_events.html", context)
+
+
+def detail_event(request, event_id):
+    event = Event.objects.get(pk=event_id)
+    context = {"event": event}
+    return render(request, "agenda/detail_event.html", context)
 
 
 @login_required

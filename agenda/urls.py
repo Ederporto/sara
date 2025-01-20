@@ -9,6 +9,7 @@ urlpatterns = [
     path('day', views.show_calendar_day, name='show_calendar_day'),
     path('add', views.add_event, name="create_event"),
     path('list', views.list_events, name="list_events"),
+    path('activity/<int:event_id>', views.detail_event, name="detail_event"),
     path('activity/<int:event_id>/delete', views.delete_event, name="delete_event"),
     path('activity/<int:event_id>/edit', views.update_event, name="edit_event"),
     path('send_email', views.send_email, name="send_email"),
