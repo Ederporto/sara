@@ -77,12 +77,15 @@
         <div class="nav_separator"></div>
         <div class="nav_block nav_bottom">
             {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}" aria-label="{% translate 'Logout' %}">
-                    <i class="nav_icon fa-solid fa-right-from-bracket"></i>
-                    <span class="nav_btn_title">{% translate "Logout" %}</span>
-                </a>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button class="link-button" type="submit">
+                        <i class="nav_icon fa-solid fa-right-from-bracket"></i>
+                        <span class="nav_btn_title">{% translate "Logout" %}</span>
+                    </button>
+                </form>
             {% else %}
-                <a href="{% url 'login' %}" aria-label="{% translate 'Logout' %}">
+                <a href="{% url 'login' %}" aria-label="{% translate 'Login' %}">
                     <i class="nav_icon fa-solid fa-right-to-bracket"></i>
                     <span class="nav_btn_title">{% translate "Login" %}</span>
                 </a>

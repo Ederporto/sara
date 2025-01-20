@@ -33,6 +33,9 @@
 .nav_block i, .nav_block span { transition: all 300ms ease-in-out; }
 .nav_block:hover i, .nav_block:hover span { color: var(--light-color); }
 
+.link-button { all: unset; cursor: pointer; }
+.link-button:hover { text-decoration: none; }
+
 /* LOGO */
 .st0 { fill: var(--main-color) }
 .logo_nav svg { height: 3em }
