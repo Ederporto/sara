@@ -118,7 +118,7 @@ def add_event(request):
 @login_required
 @transaction.atomic
 def list_events(request):
-    events = Event.objects.all().order_by("-year")
+    events = Event.objects.all().order_by("-initial_date__year")
     context = {"dataset": events, "title": _("List events")}
     return render(request, "agenda/list_events.html", context)
 
