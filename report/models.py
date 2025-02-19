@@ -214,6 +214,10 @@ class Report(models.Model):
     # Metrics associated
     metrics_related = models.ManyToManyField(Metric, related_name="metrics_related", blank=False)
 
+    # Financial metrics
+    donors = models.IntegerField(null=True, default=0)
+    submissions = models.IntegerField(null=True, default=0)
+
     class Meta:
         verbose_name = _("Report")
         verbose_name_plural = _("Reports")
