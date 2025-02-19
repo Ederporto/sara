@@ -127,6 +127,10 @@ class Metric(models.Model):
     number_of_community_communications = models.IntegerField(null=True, default=0)
     number_of_people_reached_through_social_media = models.IntegerField(null=True, default=0)
 
+    # Financial metrics
+    number_of_donors = models.IntegerField(null=True, default=0)
+    number_of_submissions = models.IntegerField(null=True, default=0)
+
     # Other metrics
     boolean_type = models.BooleanField(default=False)
     other_type = models.CharField(null=True, blank=True, max_length=420)
