@@ -161,7 +161,7 @@ class MetricViewsTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, f"{reverse('login')}?next={url}")
 
-    def test_show_detailed_metrics_per_project_succeds_if_user_have_permission(self):
+    def test_show_detailed_metrics_per_project_succeeds_if_user_have_permission(self):
         permission = Permission.objects.get(codename="delete_logentry")
         self.user.user_permissions.add(permission)
         self.client.login(username=self.username, password=self.password)
@@ -587,7 +587,7 @@ class MetricsExportTests(TestCase):
         self.other_activity = Activity.objects.create(text="Other activity")
         self.activity = Activity.objects.create(text="Activity")
 
-    def test_export_trimester_report_succeds_if_user_is_authenticated(self):
+    def test_export_trimester_report_succeeds_if_user_is_authenticated(self):
         self.client.login(username=self.username, password=self.password)
         url = reverse("metrics:export_reports_per_trimester")
 
@@ -634,7 +634,7 @@ class MetricsExportTests(TestCase):
         report = Report.objects.create(description="Report 1",
                                        created_by=self.user_profile,
                                        modified_by=self.user_profile,
-                                       initial_date=date(2024, 2, 29),
+                                       initial_date=date(datetime.today().year, 2, 28),
                                        learning="Learnings!" * 51,
                                        activity_associated=self.activity,
                                        area_responsible=area_reponsible,
@@ -670,7 +670,7 @@ class MetricsExportTests(TestCase):
         report = Report.objects.create(description="Report 1",
                                        created_by=self.user_profile,
                                        modified_by=self.user_profile,
-                                       initial_date=date(2024, 2, 29),
+                                       initial_date=date(datetime.today().year, 2, 28),
                                        learning="Learnings!" * 51,
                                        activity_associated=self.activity,
                                        area_responsible=area_reponsible,
@@ -699,7 +699,7 @@ class MetricsExportTests(TestCase):
         expected_content = b"{| class='wikitable wmb_report_table'\n!Activity !! Metrics !! Q1 !! Q2 !! Q3 !! Q4 !! Total !! References\n|-\n| - || " + bytes(metric.text, 'utf-8') + b" || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || - || - || - || " + bytes(str(operation_report.number_of_events), 'utf-8') + b" || <ref name=\"sara-" + bytes(str(report.id), 'utf-8') + b"\">[" + bytes(str(report.links), 'utf-8') + b"]</ref>\n|-\n|}\n"
         self.assertEqual(response.content.decode('utf-8'), expected_content.decode('utf-8'))
 
-    def test_export_trimester_report_by_area_succeds_if_user_is_authenticated(self):
+    def test_export_trimester_report_by_area_succeeds_if_user_is_authenticated(self):
         self.client.login(username=self.username, password=self.password)
         url = reverse("metrics:export_reports_per_area")
 
@@ -707,7 +707,7 @@ class MetricsExportTests(TestCase):
         report = Report.objects.create(description="Report 1",
                                        created_by=self.user_profile,
                                        modified_by=self.user_profile,
-                                       initial_date=date(2024, 2, 29),
+                                       initial_date=date(datetime.today().year, 2, 28),
                                        learning="Learnings!" * 51,
                                        activity_associated=self.activity,
                                        area_responsible=area_reponsible,
@@ -754,7 +754,7 @@ class MetricsExportTests(TestCase):
         report = Report.objects.create(description="Report 1",
                                        created_by=self.user_profile,
                                        modified_by=self.user_profile,
-                                       initial_date=date(2024, 2, 29),
+                                       initial_date=date(datetime.today().year, 2, 28),
                                        learning="Learnings!" * 51,
                                        activity_associated=self.activity,
                                        area_responsible=area_reponsible,
@@ -790,7 +790,7 @@ class MetricsExportTests(TestCase):
         report = Report.objects.create(description="Report 1",
                                        created_by=self.user_profile,
                                        modified_by=self.user_profile,
-                                       initial_date=date(2024, 2, 29),
+                                       initial_date=date(datetime.today().year, 2, 28),
                                        learning="Learnings!" * 51,
                                        activity_associated=self.activity,
                                        area_responsible=area_reponsible,
@@ -798,7 +798,7 @@ class MetricsExportTests(TestCase):
         report_2 = Report.objects.create(description="Report 2",
                                        created_by=self.user_profile,
                                        modified_by=self.user_profile,
-                                       initial_date=date(2024, 2, 29),
+                                       initial_date=date(datetime.today().year, 2, 28),
                                        learning="Learnings!" * 51,
                                        activity_associated=self.activity,
                                        area_responsible=area_reponsible,

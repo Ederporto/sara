@@ -169,7 +169,7 @@ def list_reports(request):
 @permission_required("report.view_report")
 def list_reports_of_year(request, year):
     custom_filter = Q(initial_date__year=year) | Q(end_date__year=year)
-    context = {"dataset": Report.objects.filter(custom_filter).order_by('-created_at'), "mine": False, "title": _("List reports of %(year)s") % {"year": year}}
+    context = {"dataset": Report.objects.filter(custom_filter).order_by('-created_at'), "mine": False, "title": _("List reports of %(year)s") % {"year": year}, "year": year}
 
     return render(request, "report/list_reports.html", context)
 
@@ -188,29 +188,29 @@ def detail_report(request, report_id):
     return render(request, "report/detail_report.html", context)
 
 
-def add_csv_file(function_name, report_id=None):
+def add_csv_file(function_name, report_id=None, custom_query=None):
     csv_file = BytesIO()
-    function_name(report_id).to_csv(path_or_buf=csv_file, index=False)
+    function_name(report_id, custom_query).to_csv(path_or_buf=csv_file, index=False)
 
     return csv_file
 
 
-def add_excel_file(report_id=None):
+def add_excel_file(report_id=None, custom_query=None):
     excel_file = BytesIO()
     writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
 
-    export_report_instance(report_id).to_excel(writer, sheet_name='Report', index=False)
-    export_operation_report(report_id).to_excel(writer, sheet_name='Operation report', index=False)
-    export_metrics(report_id).to_excel(writer, sheet_name='Metrics', index=False)
-    export_user_profile(report_id).to_excel(writer, sheet_name='Users', index=False)
-    export_area_activated(report_id).to_excel(writer, sheet_name='Areas', index=False)
-    export_directions_related(report_id).to_excel(writer, sheet_name='Directions', index=False)
-    export_editors(report_id).to_excel(writer, sheet_name='Editors', index=False)
-    export_funding(report_id).to_excel(writer, sheet_name='Fundings', index=False)
-    export_learning_questions_related(report_id).to_excel(writer, sheet_name='Learning questions', index=False)
-    export_organizers(report_id).to_excel(writer, sheet_name='Organizers', index=False)
-    export_partners_activated(report_id).to_excel(writer, sheet_name='Partners', index=False)
-    export_technologies_used(report_id).to_excel(writer, sheet_name='Technologies', index=False)
+    export_report_instance(report_id, custom_query).to_excel(writer, sheet_name='Report', index=False)
+    export_operation_report(report_id, custom_query).to_excel(writer, sheet_name='Operation report', index=False)
+    export_metrics(report_id, custom_query).to_excel(writer, sheet_name='Metrics', index=False)
+    export_user_profile(report_id, custom_query).to_excel(writer, sheet_name='Users', index=False)
+    export_area_activated(report_id, custom_query).to_excel(writer, sheet_name='Areas', index=False)
+    export_directions_related(report_id, custom_query).to_excel(writer, sheet_name='Directions', index=False)
+    export_editors(report_id, custom_query).to_excel(writer, sheet_name='Editors', index=False)
+    export_funding(report_id, custom_query).to_excel(writer, sheet_name='Fundings', index=False)
+    export_learning_questions_related(report_id, custom_query).to_excel(writer, sheet_name='Learning questions', index=False)
+    export_organizers(report_id, custom_query).to_excel(writer, sheet_name='Organizers', index=False)
+    export_partners_activated(report_id, custom_query).to_excel(writer, sheet_name='Partners', index=False)
+    export_technologies_used(report_id, custom_query).to_excel(writer, sheet_name='Technologies', index=False)
 
     writer.close()
     return excel_file
@@ -218,7 +218,7 @@ def add_excel_file(report_id=None):
 
 @login_required
 @permission_required("report.view_report")
-def export_report(request, report_id=None):
+def export_report(request, report_id=None, year=None):
     if Report.objects.count():
         buffer = BytesIO()
         zip_file = zipfile.ZipFile(buffer, mode="w")
@@ -230,6 +230,11 @@ def export_report(request, report_id=None):
         else:
             zip_name = _("SARA - Reports")
             identifier = ""
+
+        if year:
+            custom_query = Q(initial_date__year=year) | Q(end_date__year=year)
+        else:
+            custom_query = Q()
 
         posfix = identifier + " - {}".format(datetime.datetime.today().strftime('%Y-%m-%d'))
         files = [[export_report_instance, sub_directory + 'Report' + posfix],
@@ -246,8 +251,8 @@ def export_report(request, report_id=None):
                  [export_technologies_used, sub_directory + 'Technologies' + posfix]]
 
         for file in files:
-            zip_file.writestr('{}.csv'.format(file[1]), add_csv_file(file[0], report_id).getvalue())
-        zip_file.writestr('Export' + posfix + '.xlsx', add_excel_file(report_id).getvalue())
+            zip_file.writestr('{}.csv'.format(file[1]), add_csv_file(file[0], report_id, custom_query).getvalue())
+        zip_file.writestr('Export' + posfix + '.xlsx', add_excel_file(report_id, custom_query).getvalue())
 
         zip_file.close()
 
@@ -260,7 +265,7 @@ def export_report(request, report_id=None):
         return redirect(reverse("report:list_reports"))
 
 
-def export_report_instance(report_id=None):
+def export_report_instance(report_id=None, custom_query=Q()):
     header = [_('ID'), _('Created by'), _('Created at'), _('Modified by'), _('Modified at'), _('Activity associated'),
               _('Name of the activity'), _('Area responsible'), _('Area activated'), _('Initial date'), _('End date'),
               _('Description'), _('Funding associated'), _('Links'), _('Public communication'),
@@ -284,7 +289,7 @@ def export_report_instance(report_id=None):
     if report_id:
         reports = Report.objects.filter(pk=report_id)
     else:
-        reports = Report.objects.all()
+        reports = Report.objects.filter(custom_query)
 
     rows = []
     for report in reports:
@@ -399,7 +404,7 @@ def export_report_instance(report_id=None):
     return df
 
 
-def export_operation_report(report_id=None):
+def export_operation_report(report_id=None, custom_query=Q()):
     header = [_('ID'), _('Report ID'), _('Metric ID'), _('Metric'), _('Number of people reached through social media'),
               _('Number of new followers'), _('Number of mentions'), _('Number of community communications'),
               _('Number of events'), _('Number of resources'), _('Number of partnerships activated'),
@@ -408,7 +413,8 @@ def export_operation_report(report_id=None):
     if report_id:
         operation_reports = OperationReport.objects.filter(report_id=report_id)
     else:
-        operation_reports = OperationReport.objects.all()
+        reports = Report.objects.filter(custom_query)
+        operation_reports = OperationReport.objects.filter(report_id__in=reports.values_list("id", flat=True))
 
     rows = []
     for operation_report in operation_reports:
@@ -429,7 +435,7 @@ def export_operation_report(report_id=None):
     return df
 
 
-def export_metrics(report_id=None):
+def export_metrics(report_id=None, custom_query=Q()):
     header = [_('ID'), _('Metric'), _('Activity ID'), _('Activity'), _('Activity code'), _('Number of editors'),
               _('Number of participants'), _('Number of partnerships activated'), _('Number of feedbacks'),
               _('Number of events'), _('Other type? Which?'), _('Observation'), _('# Wikipedia created'),
@@ -444,7 +450,7 @@ def export_metrics(report_id=None):
     if report_id:
         reports = Report.objects.filter(pk=report_id)
     else:
-        reports = Report.objects.all()
+        reports = Report.objects.filter(custom_query)
 
     rows = []
     for report in reports:
@@ -468,7 +474,7 @@ def export_metrics(report_id=None):
     return df
 
 
-def export_user_profile(report_id=None):
+def export_user_profile(report_id=None, custom_query=Q()):
     header = [_('ID'), _('First name'), _('Last Name'), _('Username on Wiki (WMB)'), _('Username on Wiki'),
               _('Photograph'), _('Position'), _('Twitter'), _('Facebook'), _('Instagram'), _('Email'),
               _('Wikidata item'), _('LinkedIn'), _('Lattes'), _('Orcid'), _('Google_scholar')]
@@ -476,7 +482,7 @@ def export_user_profile(report_id=None):
     if report_id:
         reports = Report.objects.filter(pk=report_id)
     else:
-        reports = Report.objects.all()
+        reports = Report.objects.filter(custom_query)
 
     rows = []
     for report in reports:
@@ -502,13 +508,14 @@ def export_user_profile(report_id=None):
     return df
 
 
-def export_funding(report_id=None):
+def export_funding(report_id=None, custom_query=Q()):
     header = [_('ID'), _('Funding'), _('Value'), _('Project ID'), _('Project'), _('Active?'), _('Type of project')]
 
     if report_id:
         fundings = Funding.objects.filter(funding_associated=report_id)
     else:
-        fundings = Funding.objects.all()
+        reports = Report.objects.filter(custom_query)
+        fundings = Funding.objects.filter(funding_associated__in = reports.values_list("id", flat=True))
 
     rows = []
     for funding in fundings:
@@ -529,13 +536,13 @@ def export_funding(report_id=None):
     return df
 
 
-def export_area_activated(report_id=None):
+def export_area_activated(report_id=None, custom_query=Q()):
     header = [_('ID'), _('Area activated'), _('Contact')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
     else:
-        reports = Report.objects.all()
+        reports = Report.objects.filter(custom_query)
 
     rows = []
     for report in reports:
@@ -547,13 +554,13 @@ def export_area_activated(report_id=None):
     return df
 
 
-def export_directions_related(report_id=None):
+def export_directions_related(report_id=None, custom_query=Q()):
     header = [_('ID'), _('Direction related'), _('Strategic axis ID'), _('Strategic axis text')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
     else:
-        reports = Report.objects.all()
+        reports = Report.objects.filter(custom_query)
 
     rows = []
     for report in reports:
@@ -564,13 +571,13 @@ def export_directions_related(report_id=None):
     return df
 
 
-def export_editors(report_id=None):
+def export_editors(report_id=None, custom_query=Q()):
     header = [_('ID'), _('Username'), _('Number of reports including this editor')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
     else:
-        reports = Report.objects.all()
+        reports = Report.objects.filter(custom_query)
 
     rows = []
     for report in reports:
@@ -581,13 +588,13 @@ def export_editors(report_id=None):
     return df
 
 
-def export_learning_questions_related(report_id=None):
+def export_learning_questions_related(report_id=None, custom_query=Q()):
     header = [_('ID'), _('Learning question'), _('Learning area ID'), _('Learning area')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
     else:
-        reports = Report.objects.all()
+        reports = Report.objects.filter(custom_query)
 
     rows = []
     for report in reports:
@@ -598,13 +605,13 @@ def export_learning_questions_related(report_id=None):
     return df
 
 
-def export_organizers(report_id=None):
+def export_organizers(report_id=None, custom_query=Q()):
     header = [_('ID'), _("Organizer's name"), _("Organizer's institution ID"), _("Organizer institution's name"), _('Number of reports including this organizer')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
     else:
-        reports = Report.objects.all()
+        reports = Report.objects.filter(custom_query)
 
     rows = []
     for report in reports:
@@ -615,13 +622,13 @@ def export_organizers(report_id=None):
     return df
 
 
-def export_partners_activated(report_id=None):
+def export_partners_activated(report_id=None, custom_query=Q()):
     header = [_('ID'), _("Partners"), _("Partner's website"), _('Number of reports including this partner')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
     else:
-        reports = Report.objects.all()
+        reports = Report.objects.filter(custom_query)
 
     rows = []
     for report in reports:
@@ -632,13 +639,13 @@ def export_partners_activated(report_id=None):
     return df
 
 
-def export_technologies_used(report_id=None):
+def export_technologies_used(report_id=None, custom_query=Q()):
     header = [_('ID'), _("Technology"), _('Number of reports including this technology')]
 
     if report_id:
         reports = Report.objects.filter(pk=report_id)
     else:
-        reports = Report.objects.all()
+        reports = Report.objects.filter(custom_query)
 
     rows = []
     for report in reports:

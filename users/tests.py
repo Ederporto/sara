@@ -53,7 +53,7 @@ class TeamAreaModelTests(TestCase):
         with self.assertRaises(RestrictedError):
             self.team_area.delete()
 
-    def test_trying_to_delete_team_area_that_are_not_responsible_for_events_succeds(self):
+    def test_trying_to_delete_team_area_that_are_not_responsible_for_events_succeeds(self):
         team_area2 = TeamArea.objects.create(text="Team Area 2", code="team_area_2")
 
         Event.objects.create(

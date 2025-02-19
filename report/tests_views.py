@@ -97,6 +97,8 @@ class ReportAddViewTest(TestCase):
             "activity_associated": activity_associated.id,
             "area_responsible": area_reponsible.id,
             "links": "Links",
+            "donors": 0,
+            "submissions": 0,
             "metrics_related": [metric.id]
         }
         operation_data = {
@@ -158,7 +160,9 @@ class ReportAddViewTest(TestCase):
             "area_responsible": area_reponsible.id,
             "links": "Links",
             "metrics_related": [metric.id],
-            "organizers_string": "Organizer 1;Institution 1;Institution 2"
+            "organizers_string": "Organizer 1;Institution 1;Institution 2",
+            "donors": 0,
+            "submissions": 0
         }
         form = NewReportForm(data, user=self.user)
         self.assertTrue(form.is_valid())
@@ -251,7 +255,9 @@ class ReportAddViewTest(TestCase):
             "area_responsible": area_reponsible.id,
             "links": "Links",
             "metrics_related": [metric.id],
-            "organizers_string": "Organizer 1;Institution 1;Institution 2"
+            "organizers_string": "Organizer 1;Institution 1;Institution 2",
+            "donors": 0,
+            "submissions": 0
         }
         form = NewReportForm(data, user=self.user)
         self.assertTrue(form.is_valid())
@@ -691,7 +697,9 @@ class ReportViewViewTest(TestCase):
             "organizers_string": "new organizer 1\r\nnew organizer 2",
             "directions_related": [self.directions_related.id],
             "learning_questions_related": [self.learning_questions_related.id],
-            "metrics_related": [self.metrics_related.id]
+            "metrics_related": [self.metrics_related.id],
+            "donors": 0,
+            "submissions": 0
         }
         operation_data = {
             "Operation-TOTAL_FORMS": 1,
@@ -822,6 +830,41 @@ class ReportExportViewTest(TestCase):
         self.assertEqual(response['Content-Type'], 'application/x-zip-compressed')
         postfix = datetime.today().strftime('%Y-%m-%d')
         self.assertEqual(response['Content-Disposition'], 'attachment; filename=SARA - Reports - {}.zip'.format(postfix))
+        buffer = BytesIO(response.content)
+        with zipfile.ZipFile(buffer) as zip_file:
+            expected_files = [
+                'csv/Report - {}.csv'.format(postfix),
+                'csv/Operation report - {}.csv'.format(postfix),
+                'csv/Metrics - {}.csv'.format(postfix),
+                'csv/Users - {}.csv'.format(postfix),
+                'csv/Areas - {}.csv'.format(postfix),
+                'csv/Directions - {}.csv'.format(postfix),
+                'csv/Editors - {}.csv'.format(postfix),
+                'csv/Fundings - {}.csv'.format(postfix),
+                'csv/Learning questions - {}.csv'.format(postfix),
+                'csv/Organizers - {}.csv'.format(postfix),
+                'csv/Partners - {}.csv'.format(postfix),
+                'csv/Technologies - {}.csv'.format(postfix),
+                'Export - {}.xlsx'.format(postfix),
+            ]
+            self.assertEqual(sorted(zip_file.namelist()), sorted(expected_files))
+            self.assertEqual(zip_file.read(expected_files[0]), b'test csv data')
+            self.assertEqual(zip_file.read(expected_files[-1]), b'test excel data')
+
+    @patch('report.views.add_csv_file')
+    @patch('report.views.add_excel_file')
+    def test_export_report_generates_a_zip_file_with_a_specific_structure_with_year(self, mock_add_excel_file,
+                                                                                    mock_add_csv_file):
+        self.client.login(username=self.username, password=self.password)
+        mock_add_csv_file.return_value = BytesIO(b'test csv data')
+        mock_add_excel_file.return_value = BytesIO(b'test excel data')
+        response = self.client.get(reverse("report:export_year_reports", kwargs={"year": datetime.now().year}))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/x-zip-compressed')
+        postfix = datetime.today().strftime('%Y-%m-%d')
+        self.assertEqual(response['Content-Disposition'],
+                         'attachment; filename=SARA - Reports - {}.zip'.format(postfix))
         buffer = BytesIO(response.content)
         with zipfile.ZipFile(buffer) as zip_file:
             expected_files = [
