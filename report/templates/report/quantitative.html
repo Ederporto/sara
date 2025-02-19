@@ -60,6 +60,24 @@ Username 2; Institution 2">{% if report_form.instance.id %}{% for organizer in r
     </div>
     <div class="w3-row">
         <div class="w3-third">
+            <label class="formfieldtitle" for="number_of_donors">{% translate "Number of new donors" %}</label>
+            <p class="form-legend">{% translate "How many new donors this activity is recruiting?" %}</p>
+        </div>
+        <div class="w3-twothird formfield">
+            <input type="number" min="0" value="{{ report_form.instance.donors }}" id="number_of_donors" name="donors"/>
+        </div>
+    </div>
+    <div class="w3-row">
+        <div class="w3-third">
+            <label class="formfieldtitle" for="number_of_submissions">{% translate "Number of calls submissions" %}</label>
+            <p class="form-legend">{% translate "How many calls submissions is this activity reporting?" %}</p>
+        </div>
+        <div class="w3-twothird formfield">
+            <input type="number" min="0" value="{{ report_form.instance.donors }}" id="number_of_submissions" name="submissions"/>
+        </div>
+    </div>
+    <div class="w3-row">
+        <div class="w3-third">
             <label class="formfieldtitle" for="technologies_used">{% translate "Technologies used" %}</label>
             <p class="form-legend">{% translate "Which are the technologies used in this activity?" %}</p>
         </div>
