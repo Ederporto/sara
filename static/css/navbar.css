@@ -42,11 +42,14 @@
 #logo_s, #logo_a1, #logo_r, #logo_a2 { transition: all 1s ease-in-out; }
 #nav_logo:hover path { fill: var(--light-color); }
 
-.nav_collapsed.navbar_wrapper { flex-basis: 1.5em; }
-.nav_collapsed .nav_block span { display: none; }
-.nav_collapsed .nav_separator { width: 1.5em; }
-.nav_collapsed #logo_s { transform: translateX(-100%); opacity: 0; }
-.nav_collapsed #logo_r { transform: translateX(-100%); opacity: 0; }
-.nav_collapsed #logo_a1 { transform: translateX(-2%); }
-.nav_collapsed #logo_a2 { transform: translateX(-26%); }
-.nav_collapsed .logo_nav svg { height: 1.5em !important; }
+@media screen and (max-width: 600px) {
+    .navbar_wrapper { flex-basis: 1.5em; }
+    .nav_block span { display: none; }
+    .nav_separator { width: 1.5em; }
+
+    #logo_s { transform: translateX(-100%); opacity: 0; }
+    #logo_r { transform: translateX(-100%); opacity: 0; }
+    #logo_a1 { transform: translateX(-2%); }
+    #logo_a2 { transform: translateX(-26%); }
+    .logo_nav svg { height: 1.5em !important; }
+}
