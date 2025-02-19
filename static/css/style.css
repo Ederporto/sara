@@ -329,10 +329,5 @@ canvas {
 .btn-5 { background-color: #3FACFF; color: var(--dark-color); }
 
 @media print {
-    body * { visibility: hidden; }
-    nav, .index, .actions, .noprint { display: none !important; }
-    .printable_content, .printable_content * { visibility: visible; }
-    #page_content { width: 100% !important; }
-    body { margin: 0; padding: 0; }
-    .page-break { page-break-before: always; }
+    nav, .index { display: none !important; }
 }

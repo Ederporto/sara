@@ -13,6 +13,16 @@
     <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap-table/1.21.2/bootstrap-table.min.css">
     <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
+    <style>
+        @media print {
+            body * { visibility: hidden;}
+            nav, .index, .actions, .noprint { display: none !important; }
+            .printable_content, .printable_content * { visibility: visible; }
+            #page_content { width: 100% !important; }
+            body { margin: 0; padding: 0; }
+            .page-break { page-break-before: always; }
+        }
+    </style>
 {% endblock %}
 {% block banner %}{% endblock %}
 {% block content %}
