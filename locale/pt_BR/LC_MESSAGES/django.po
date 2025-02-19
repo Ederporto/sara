@@ -27,7 +27,7 @@ msgstr "Eventos"
 
 #: .\agenda\models.py:49
 msgid "Every event needs a name, a date of beginning and ending"
-msgstr "Todo evento precisa de um nome, uma data de início e data de término"
+msgstr "Eventos precisam de um nome, uma data de início e data de término"
 
 #: .\agenda\templates\agenda\add_event.html:22
 #: .\agenda\templates\agenda\list_events.html:36
