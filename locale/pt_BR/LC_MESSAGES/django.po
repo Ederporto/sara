@@ -587,7 +587,7 @@ msgid ""
 "and evaluating activities quantitative and qualitative metrics."
 msgstr ""
 "<b>S.A.R.A.</b> é um acrônimo para <i><b>S</b>istema de <b>A</b>valiação de "
-"<b>R </b>esultados e <b>A</b>prendizados</i> e é um <i>software</i> "
+"<b>R</b>esultados e <b>A</b>prendizados</i> e é um <i>software</i> "
 "destinado ao registro e avaliação de métricas quantitativas e qualitativas "
 "de atividades."
 
@@ -1827,13 +1827,13 @@ msgstr "# editados(as) na Wikiversidade"
 #: .\report\tests_views.py:1057 .\report\tests_views.py:1128
 #: .\report\tests_views.py:1185 .\report\views.py:278 .\report\views.py:443
 msgid "# Wikibooks created"
-msgstr "# criados(as) no Wikilivross"
+msgstr "# criados(as) no Wikilivros"
 
 #: .\report\tests_views.py:898 .\report\tests_views.py:984
 #: .\report\tests_views.py:1057 .\report\tests_views.py:1129
 #: .\report\tests_views.py:1186 .\report\views.py:278 .\report\views.py:444
 msgid "# Wikibooks edited"
-msgstr "# editados(as) no Wikilivross"
+msgstr "# editados(as) no Wikilivros"
 
 #: .\report\tests_views.py:898 .\report\tests_views.py:984
 #: .\report\tests_views.py:1057 .\report\tests_views.py:1129
