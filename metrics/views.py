@@ -1,6 +1,7 @@
 import calendar
 import datetime
 from django.shortcuts import render, redirect, reverse, HttpResponse
+from django.utils.translation import get_language
 from django.utils.translation import gettext as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, Sum, F
@@ -198,18 +199,30 @@ def dewikify_url(link, meta=False):
 @login_required
 @permission_required("metrics.view_metric")
 def show_metrics_per_project(request):
+    current_language = get_language()
     poa_project = Project.objects.get(current_poa=True)
-    operational_dataset = get_metrics_and_aggregate_per_project(Q(current_poa=True), Q(is_operation=True))
+    operational_dataset = get_metrics_and_aggregate_per_project(Q(current_poa=True), Q(is_operation=True), lang=current_language)
 
-    poa_dataset = get_metrics_and_aggregate_per_project(Q(current_poa=True), Q(boolean_type=True), "Occurrence")
+    poa_dataset = get_metrics_and_aggregate_per_project(Q(current_poa=True), Q(boolean_type=True), "Occurrence", lang=current_language)
     if poa_dataset and operational_dataset:
         poa_dataset[poa_project.id]["project_metrics"] += operational_dataset[poa_project.id]["project_metrics"]
 
     context = {
         "poa_dataset": poa_dataset,
-        "dataset": get_metrics_and_aggregate_per_project(Q(active=True, current_poa=False)),
+        "dataset": get_metrics_and_aggregate_per_project(Q(active=True, current_poa=False), lang=current_language),
         "title": _("Show metrics per project")
     }
+
+    return render(request, "metrics/list_metrics_per_project.html", context)
+
+
+@login_required
+@permission_required("metrics.view_metric")
+def show_metrics_for_specific_project(request, project_id):
+    current_language = get_language()
+    project = Project.objects.get(pk=project_id)
+    metrics_aggregated = get_metrics_and_aggregate_per_project(Q(pk=project_id), lang=current_language)
+    context = { "dataset": metrics_aggregated, "title": project.text }
 
     return render(request, "metrics/list_metrics_per_project.html", context)
 
@@ -398,7 +411,7 @@ def construct_wikitext(results, wikitext):
     return wikitext
 
 
-def get_metrics_and_aggregate_per_project(project_query=Q(active=True), metric_query=Q(), field=None):
+def get_metrics_and_aggregate_per_project(project_query=Q(active=True), metric_query=Q(), field=None, lang=""):
     aggregated_metrics_and_results = {}
 
     for project in Project.objects.filter(project_query).order_by("-current_poa", "-main_funding"):
@@ -421,7 +434,8 @@ def get_metrics_and_aggregate_per_project(project_query=Q(active=True), metric_q
                 if not result_metrics:
                     result_metrics = {"Other metric": {"goal": "-", "done": "-", "final": final}}
 
-                activity_metrics[metric.id] = {"title": metric.text, "metrics": result_metrics}
+                localized_title = metric.text_en if lang=="en" else metric.text
+                activity_metrics[metric.id] = {"title": localized_title, "metrics": result_metrics}
 
             if activity_metrics:
                 project_metrics.append({
