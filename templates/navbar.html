@@ -35,6 +35,13 @@
                 </a>
             </div>
             <div class="nav_separator"></div>
+            <div class="nav_block">
+                <a href="{% url 'metrics:per_project' %}" aria-label="{% translate 'Track metrics' %}">
+                    <i class="nav_icon fa-solid fa-bullseye"></i>
+                    <span class="nav_btn_title">{% translate "Track metrics" %}</span>
+                </a>
+            </div>
+            <div class="nav_separator"></div>
         {% endif %}
         <div class="nav_block">
             <a href="{% url 'agenda:show_calendar' %}" aria-label="{% translate 'Calendar of activities' %}">
@@ -64,7 +71,6 @@
     </div>
     <div class="nav_section nav_bottom">
         {% if user.is_authenticated %}
-            <div class="nav_separator"></div>
             <div class="nav_block nav_bottom">
                 <a href="{% url 'user:profile' user_id=user.id %}" aria-label="{% translate 'User profile' %}">
                     <i class="nav_icon fa-solid fa-user-gear"></i>
