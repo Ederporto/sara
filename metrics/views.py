@@ -221,7 +221,18 @@ def show_metrics_per_project(request):
 def show_metrics_for_specific_project(request, project_id):
     current_language = get_language()
     project = Project.objects.get(pk=project_id)
-    metrics_aggregated = get_metrics_and_aggregate_per_project(Q(pk=project_id), lang=current_language)
+
+    if project.current_poa:
+        operational_dataset = get_metrics_and_aggregate_per_project(Q(current_poa=True), Q(is_operation=True),
+                                                                    lang=current_language)
+
+        metrics_aggregated = get_metrics_and_aggregate_per_project(Q(current_poa=True), Q(boolean_type=True),
+                                                                   "Occurrence", lang=current_language)
+        if metrics_aggregated and operational_dataset:
+            metrics_aggregated[project.id]["project_metrics"] += operational_dataset[project.id]["project_metrics"]
+    else:
+        metrics_aggregated = get_metrics_and_aggregate_per_project(Q(pk=project_id), lang=current_language)
+
     context = { "dataset": metrics_aggregated, "title": project.text }
 
     return render(request, "metrics/list_metrics_per_project.html", context)
