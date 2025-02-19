@@ -34,6 +34,21 @@
         {% block content %}{% endblock %}
     </main>
     {% block scripts %}{% endblock %}
+    <script>
+      document.getElementById("sara_logo").addEventListener("click", function () {
+        document.getElementById("sara_navbar").classList.toggle("nav_collapsed");
+      });
+
+      function resizeNav() {
+        if (window.innerWidth <= 600) {
+          document.getElementById("sara_navbar").classList.toggle("nav_collapsed");
+        }
+      }
+
+      resizeNav();
+
+      window.addEventListener("resize", resizeNav);
+    </script>
 </div>
 </body>
 </html>

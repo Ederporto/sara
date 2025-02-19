@@ -45,14 +45,12 @@ html {
     height: 100%;
     padding: 0;
     margin: 0;
-    overflow: hidden;
 }
 body {
     font-size: 100%;
     height: 100vh;
     padding: 0 !important;
     margin: 0;
-    overflow: hidden;
     color: var(--light-grey-color);
     font-family: var(--main-font), sans-serif;
 }
@@ -131,7 +129,7 @@ canvas {
     width:100%;
 }
 
-.wrapper { display: flex; height: 100%; }
+.wrapper { display: flex; min-height: 100%; }
 .wrapper-main { width: 100%; height: 100vh; overflow-y: auto; }
 .w3-container { padding: 0; }
 .w3-threequarter { padding: 1em 2em; }
